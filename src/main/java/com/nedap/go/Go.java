@@ -3,7 +3,7 @@ package com.nedap.go;
 import com.nedap.go.gui.GoGuiIntegrator;
 
 /**
- * Example on how to use the GoGui
+ * Example on how to use the GoGui.
  *
  */
 public class Go {

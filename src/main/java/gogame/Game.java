@@ -47,32 +47,51 @@ public class Game {
 
     /**
      * Check if the move is valid: correct player, valid coordinate on board and ko-rule.
+     *
+     * @return true if the move is valid.
      */
     protected boolean isValid(int location, Color color) {
         return isCorrectTurn(color) && active &&
-                board.isValid(getCoordinate(location)[0], getCoordinate(location)[1], color) &&
+                board.isValid(getCoordinate(location)[0], getCoordinate(location)[1]) &&
                 !isKoFight(location, color);
     }
 
+    /**
+     * Check and return true if the move results in a Ko-fight.
+     *
+     * @param location index of intersection of move
+     * @param color color of move
+     *
+     * @return true if the move results in a Ko-fight
+     */
     protected boolean isKoFight(int location, Color color) {
         Board copyBoard = board.deepCopy();
+        // make test move
         copyBoard.setField(getCoordinate(location)[0], getCoordinate(location)[1], color);
+        // check if this moves results in a similar board as one move ago, if so: Ko-fight
         copyBoard.removeCaptured(copyBoard.getCaptured(getCoordinate(location)[0], getCoordinate(location)[1]));
         return Arrays.deepEquals(copyBoard.fields, previousBoard.fields);
     }
 
     /**
+     * Do the move if this is valid.
      *
-     * @param location
-     * @param color
+     * @param location index of intersection of move
+     * @param color color of move
      */
     protected void doMove(int location, Color color) {
         if (isValid(location, color)) {
+            // set new previous board for ko-fight check
             previousBoard = board.deepCopy();
+            // put the stone on the field
             board.setField(getCoordinate(location)[0], getCoordinate(location)[1], color);
             //TODO: sendMove() over network
-            //check for suicide
-            board.removeCaptured(board.getCaptured(getCoordinate(location)[0], getCoordinate(location)[1]));
+            //TODO: check for suicide
+            //check for and remove captured stones
+            board.removeCaptured(
+                    board.getCaptured(getCoordinate(location)[0], getCoordinate(location)[1])
+            );
+            // switch turn and set pass to false
             turn = otherTurn();
             passed = false;
             //TODO: sendTurn() over network
@@ -81,20 +100,30 @@ public class Game {
         }
     }
 
+    /**
+     * Do a passing move.
+     *
+     * @param color color of ServerPlayer who is passing
+     */
     protected void doPass(Color color) {
         if (isCorrectTurn(color) && active) {
             if (passed) {
-                //TODO: activate ending of game
                 end();
             } else {
+                // switch turn and set passed to true.
                 turn = otherTurn();
+                passed = true;
                 //TODO: sendMove() over network
                 //TODO: sendTurn() over network
-                passed = true;
             }
         }
     }
 
+    /**
+     * Return ServerPlayer who is not at turn.
+     *
+     * @return ServerPlayer who is not at turn
+     */
     private ServerPlayer otherTurn() {
         if (turn == players.get(0)) {
             return players.get(1);
@@ -132,9 +161,8 @@ public class Game {
         // Inactivate the game
         active = false;
 
-        // Calculate winner
-        board.getFilledBoard();
-        switch(board.getWinningColor()) {
+        // Get winner
+        switch(board.getWinner()) {
             case Color.WHITE -> System.out.println("WHITE is winner");
             case Color.BLACK -> System.out.print("BLACK is winner");
             case Color.NEUTRAL -> System.out.println("DRAW");

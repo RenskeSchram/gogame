@@ -37,10 +37,10 @@ public class BoardTest {
 
     @Test
     public void testIsValid() {
-        assertTrue(board.isValid(0, 0, Color.WHITE));
+        assertTrue(board.isValid(0, 0));
         board.setField(0, 0, Color.WHITE);
-        assertFalse(board.isValid(0, 0, Color.BLACK));
-        assertFalse(board.isValid(Board.DIM, Board.DIM, Color.BLACK));
+        assertFalse(board.isValid(0, 0));
+        assertFalse(board.isValid(Board.DIM, Board.DIM));
     }
 
     @Test
@@ -103,6 +103,7 @@ public class BoardTest {
         board.removeCaptured(board.getCaptured(Board.DIM - 1, Board.DIM - 2));
         System.out.println(board.toString());
 
+        // test with edge
         board.setField(Board.DIM - 1, Board.DIM - 1, Color.WHITE);
         board.setField(Board.DIM - 1, Board.DIM - 2, Color.BLACK);
         board.setField(Board.DIM - 2, Board.DIM - 2, Color.BLACK);
@@ -120,6 +121,8 @@ public class BoardTest {
         board.getFilledBoard();
         System.out.println(board.toString());
 
+        // test two captures at the same time
+
     }
     @Test
     public void testGetTerritory() {
@@ -131,6 +134,39 @@ public class BoardTest {
 
         System.out.println(board.toString());
 
+        board.getFilledBoard();
+        System.out.println(board.toString());
+
+
+        // filled edge case
+        setUp();
+
+        board.setField(Board.DIM - 5, Board.DIM - 4, Color.WHITE);
+        board.setField(Board.DIM - 4, Board.DIM - 5, Color.WHITE);
+        for (int i = 1; i <= Board.DIM; i++) {
+            board.setField(Board.DIM - i, Board.DIM - 2, Color.BLACK);
+        }
+
+        System.out.println(board.toString());
+
+        board.getFilledBoard();
+        System.out.println(board.toString());
+
+
+        // centre situation
+        setUp();
+
+        board.setField(Board.DIM - 5, Board.DIM - 4, Color.WHITE);
+        board.setField(Board.DIM - 4, Board.DIM - 5, Color.WHITE);
+        board.setField(Board.DIM - 6, Board.DIM - 6, Color.WHITE);
+        board.setField(Board.DIM - 4, Board.DIM - 7, Color.WHITE);
+        board.setField(Board.DIM - 6, Board.DIM - 5, Color.WHITE);
+        board.setField(Board.DIM - 5, Board.DIM - 7, Color.WHITE);
+        board.setField(Board.DIM - 3, Board.DIM - 6, Color.WHITE);
+        board.setField(Board.DIM - 2, Board.DIM - 6, Color.BLACK);
+        board.setField(Board.DIM - 5, Board.DIM - 6, Color.BLACK);
+
+        System.out.println(board.toString());
         board.getFilledBoard();
         System.out.println(board.toString());
 

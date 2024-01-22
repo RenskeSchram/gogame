@@ -70,9 +70,14 @@ public class GameServer {
     protected void handleConnection(Socket socket) throws IOException {
         ServerConnection serverConnection = new ServerConnection(socket);
         serverConnection.serverPlayer = new ServerPlayer();
+        serverConnection.serverPlayer.gameServer = this;
+        serverConnection.gameServer = this;
         serverConnection.start();
     }
 
+    /**
+     * Check queue and start game if two players are queued.
+     */
     private void checkQueue() {
         if (queue.size() >= 2) {
             startGame(queue.get(0), queue.get(1));
@@ -80,18 +85,25 @@ public class GameServer {
     }
 
     /**
-     * Add serverplayer to serverMap.
+     * Add serverPlayer to serverMap.
      * @param serverPlayer serverPlayer to be added to the serverMap
      */
-    protected void addServerPlayer(ServerPlayer serverPlayer) {
-        queue.add(serverPlayer);
-        checkQueue();
+    protected void queueServerPlayer(ServerPlayer serverPlayer) {
+        if (!queue.contains(serverPlayer)) {
+            queue.add(serverPlayer);
+            checkQueue();
+        } else {
+            queue.remove(serverPlayer);
+        }
+
     }
 
-    protected void removeServerPlayer(ServerPlayer serverPlayer) {
-        queue.remove(serverPlayer);
-    }
-
+    /**
+     * Start a new game, remove assigned plauers from queue to serverMap with corresponding game.
+     *
+     * @param firstPlayer
+     * @param secondPlayer
+     */
     protected void startGame(ServerPlayer firstPlayer, ServerPlayer secondPlayer) {
         Game game = new Game(firstPlayer, secondPlayer);
         queue.remove(firstPlayer);
@@ -100,6 +112,12 @@ public class GameServer {
         serverMap.put(secondPlayer, game);
     }
 
+    /**
+     * Main function to retrieve port number and start create a new GameServer.
+     *
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.print("server port number: ");
