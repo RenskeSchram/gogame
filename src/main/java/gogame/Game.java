@@ -25,7 +25,7 @@ public class Game {
      * Initialize start of game by assigning colors and first turn to the players.
      */
     private void start() {
-        // sendStartedGame() over network
+        //TODO: sendStartedGame() over network
         active = true;
         players.get(0).setColor(Color.BLACK);
         players.get(1).setColor(Color.WHITE);
@@ -49,7 +49,7 @@ public class Game {
      * Check if the move is valid: correct player, valid coordinate on board and ko-rule.
      */
     protected boolean isValid(int location, Color color) {
-        return correctTurn(color) &&
+        return isCorrectTurn(color) && active &&
                 board.isValid(getCoordinate(location)[0], getCoordinate(location)[1], color) &&
                 !isKoFight(location, color);
     }
@@ -71,6 +71,7 @@ public class Game {
             previousBoard = board.deepCopy();
             board.setField(getCoordinate(location)[0], getCoordinate(location)[1], color);
             //TODO: sendMove() over network
+            //check for suicide
             board.removeCaptured(board.getCaptured(getCoordinate(location)[0], getCoordinate(location)[1]));
             turn = otherTurn();
             passed = false;
@@ -81,13 +82,16 @@ public class Game {
     }
 
     protected void doPass(Color color) {
-        if (passed) {
-            active = false;
-        } else {
-            turn = otherTurn();
-            //TODO: sendMove() over network
-            //TODO: sendTurn() over network
-            passed = true;
+        if (isCorrectTurn(color) && active) {
+            if (passed) {
+                //TODO: activate ending of game
+                end();
+            } else {
+                turn = otherTurn();
+                //TODO: sendMove() over network
+                //TODO: sendTurn() over network
+                passed = true;
+            }
         }
     }
 
@@ -108,7 +112,7 @@ public class Game {
      * @param color color of placed stone.
      * @return true if the placed color is of the correct ServerPlayer at turn.
      */
-    private boolean correctTurn(Color color) {
+    private boolean isCorrectTurn(Color color) {
         return color == turn.getColor();
     }
 
@@ -118,6 +122,23 @@ public class Game {
      */
     protected ServerPlayer getTurn() {
         return turn;
+    }
+
+
+    /**
+     * End game. Stop possibility to make a move, calculate scores and call out winner.
+     */
+    private void end() {
+        // Inactivate the game
+        active = false;
+
+        // Calculate winner
+        board.getFilledBoard();
+        switch(board.getWinningColor()) {
+            case Color.WHITE -> System.out.println("WHITE is winner");
+            case Color.BLACK -> System.out.print("BLACK is winner");
+            case Color.NEUTRAL -> System.out.println("DRAW");
+        }
     }
 
 }

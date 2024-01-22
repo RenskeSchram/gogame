@@ -2,7 +2,7 @@ package gogame;
 
 public enum Color {
 
-    EMPTY("\u001B[37m" + "◌" + "\u001B[0m"), BLACK("○"), WHITE("●");
+    EMPTY("\u001B[37m" + "◌" + "\u001B[0m"), BLACK("\u001B[30m" + "●" + "\u001B[0m"), WHITE("●"), NEUTRAL("\u001B[37m" + "○" + "\u001B[0m");
     private final String symbol;
 
     Color(String symbol) {
