@@ -1,5 +1,6 @@
 package gogame;
 
+import gogame.server.ServerPlayer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,15 +21,17 @@ public class GameTest {
 
     @Test
     public void testIsValid() {
-        assertTrue(game.isValid(6, Color.BLACK));
-        assertFalse(game.isValid(Board.DIM*Board.DIM+1, Color.BLACK));
-        assertFalse(game.isValid(6, Color.WHITE));
+        assertTrue(game.isValid(new int[]{1,6}, Color.BLACK));
+        game.doMove(new int[]{1,6}, Color.BLACK);
+        assertFalse(game.isValid(new int[]{1,6}, Color.BLACK));
+        assertFalse(game.isValid(new int[]{1,6}, Color.WHITE));
+        assertTrue(game.isValid(new int[]{2,6}, Color.WHITE));
     }
 
     @Test
     public void testDoMove() {
         assertSame(game.board.getField(game.getCoordinate(6)[0], game.getCoordinate(6)[1]), Color.EMPTY);
-        game.doMove(6, Color.BLACK);
+        game.doMove(game.getCoordinate(6), Color.BLACK);
         assertSame(game.board.getField(game.getCoordinate(6)[0], game.getCoordinate(6)[1]), Color.BLACK);
 
         // Correct player
@@ -39,12 +42,14 @@ public class GameTest {
         game.board.setField(Board.DIM - 2, Board.DIM - 2, Color.BLACK);
         game.board.setField(Board.DIM - 1, Board.DIM - 3, Color.BLACK);
         game.board.setField(Board.DIM - 3, Board.DIM - 3, Color.BLACK);
+        System.out.println(game.board.toString());
 
-        game.doMove(Board.DIM*(Board.DIM-3) + Board.DIM-2 , Color.WHITE);
-        game.doMove(Board.DIM*(Board.DIM-2) + Board.DIM-4 , Color.BLACK);
-        game.doMove(Board.DIM*(Board.DIM-2) + Board.DIM-3 , Color.WHITE);
-        assertTrue(game.isKoFight(Board.DIM*(Board.DIM-2) + Board.DIM-2 , Color.BLACK));
-        game.doMove(Board.DIM*(Board.DIM-2) + Board.DIM-2 , Color.BLACK);
+        game.doMove(new int[]{Board.DIM-3, Board.DIM-2} , Color.WHITE);
+        game.doMove(new int[]{Board.DIM-2, Board.DIM-4} , Color.BLACK);
+        game.doMove(new int[]{Board.DIM-2, Board.DIM-3} , Color.WHITE);
+        System.out.println(game.board.toString());
+        assertTrue(game.isKoFight(new int[]{Board.DIM-2, Board.DIM-2} , Color.BLACK));
+        game.doMove(new int[]{Board.DIM-2, Board.DIM-2}, Color.BLACK);
         assertSame(game.getTurn().color, Color.BLACK);
         System.out.println(game.board.toString());
     }

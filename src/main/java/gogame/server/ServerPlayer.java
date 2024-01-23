@@ -1,7 +1,7 @@
-package gogame;
+package gogame.server;
 
-import server.ServerConnection;
-import server.SocketConnection;
+import gogame.Player;
+import gogame.SocketConnection;
 
 /**
  * Server implementation of player in a game.
@@ -12,5 +12,10 @@ public class ServerPlayer extends Player {
     @Override
     public SocketConnection getConnection() {
         return serverConnection;
+    }
+
+    @Override
+    public void passGameUpdate(String gameUpdate) {
+        serverConnection.sendOutput(gameUpdate);
     }
 }

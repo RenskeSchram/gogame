@@ -1,8 +1,14 @@
-package gogame;
+package gogame.player;
 
-import java.util.*;
 
-public class Game {
+import gogame.Board;
+import gogame.Color;
+import gogame.Player;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class PlayerGame {
     private final List<Player> players = new ArrayList<>();
     public Board board;
     private Board previousBoard;
@@ -13,7 +19,7 @@ public class Game {
     /**
      * Constructor for new Game object with players and a new Board.
      */
-    public Game(Player firstPlayer, Player secondPlayer) {
+    public PlayerGame(Player firstPlayer, Player secondPlayer) {
         board = new Board();
         previousBoard = new Board();
         players.add(firstPlayer);
@@ -29,14 +35,8 @@ public class Game {
         // activate game
         active = true;
         players.get(0).setColor(Color.BLACK);
-        players.get(0).game = this;
         players.get(1).setColor(Color.WHITE);
-        players.get(0).game = this;
         turn = players.get(0);
-
-        for (Player player : players) {
-            player.passGameUpdate(Protocol.GAMESTARTED + Protocol.SEPARATOR + players.get(0) + Protocol.SEPARATOR + players.get(1));
-        }
     }
 
     /**
@@ -88,10 +88,6 @@ public class Game {
      */
     public void doMove(int[] location, Color color) {
         if (isValid(location, color)) {
-            // send move over network
-            for (Player player : players) {
-                player.passGameUpdate(Protocol.MOVE + Protocol.SEPARATOR + "5" + Protocol.SEPARATOR + getTurn().getColor());
-            }
             // set new previous board for ko-fight check
             previousBoard = board.deepCopy();
             // put the stone on the field
@@ -101,10 +97,6 @@ public class Game {
             board.removeCaptured(board.getCaptured(location[0], location[1]));
 
             turn = otherTurn();
-            // ask for new move to correct player
-            getTurn().passGameUpdate(Protocol.MAKEMOVE);
-
-            System.out.println(board.toString());
 
         } else {
             // ERROR incorrect player making turn
@@ -126,9 +118,6 @@ public class Game {
                 passed = true;
             }
         }
-
-        // ask for new move to correct player
-        getTurn().passGameUpdate(Protocol.MAKEMOVE);
     }
 
     public void doResign(Color color) {
@@ -171,7 +160,7 @@ public class Game {
     private void end() {
         // Inactivate the game
         active = false;
-
     }
 
 }
+

@@ -1,7 +1,7 @@
-package server;
+package gogame.server;
 
 import gogame.Game;
-import gogame.ServerPlayer;
+import gogame.Player;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -25,6 +25,7 @@ public class GameServer {
     protected GameServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         serverMap = new HashMap<>();
+        queue = new ArrayList<>();
     }
 
     /**
@@ -69,8 +70,6 @@ public class GameServer {
      */
     protected void handleConnection(Socket socket) throws IOException {
         ServerConnection serverConnection = new ServerConnection(socket);
-        serverConnection.serverPlayer = new ServerPlayer();
-        serverConnection.serverPlayer.serverConnection = serverConnection;
         serverConnection.gameServer = this;
         serverConnection.start();
     }
@@ -79,6 +78,7 @@ public class GameServer {
      * Check queue and start game if two players are queued.
      */
     private void checkQueue() {
+        System.out.println("Checking queue with size"+ queue.size());
         if (queue.size() >= 2) {
             startGame(queue.get(0), queue.get(1));
         }
@@ -107,8 +107,10 @@ public class GameServer {
         Game game = new Game(firstPlayer, secondPlayer);
         queue.remove(firstPlayer);
         serverMap.put(firstPlayer, game);
+        firstPlayer.game = game;
         queue.remove(secondPlayer);
         serverMap.put(secondPlayer, game);
+        secondPlayer.game = game;
     }
 
     /**
@@ -123,5 +125,13 @@ public class GameServer {
         int port = scanner.nextInt();
         GameServer gameServer = new GameServer(port);
         gameServer.acceptConnections();
+    }
+
+    public boolean correctUsername(String userName) {
+        boolean correct = true;
+        for (Player player : serverMap.keySet()) {
+            if (player.getUsername().equals(userName)) {correct = false; break;}
+        }
+        return correct;
     }
 }

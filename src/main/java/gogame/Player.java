@@ -1,18 +1,15 @@
 package gogame;
 
-import player.PlayerConnection;
-import server.SocketConnection;
-
 public abstract class Player {
     Color color;
     String userName;
-    Game game;
+    public Game game;
 
     /**
      * Send move to board and add this ServerPlayer as parameter.
      * @param location
      */
-    public void doMove(int location) {
+    public void doMove(int[] location, Color color) {
         game.doMove(location, color);
     }
 
@@ -35,7 +32,7 @@ public abstract class Player {
      *
      * @param color assigned color
      */
-    protected void setColor(Color color) {
+    public void setColor(Color color) {
         this.color = color;
     }
 
@@ -67,5 +64,7 @@ public abstract class Player {
     }
 
     public abstract SocketConnection getConnection();
+
+    public abstract void passGameUpdate(String gameUpdate);
 
 }

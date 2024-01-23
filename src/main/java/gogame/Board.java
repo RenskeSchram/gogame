@@ -11,8 +11,8 @@ public class Board {
     /**
      * Initialisation parameters of the board.
      */
-    public static final int DIM = 9;
-    protected final Color[][] fields;
+    public static int DIM = 9;
+    public final Color[][] fields;
 
     /**
      * Constructor for an empty Board.
@@ -61,7 +61,7 @@ public class Board {
      * @param color color of placed move.
      * //@requires isField(row, col)
      */
-    protected void setField(int row, int col, Color color) {
+    public void setField(int row, int col, Color color) {
         if (isField(row, col)) {
             this.fields[row][col] = color;
         }
@@ -91,7 +91,7 @@ public class Board {
      * @param col index of col of location
      * @return
      */
-    protected boolean isValid(int row, int col) {
+    public boolean isValid(int row, int col) {
         return isField(row, col) && isEmpty(row, col);
     }
 
@@ -217,7 +217,7 @@ public class Board {
      * @param col index of col of placed stone
      * @return list of int[]{row, col} of captured stones
      */
-    protected List<int[]> getCaptured(int row, int col) {
+    public List<int[]> getCaptured(int row, int col) {
         List<int[]> captured = new ArrayList<>();
 
         for (int[] adjacent : getAdjacentStones(row, col)) {
@@ -242,7 +242,7 @@ public class Board {
      * Set fields of captured stones to empty.
      * @param captured list of coordinates of captured stones.
      */
-    protected void removeCaptured(List<int[]> captured) {
+    public void removeCaptured(List<int[]> captured) {
         for (int[] capture : captured) {
             setField(capture[0], capture[1], Color.EMPTY);
         }

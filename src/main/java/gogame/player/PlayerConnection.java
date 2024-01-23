@@ -1,24 +1,23 @@
-package player;
+package gogame.player;
 
-import gogame.Game;
-import gogame.Player;
-import gogame.Protocol;
-import gogame.ServerPlayer;
+import gogame.*;
 import java.io.IOException;
 import java.net.Socket;
-import server.SocketConnection;
+import gogame.SocketConnection;
 
 public class PlayerConnection extends SocketConnection {
-    Player player;
+    OnlinePlayer player;
+
     /**
      * Abstract constructor for a new SocketConnection object with buffered reader and writer.
      *
      * @param socket the socket for establishing the connection
      * @throws IOException if there is an I/O exception while initializing the Reader/Writer objects
      */
-    protected PlayerConnection(Socket socket) throws IOException {
+    protected PlayerConnection(Socket socket, OnlinePlayer player) throws IOException {
         super(socket);
         this.start();
+        this.player = player;
     }
 
     /**
@@ -32,49 +31,60 @@ public class PlayerConnection extends SocketConnection {
         switch (protocol[0]) {
 
             case Protocol.HELLO: {
-                // TODO: send username
-
+                player.receiveMessage(protocol[1]);
+                player.sendUsername();
                 break;
             }
 
-            // QUEUE: send queue protocol message to serverPlayer
+            // QUEUE: send queue protocol message
             case Protocol.QUEUED: {
-                //TODO: handleQueued
+                player.receiveMessage("you are currently queued \nif you want to leave the queue, send: QEUEUE");
                 break;
             }
 
-            // MOVE: if player is in a game, send move to serverPlayer
+            // MOVE: received move, play in game
             case Protocol.MOVE: {
-                if (protocol.length == 2) {
-                    //TODO: handleReceivedMove
+                if (protocol.length == 3) {
+                    // handleReceivedMove: doMove()
+                    player.game.doMove(getLocationArray(protocol[1], player.game.board), getColor(protocol[2]));
                 }
                 break;
             }
 
             case Protocol.ACCEPTED: {
-
+                player.receiveMessage("username is accepted \nif you want to queue send: QUEUE ");
                 break;
             }
             case Protocol.REJECTED: {
-                //TODO: handleReceivedMove
+                player.receiveMessage("username is rejected\nsend new username using: LOGIN\"-<username>");
+                player.sendUsername();
                 break;
             }
             case Protocol.GAMESTARTED: {
-                //TODO: start new Game
+                // start new strategy PlayerGame
+                player.game = new Game(player, new OnlinePlayer());
+
             }
             case Protocol.MAKEMOVE: {
-                //TODO: handleReceivedMove
+                player.strategy.determineMove();
                 break;
             }
             case Protocol.GAMEOVER: {
-                //TODO: handleReceivedMove
+                player.receiveMessage(input);
+                // TODO: handleGameOver: ask to reconnect to server?
                 break;
             }
             case Protocol.ERROR: {
-                //TODO: handleReceivedMove
+                player.receiveMessage(input);
                 break;
             }
         }
+    }
+
+
+    @Override
+    public void sendOutput(String output) {
+        super.sendOutput(output);
     }
 
     /**

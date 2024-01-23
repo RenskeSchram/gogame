@@ -1,4 +1,4 @@
-package server;
+package gogame;
 
 import java.io.*;
 import java.net.Socket;
@@ -60,7 +60,7 @@ public abstract class SocketConnection {
      * Sends message over the network in String format.
      * @param output the line of input to be sent.
      */
-    protected void sendOutput(String output) {
+    public void sendOutput(String output) {
         try {
             out.write(output);
             out.newLine();
@@ -97,4 +97,38 @@ public abstract class SocketConnection {
      * Handles a disconnection of the connection.
      */
     protected abstract void handleDisconnect();
+
+
+    protected int[] getLocationArray(String input, Board board) {
+        String[] splittedInput = input.split(",");
+        if (splittedInput.length == 1) {
+            int row = Integer.parseInt(splittedInput[0]) / board.DIM;
+            int col = Integer.parseInt(splittedInput[0]) % board.DIM -1 ;
+            return new int[]{col, row};
+
+        } else if (splittedInput.length == 2) {
+            return new int[]{Integer.parseInt(splittedInput[0]), Integer.parseInt(splittedInput[1])};
+
+        } else {
+            System.out.println("ERROR with provided location");
+            return new int[]{-1, -1};
+        }
+
+    }
+
+    protected Color getColor(String input) {
+        switch (input.toLowerCase()) {
+            case "white":
+                return Color.WHITE;
+            case "black":
+                return Color.BLACK;
+            case "empty":
+                return Color.EMPTY;
+            default:
+                sendOutput(Protocol.ERROR + Protocol.SEPARATOR + "color is not recognized");
+                return null;
+        }
+    }
+
+
 }
