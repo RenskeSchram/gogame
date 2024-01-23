@@ -1,7 +1,6 @@
-package connection;
+package server;
 
 import gogame.Color;
-import gogame.Game;
 import gogame.Protocol;
 import gogame.ServerPlayer;
 import java.io.IOException;
@@ -74,6 +73,8 @@ public class ServerConnection extends SocketConnection{
         }
     }
 
+
+
     public void sendGameStarted(String nameBlackPlayer, String nameWhitePlayer) {
         sendOutput(Protocol.GAMESTARTED + Protocol.SEPARATOR + nameBlackPlayer + Protocol.SEPARATOR + nameWhitePlayer);
     }
@@ -114,20 +115,12 @@ public class ServerConnection extends SocketConnection{
         sendOutput(Protocol.ERROR + Protocol.SEPARATOR + message);
     }
 
-
-
-    /**
-     * Send formatted message according to the protocol over the network.
-     * @param output formatted message according to the protocol.
-     */
-    protected void sendOutput(String output) {
-        super.sendOutput(output);
-    }
-
     /**
      * Handles a disconnection of the connection.
      */
     @Override
     protected void handleDisconnect() {
     }
+
+    public void sendPass() { }
 }

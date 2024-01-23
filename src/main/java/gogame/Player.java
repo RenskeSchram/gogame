@@ -1,0 +1,71 @@
+package gogame;
+
+import player.PlayerConnection;
+import server.SocketConnection;
+
+public abstract class Player {
+    Color color;
+    String userName;
+    Game game;
+
+    /**
+     * Send move to board and add this ServerPlayer as parameter.
+     * @param location
+     */
+    public void doMove(int location) {
+        game.doMove(location, color);
+    }
+
+    /**
+     * Send pass to the board and add this ServerPlayer as parameter.
+     */
+    public void doPass() {
+        game.doPass(color);
+    }
+
+    /**
+     * Send pass to the board and add this ServerPlayer as parameter.
+     */
+    public void doResign() {
+        game.doResign(color);
+    }
+
+    /**
+     * Set assigned color of this ServerPlayer.
+     *
+     * @param color assigned color
+     */
+    protected void setColor(Color color) {
+        this.color = color;
+    }
+
+    /**
+     * Return color of this ServerPlayer.
+     *
+     * @return color of this ServerPlayer
+     */
+    public Color getColor() {
+        return this.color;
+    }
+
+    /**
+     * Set username of this ServerPlayer.
+     *
+     * @param userName assigned color
+     */
+    public void setUsername(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * Return username of this Player.
+     *
+     * @return username of this Player
+     */
+    public String getUsername() {
+        return this.userName;
+    }
+
+    public abstract SocketConnection getConnection();
+
+}

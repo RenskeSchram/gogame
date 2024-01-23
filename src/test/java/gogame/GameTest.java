@@ -1,6 +1,5 @@
 package gogame;
 
-import connection.GameServer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,14 +7,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
     private Game game;
-    //private GameServer gameServer = new GameServer(8080);
-
 
     @BeforeEach
     public void setUp(){
         game = new Game(new ServerPlayer(), new ServerPlayer());
     }
-
 
     @Test
     public void testGetCoordinate() {
@@ -51,9 +47,7 @@ public class GameTest {
         game.doMove(Board.DIM*(Board.DIM-2) + Board.DIM-2 , Color.BLACK);
         assertSame(game.getTurn().color, Color.BLACK);
         System.out.println(game.board.toString());
-
     }
-
 
     @Test
     public void testDoPass() {

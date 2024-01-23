@@ -1,4 +1,4 @@
-package connection;
+package server;
 
 import gogame.Game;
 import gogame.ServerPlayer;
@@ -70,7 +70,7 @@ public class GameServer {
     protected void handleConnection(Socket socket) throws IOException {
         ServerConnection serverConnection = new ServerConnection(socket);
         serverConnection.serverPlayer = new ServerPlayer();
-        serverConnection.serverPlayer.gameServer = this;
+        serverConnection.serverPlayer.serverConnection = serverConnection;
         serverConnection.gameServer = this;
         serverConnection.start();
     }
@@ -95,7 +95,6 @@ public class GameServer {
         } else {
             queue.remove(serverPlayer);
         }
-
     }
 
     /**

@@ -1,22 +1,24 @@
 package gogame;
 
 import java.util.*;
+import server.SocketConnection;
 
 public class Game {
+    private final List<Player> players = new ArrayList<>();
     public Board board;
-    private ServerPlayer turn;
-    private final List<ServerPlayer> players = new ArrayList<>();
     private Board previousBoard;
+    private Player turn;
     protected boolean active = false;
     private boolean passed = false;
 
     /**
      * Constructor for new Game object with players and a new Board.
      */
-    public Game(ServerPlayer firstPlayer, ServerPlayer secondPlayer) {
-        this.board = new Board();
-        this.players.add(firstPlayer);
-        this.players.add(secondPlayer);
+    public Game(Player firstPlayer, Player secondPlayer) {
+        board = new Board();
+        previousBoard = new Board();
+        players.add(firstPlayer);
+        players.add(secondPlayer);
 
         start();
     }
@@ -25,13 +27,16 @@ public class Game {
      * Initialize start of game by assigning colors and first turn to the players.
      */
     private void start() {
-        //TODO: sendStartedGame() over network
+        // activate game
         active = true;
         players.get(0).setColor(Color.BLACK);
         players.get(1).setColor(Color.WHITE);
-        previousBoard = new Board();
-
         turn = players.get(0);
+
+        //sendStartedGame() over network
+        for (Player player : players) {
+            // TODO: player.getConnection().sendGameStarted(players.get(0).userName, players.get(1).userName);
+        }
     }
 
     /**
@@ -51,7 +56,9 @@ public class Game {
      * @return true if the move is valid.
      */
     protected boolean isValid(int location, Color color) {
-        return isCorrectTurn(color) && active &&
+        return isCorrectTurn(color) &&
+                active &&
+                turn != null &&
                 board.isValid(getCoordinate(location)[0], getCoordinate(location)[1]) &&
                 !isKoFight(location, color);
     }
@@ -85,19 +92,26 @@ public class Game {
             previousBoard = board.deepCopy();
             // put the stone on the field
             board.setField(getCoordinate(location)[0], getCoordinate(location)[1], color);
-            //TODO: sendMove() over network
-            //TODO: check for suicide
             //check for and remove captured stones
+            //TODO: check for suicide
             board.removeCaptured(
                     board.getCaptured(getCoordinate(location)[0], getCoordinate(location)[1])
             );
-            // switch turn and set pass to false
-            turn = otherTurn();
-            passed = false;
-            //TODO: sendTurn() over network
+
+            // sendMove() over network
+            for (Player player : players) {
+                //player.getConnection().sendOutput(location, color);
+            }
+
         } else {
             // ERROR incorrect player making turn
         }
+
+        // sendMakeMove() over network
+        for (Player player : players) {
+            //TODO: player.serverConnection.sendMakeMove(turn.userName);
+        }
+
     }
 
     /**
@@ -113,8 +127,12 @@ public class Game {
                 // switch turn and set passed to true.
                 turn = otherTurn();
                 passed = true;
-                //TODO: sendMove() over network
-                //TODO: sendTurn() over network
+
+                // update over network
+                for (Player player : players) {
+                    //TODO: player.serverConnection.sendPass();
+                    // player.serverConnection.sendMakeMove(turn.userName);
+                }
             }
         }
     }
@@ -124,7 +142,7 @@ public class Game {
      *
      * @return ServerPlayer who is not at turn
      */
-    private ServerPlayer otherTurn() {
+    private Player otherTurn() {
         if (turn == players.get(0)) {
             return players.get(1);
         } else if (turn == players.get(1)) {
@@ -149,10 +167,9 @@ public class Game {
      * Returns the players whose turn it is.
      * @return the players whose turn it is.
      */
-    protected ServerPlayer getTurn() {
+    protected Player getTurn() {
         return turn;
     }
-
 
     /**
      * End game. Stop possibility to make a move, calculate scores and call out winner.
@@ -160,13 +177,12 @@ public class Game {
     private void end() {
         // Inactivate the game
         active = false;
-
-        // Get winner
-        switch(board.getWinner()) {
-            case Color.WHITE -> System.out.println("WHITE is winner");
-            case Color.BLACK -> System.out.print("BLACK is winner");
-            case Color.NEUTRAL -> System.out.println("DRAW");
-        }
+        //TODO: update players with winner
     }
+
+    public void doResign(Color color) {
+
+    }
+
 
 }
