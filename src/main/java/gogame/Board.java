@@ -275,7 +275,7 @@ public class Board {
         StringBuilder stringBoard = new StringBuilder();
         for (int row = 0; row < DIM; row++) {
             for (int col = 0; col < DIM; col++) {
-                stringBoard.append(fields[row][col]).append("  ");
+                stringBoard.append(fields[row][col].toSymbol()).append("  ");
             }
             stringBoard.append("\n");
         }

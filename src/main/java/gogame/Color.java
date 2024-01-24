@@ -24,8 +24,7 @@ public enum Color {
         }
     }
 
-    @Override
-    public String toString() {
+    public String toSymbol() {
         return symbol;
     }
 }
