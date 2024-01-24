@@ -78,7 +78,6 @@ public class GameServer {
      * Check queue and start game if two players are queued.
      */
     private void checkQueue() {
-        System.out.println("Checking queue with size"+ queue.size());
         if (queue.size() >= 2) {
             startGame(queue.get(0), queue.get(1));
         }
@@ -111,6 +110,7 @@ public class GameServer {
         queue.remove(secondPlayer);
         serverMap.put(secondPlayer, game);
         secondPlayer.game = game;
+
     }
 
     /**

@@ -10,7 +10,7 @@ public abstract class Player {
      * @param location
      */
     public void doMove(int[] location, Color color) {
-        game.doMove(location, color);
+        game.doMove(location, this.color);
     }
 
     /**
@@ -66,5 +66,7 @@ public abstract class Player {
     public abstract SocketConnection getConnection();
 
     public abstract void passGameUpdate(String gameUpdate);
+
+    public abstract void lookAtBoard();
 
 }

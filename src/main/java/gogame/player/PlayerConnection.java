@@ -46,6 +46,7 @@ public class PlayerConnection extends SocketConnection {
             case Protocol.MOVE: {
                 if (protocol.length == 3) {
                     // handleReceivedMove: doMove()
+                    player.receiveMessage("received MOVE " + protocol[1]);
                     player.game.doMove(getLocationArray(protocol[1], player.game.board), getColor(protocol[2]));
                 }
                 break;
@@ -61,7 +62,7 @@ public class PlayerConnection extends SocketConnection {
                 break;
             }
             case Protocol.GAMESTARTED: {
-                // start new strategy PlayerGame
+                player.receiveMessage(input);
                 player.game = new Game(player, new OnlinePlayer());
 
             }
@@ -74,8 +75,14 @@ public class PlayerConnection extends SocketConnection {
                 // TODO: handleGameOver: ask to reconnect to server?
                 break;
             }
+
             case Protocol.ERROR: {
                 player.receiveMessage(input);
+                break;
+            }
+
+            case Protocol.PRINT: {
+                player.receiveMessage(player.game.board.toString());
                 break;
             }
         }

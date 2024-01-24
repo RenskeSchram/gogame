@@ -1,5 +1,6 @@
 package gogame;
 
+import java.io.*;
 import java.util.*;
 
 public class Game {
@@ -35,7 +36,7 @@ public class Game {
         turn = players.get(0);
 
         for (Player player : players) {
-            player.passGameUpdate(Protocol.GAMESTARTED + Protocol.SEPARATOR + players.get(0) + Protocol.SEPARATOR + players.get(1));
+            player.passGameUpdate(Protocol.GAMESTARTED + Protocol.SEPARATOR + players.get(0).getUsername() +"," + players.get(1).getUsername());
         }
     }
 
@@ -90,7 +91,7 @@ public class Game {
         if (isValid(location, color)) {
             // send move over network
             for (Player player : players) {
-                player.passGameUpdate(Protocol.MOVE + Protocol.SEPARATOR + "5" + Protocol.SEPARATOR + getTurn().getColor());
+                player.passGameUpdate(Protocol.MOVE + Protocol.SEPARATOR + location[0] + "," + location[1] + Protocol.SEPARATOR + getTurn().getColor());
             }
             // set new previous board for ko-fight check
             previousBoard = board.deepCopy();
@@ -101,12 +102,14 @@ public class Game {
             board.removeCaptured(board.getCaptured(location[0], location[1]));
 
             turn = otherTurn();
+
             // ask for new move to correct player
             getTurn().passGameUpdate(Protocol.MAKEMOVE);
 
-            System.out.println(board.toString());
-
         } else {
+            // ask for new move as the previous was incorrect
+            getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "incorrect move");
+            getTurn().passGameUpdate(Protocol.MAKEMOVE);
             // ERROR incorrect player making turn
         }
     }
@@ -121,6 +124,10 @@ public class Game {
             if (passed) {
                 end();
             } else {
+                // send move to players
+                for (Player player : players) {
+                    player.passGameUpdate(Protocol.PASS + Protocol.SEPARATOR + getTurn().getColor());
+                }
                 // switch turn and set passed to true.
                 turn = otherTurn();
                 passed = true;

@@ -62,7 +62,7 @@ public class ServerConnection extends SocketConnection {
 
             // MOVE: if player is in a game, send move to serverPlayer
             case Protocol.MOVE: {
-                if (protocol.length == 2 && gameServer.serverMap.containsKey(serverPlayer)) {
+                if (protocol.length >= 2 && gameServer.serverMap.containsKey(serverPlayer)) {
                         serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board), Color.EMPTY);
                     }
                 break;
@@ -80,6 +80,14 @@ public class ServerConnection extends SocketConnection {
             // RESIGN: if player is in a game, send resign to serverPlayer
             case Protocol.RESIGN: {
                 //TODO: handle resign
+                break;
+            }
+
+
+            // RESIGN: if player is in a game, send resign to serverPlayer
+            case Protocol.PRINT: {
+                System.out.println(serverPlayer.game.board.toString());
+                sendOutput(Protocol.PRINT);
                 break;
             }
         }
