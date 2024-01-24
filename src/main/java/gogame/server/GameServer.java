@@ -22,7 +22,7 @@ public class GameServer {
      * @param port the port on which this server listens for connections
      * @throws IOException if an I/O error occurs when opening the socket
      */
-    protected GameServer(int port) throws IOException {
+    public GameServer(int port) throws IOException {
         serverSocket = new ServerSocket(port);
         serverMap = new HashMap<>();
         queue = new ArrayList<>();

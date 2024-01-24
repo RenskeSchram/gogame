@@ -1,6 +1,12 @@
 package gogame;
 
+import gogame.server.GameServer;
+import gogame.server.ServerConnection;
 import gogame.server.ServerPlayer;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Random;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,10 +14,23 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameTest {
     private Game game;
+    private GameServer gameServer;
+    public int getRandomPort() {
+        Random random = new Random();
+        return random.nextInt(9999 - 1) + 1;
+    }
+
 
     @BeforeEach
-    public void setUp(){
-        game = new Game(new ServerPlayer(), new ServerPlayer());
+    public void setUp() throws IOException {
+        int PORT = getRandomPort();
+        this.gameServer = new GameServer(PORT);
+        ServerPlayer playerI = new ServerPlayer();
+        playerI.serverConnection = new ServerConnection(new Socket(InetAddress.getByName("localhost"), PORT));
+        ServerPlayer playerII = new ServerPlayer();
+        playerII.serverConnection = new ServerConnection(new Socket(InetAddress.getByName("localhost"), PORT));
+
+        game = new Game(playerI, playerII);
     }
 
     @Test
@@ -30,11 +49,13 @@ public class GameTest {
 
     @Test
     public void testDoMove() {
+        // Correct player
         assertSame(game.board.getField(game.getCoordinate(6)[0], game.getCoordinate(6)[1]), Color.EMPTY);
         game.doMove(game.getCoordinate(6), Color.BLACK);
         assertSame(game.board.getField(game.getCoordinate(6)[0], game.getCoordinate(6)[1]), Color.BLACK);
 
-        // Correct player
+        // Incorrect player
+
 
         // Ko-rule
         game.board.setField(Board.DIM - 2, Board.DIM - 1, Color.WHITE);

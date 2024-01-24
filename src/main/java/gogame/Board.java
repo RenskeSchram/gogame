@@ -22,7 +22,7 @@ public class Board {
         fields = new Color[DIM][DIM];
         for (int row = 0; (row >= 0) && (row < DIM); row++) {
             for (int col = 0; (col >= 0) && (col < DIM); col++) {
-                setField(row, col, Color.EMPTY);
+                setField(col, row, Color.EMPTY);
             }
         }
     }
@@ -34,7 +34,7 @@ public class Board {
      * @param col index of col of location
      * @return true if location is a valid field on the Board.
      */
-    protected boolean isField(int row, int col) {
+    protected boolean isField(int col, int row) {
         return row >= 0 && row < DIM && col >= 0 && col < DIM;
     }
 
@@ -45,9 +45,9 @@ public class Board {
      * @param col index of col of location
      * @return true if location is a valid field on the Board.
      */
-    protected boolean isEmpty(int row, int col) {
-        if (isField(row, col)) {
-            return getField(row, col) == Color.EMPTY;
+    protected boolean isEmpty(int col, int row) {
+        if (isField(col, row)) {
+            return getField(col, row) == Color.EMPTY;
         } else {
             return false;
         }
@@ -61,9 +61,9 @@ public class Board {
      * @param color color of placed move.
      * //@requires isField(row, col)
      */
-    public void setField(int row, int col, Color color) {
-        if (isField(row, col)) {
-            this.fields[row][col] = color;
+    public void setField(int col, int row, Color color) {
+        if (isField(col, row)) {
+            this.fields[col][row] = color;
         }
     }
 
@@ -75,9 +75,9 @@ public class Board {
      * @return Color of the field with row and col
      * // requires: isField(row, col)
      */
-    protected Color getField(int row, int col) {
-        if (isField(row, col)) {
-            return fields[row][col];
+    protected Color getField(int col, int row) {
+        if (isField(col, row)) {
+            return fields[col][row];
         } else {
             return null;
         }
@@ -91,8 +91,8 @@ public class Board {
      * @param col index of col of location
      * @return
      */
-    public boolean isValid(int row, int col) {
-        return isField(row, col) && isEmpty(row, col);
+    public boolean isValid(int col, int row) {
+        return isField(col, row) && isEmpty(col, row);
     }
 
     /**
@@ -102,10 +102,10 @@ public class Board {
      * @param col
      * @return if the stone has a liberty (empty adjacent stone).
      */
-    protected boolean hasLiberty(int row, int col) {
+    protected boolean hasLiberty(int col, int row) {
         boolean liberty = false;
         // get the color for all adjacent intersections
-        for (int[] adjacent : getAdjacentStones(row, col)) {
+        for (int[] adjacent : getAdjacentStones(col, row)) {
             // check if color is EMPTY, meaning there is a liberty
             if (isEmpty(adjacent[0], adjacent[1])) { liberty = true; }
         }
@@ -123,20 +123,20 @@ public class Board {
      *
      * @return List of coordinates of intersections in group
      */
-    protected List<int[]> getGroup(int row, int col, boolean active) {
+    protected List<int[]> getGroup(int col, int row, boolean active) {
         List<int[]> group = new ArrayList<>();
         if (active) {
-            if (getField(row, col) != Color.EMPTY) {
-                group.add(new int[]{row, col});
+            if (getField(col, row) != Color.EMPTY) {
+                group.add(new int[]{col, row});
             }
         } else {
-            if (getField(row, col) == Color.EMPTY) {
-                group.add(new int[]{row, col});
+            if (getField(col, row) == Color.EMPTY) {
+                group.add(new int[]{col, row});
             }
         }
 
-        for (int[] adjacent : getAdjacentStones(row, col)) {
-            exploreAdjacentStones(group, adjacent, getField(row, col));
+        for (int[] adjacent : getAdjacentStones(col, row)) {
+            exploreAdjacentStones(group, adjacent, getField(col, row));
         }
 
         return group;
@@ -186,21 +186,21 @@ public class Board {
      * @param col index of col of location
      * @return adjacent field coordinates on the board.
      */
-    protected List<int[]> getAdjacentStones(int row, int col) {
+    protected List<int[]> getAdjacentStones(int col, int row) {
         List<int[]> adjacentStones = new ArrayList<>();
-        int[] left = new int[]{row, col - 1};
+        int[] left = new int[]{col, row - 1};
         if (isField(left[0], left[1])) {
             adjacentStones.add(left);
         }
-        int[] right = new int[]{row, col + 1};
+        int[] right = new int[]{col, row + 1};
         if (isField(right[0], right[1])) {
             adjacentStones.add(right);
         }
-        int[] up = new int[]{row + 1, col};
+        int[] up = new int[]{col + 1, row};
         if (isField(up[0], up[1])) {
             adjacentStones.add(up);
         }
-        int[] down = new int[]{row - 1, col};
+        int[] down = new int[]{col - 1, row};
         if (isField(down[0], down[1])) {
             adjacentStones.add(down);
         }
@@ -217,10 +217,10 @@ public class Board {
      * @param col index of col of placed stone
      * @return list of int[]{row, col} of captured stones
      */
-    public List<int[]> getCaptured(int row, int col) {
+    public List<int[]> getCaptured(int col, int row) {
         List<int[]> captured = new ArrayList<>();
 
-        for (int[] adjacent : getAdjacentStones(row, col)) {
+        for (int[] adjacent : getAdjacentStones(col, row)) {
             List<int[]> group = getGroup(adjacent[0], adjacent[1], true);
             boolean noliberty = true;
 
@@ -259,7 +259,7 @@ public class Board {
         Board copy = new Board();
         for (int row = 0; row < DIM; row++) {
             for (int col = 0; col < DIM; col++) {
-                copy.setField(row, col, this.getField(row, col));
+                copy.setField(col, row, this.getField(col, row));
             }
         }
         return copy;
@@ -275,7 +275,7 @@ public class Board {
         StringBuilder stringBoard = new StringBuilder();
         for (int row = 0; row < DIM; row++) {
             for (int col = 0; col < DIM; col++) {
-                stringBoard.append(fields[row][col].toSymbol()).append("  ");
+                stringBoard.append(fields[col][row].toSymbol()).append("  ");
             }
             stringBoard.append("\n");
         }
@@ -297,8 +297,8 @@ public class Board {
         int blackCount = 0;
         for (int row = 0; row < DIM; row++) {
             for (int col = 0; col < DIM; col++) {
-                if (getField(row, col) == Color.WHITE) { whiteCount++; }
-                if (getField(row, col) == Color.BLACK) { blackCount++; }
+                if (getField(col, row) == Color.WHITE) { whiteCount++; }
+                if (getField(col, row) == Color.BLACK) { blackCount++; }
             }
         }
 
@@ -321,11 +321,11 @@ public class Board {
             for (int col = 0; col < DIM; col++) {
 
                 // find next empty intersection on the board and create new group
-                if (getField(row, col)== Color.EMPTY) {
+                if (getField(col, row)== Color.EMPTY) {
                     List<int[]> group = new ArrayList<>();
 
                     // find all adjacent empty intersections and add to group
-                    exploreAdjacentStones(group, new int[]{row, col}, Color.EMPTY);
+                    exploreAdjacentStones(group, new int[]{col, row}, Color.EMPTY);
 
                     // get and set territory color for group
                     if (!group.isEmpty()) {
@@ -364,7 +364,7 @@ public class Board {
                 break;
             }
         }
-        if (correctTerritory) {
+        if (correctTerritory && !colors.isEmpty()) {
             return colors.get(0);
         } else {
             return Color.NEUTRAL;

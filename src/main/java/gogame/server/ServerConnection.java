@@ -10,8 +10,8 @@ import java.net.Socket;
  * ServerConnection to handle receiving and sending messages according to protocol.
  */
 public class ServerConnection extends SocketConnection {
-    ServerPlayer serverPlayer;
-    GameServer gameServer;
+    public ServerPlayer serverPlayer;
+    public GameServer gameServer;
 
     public ServerConnection(Socket socket) throws IOException {
         super(socket);
@@ -23,37 +23,40 @@ public class ServerConnection extends SocketConnection {
      * @param input line of input to be handled
      */
     @Override
-    protected void handleInput(String input) {
+    public void handleInput(String input) {
         String[] protocol = input.split(Protocol.SEPARATOR);
         switch (protocol[0]) {
 
             // HELLO handshake: ask to receive username using LOGIN
             case Protocol.HELLO: {
-                System.out.println("[SERVER LOG] HELLO received");
-                serverPlayer = new ServerPlayer();
-                serverPlayer.serverConnection = this;
-                sendOutput(Protocol.HELLO + Protocol.SEPARATOR + "please provide a username using: LOGIN<username>");
+                if (serverPlayer == null) {
+                    serverPlayer = new ServerPlayer();
+                    serverPlayer.serverConnection = this;
+                    sendOutput(Protocol.HELLO + Protocol.SEPARATOR + "please provide a username using: LOGIN<username>");
+                } else {
+                    sendError("Hello to you too! We have exchanged HELLOs before right?");
+                }
                 break;
             }
 
             // LOGIN: username received. If correct (not existing) send accept and set username for ServerPlayer
             case Protocol.LOGIN: {
-                if (protocol.length >= 2) {
-                    if (gameServer.correctUsername(protocol[1])) {
+                if (serverPlayer != null && protocol.length >= 2) {
+                    if (gameServer.correctUsername(protocol[1]) && serverPlayer.getUsername() == null) {
                         serverPlayer.setUsername(protocol[1]);
                     }
-                    System.out.println(serverPlayer.getUsername());
-                    sendAccepted(gameServer.correctUsername(protocol[1]));
+                    sendAccepted(gameServer.correctUsername(protocol[1])&& serverPlayer.getUsername() != null);
+                } else {
+                    sendError("could not handle LOGIN, no username provided");
                 }
                 break;
             }
 
             // QUEUE: send queue protocol message to serverPlayer
             case Protocol.QUEUE: {
-                //TODO: check if logged in
-                if (serverPlayer.getUsername() != null) {
-                gameServer.queueServerPlayer(serverPlayer);
-                sendQueued();
+                if (serverPlayer != null && serverPlayer.getUsername() != null) {
+                    gameServer.queueServerPlayer(serverPlayer);
+                    sendQueued();
                 } else {
                     sendError("correct LOGIN required to queue");
                 }
@@ -64,7 +67,9 @@ public class ServerConnection extends SocketConnection {
             case Protocol.MOVE: {
                 if (protocol.length >= 2 && gameServer.serverMap.containsKey(serverPlayer)) {
                         serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board), Color.EMPTY);
-                    }
+                    } else {
+                    sendError("could not handle MOVE");
+                }
                 break;
                 }
 
@@ -73,13 +78,19 @@ public class ServerConnection extends SocketConnection {
             case Protocol.PASS: {
                 if (gameServer.serverMap.containsKey(serverPlayer)) {
                     serverPlayer.doPass();
+                } else {
+                    sendError("could not handle PASS");
                 }
                 break;
             }
 
             // RESIGN: if player is in a game, send resign to serverPlayer
             case Protocol.RESIGN: {
-                //TODO: handle resign
+                if (gameServer.serverMap.containsKey(serverPlayer)) {
+                    serverPlayer.doResign();
+                } else {
+                    sendError("could not handle RESIGN");
+                }
                 break;
             }
 

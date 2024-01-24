@@ -38,6 +38,9 @@ public class Game {
         for (Player player : players) {
             player.passGameUpdate(Protocol.GAMESTARTED + Protocol.SEPARATOR + players.get(0).getUsername() +"," + players.get(1).getUsername());
         }
+
+        turn.passGameUpdate(Protocol.MAKEMOVE);
+
     }
 
     /**
@@ -178,6 +181,12 @@ public class Game {
     private void end() {
         // Inactivate the game
         active = false;
+        for (Player player : players) {
+            player.quitGame();
+            player.passGameUpdate(Protocol.PRINT);
+            player.passGameUpdate(Protocol.GAMEOVER+Protocol.SEPARATOR+ board.getWinner());
+        }
+
 
     }
 

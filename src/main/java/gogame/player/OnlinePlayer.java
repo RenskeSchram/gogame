@@ -1,6 +1,7 @@
 package gogame.player;
 
 import gogame.Color;
+import gogame.Game;
 import gogame.Player;
 import gogame.SocketConnection;
 import java.io.IOException;
@@ -8,8 +9,8 @@ import java.net.Socket;
 
 public class OnlinePlayer extends Player {
     PlayerConnection playerConnection;
-    PlayerTUI tui;
-    Strategy strategy;
+    public PlayerTUI tui;
+    Strategy strategy = new HumanStrategy(this);
 
     @Override
     public SocketConnection getConnection() {
@@ -41,7 +42,7 @@ public class OnlinePlayer extends Player {
         if (type.equals("computer")){
             strategy = new ComputerStrategy(this);
         } else {
-            strategy = new HumanStrategy(this);
+            receiveMessage("human strategy applied");
         }
     }
 

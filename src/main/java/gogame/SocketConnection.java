@@ -98,19 +98,29 @@ public abstract class SocketConnection {
      */
     protected abstract void handleDisconnect();
 
-
+    /**
+     *
+     * @param input
+     * @param board
+     * @return
+     */
     protected int[] getLocationArray(String input, Board board) {
-        String[] splittedInput = input.split(",");
-        if (splittedInput.length == 1) {
-            int row = Integer.parseInt(splittedInput[0]) / board.DIM;
-            int col = Integer.parseInt(splittedInput[0]) % board.DIM -1 ;
-            return new int[]{col, row};
+        String[] splitInput = input.split(",");
+        try {
+            if (splitInput.length == 1) {
+                int row = Integer.parseInt(splitInput[0]) / board.DIM;
+                int col = Integer.parseInt(splitInput[0]) % board.DIM - 1;
+                return new int[]{col, row};
 
-        } else if (splittedInput.length == 2) {
-            return new int[]{Integer.parseInt(splittedInput[0]), Integer.parseInt(splittedInput[1])};
+            } else if (splitInput.length == 2) {
+                return new int[]{Integer.parseInt(splitInput[0]), Integer.parseInt(splitInput[1])};
 
-        } else {
-            System.out.println("ERROR with provided location");
+            } else {
+                sendOutput(Protocol.ERROR + Protocol.SEPARATOR + "incorrect number of comma inputs for location (use format:  MOVE-<int> or MOVE-<int, int>)");
+                return new int[]{-1, -1};
+            }
+        } catch (NumberFormatException e) {
+            sendOutput(Protocol.ERROR + Protocol.SEPARATOR + "incorrect input for location (check format:  MOVE-<int> or MOVE-<int, int>)");
             return new int[]{-1, -1};
         }
 
@@ -130,5 +140,8 @@ public abstract class SocketConnection {
         }
     }
 
+    public void sendError(String errorMessage) {
+        sendOutput(Protocol.ERROR + Protocol.SEPARATOR + errorMessage);
+    }
 
 }
