@@ -19,9 +19,9 @@ public class PlayerGame {
     /**
      * Constructor for new Game object with players and a new Board.
      */
-    public PlayerGame(Player firstPlayer, Player secondPlayer) {
-        board = new Board();
-        previousBoard = new Board();
+    public PlayerGame(Player firstPlayer, Player secondPlayer, int DIM) {
+        board = new Board(DIM);
+        previousBoard = new Board(DIM);
         players.add(firstPlayer);
         players.add(secondPlayer);
 
@@ -45,8 +45,8 @@ public class PlayerGame {
      * @return int[] variable with variable[1] = row and variable[2] = col
      */
     protected int[] getCoordinate(int location) {
-        int row = location / Board.DIM;
-        int col = location % Board.DIM;
+        int row = location / board.DIM;
+        int col = location % board.DIM;
         return new int[]{row, col};
     }
 

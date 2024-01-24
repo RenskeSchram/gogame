@@ -51,33 +51,48 @@ public class PlayerConnection extends SocketConnection {
                         sendError("could not handle GAMESTARTED, too little inputs received");
                     } else {
                         player.receiveMessage(input);
-                        player.game = new Game(player, new OnlinePlayer());
+                        // check gamesetup
+                        int DIM = Integer.parseInt(protocol[2]);
+                        if (protocol[1].split(",")[1].equals(player.getUsername())) {
+                            player.game = new Game(player, new OnlinePlayer(), DIM);
+                        } else {
+                            player.game = new Game(new OnlinePlayer(), player, DIM);
+                        }
                     }
                 } else {
                     sendError("could not handle START GAME, player is already in a game");
                 }
+                break;
             }
 
             // MOVE: received move, convert to locationArray and send to player
             case Protocol.MOVE: {
-                    if (protocol.length < 3) {
-                        sendError("could not handle MOVE, too little inputs received");
-                    } else {
-                        player.game.doMove(getLocationArray(protocol[1], player.game.board),
+                if (protocol.length < 3) {
+                    sendError("could not handle MOVE, too little inputs received");
+                } else {
+                    player.doMove(getLocationArray(protocol[1], player.game.board),
                                            getColor(protocol[2]));
-                    }
+                }
                 break;
             }
+
+
+            // MOVE: received move, convert to locationArray and send to player
+            case Protocol.PASS: {
+                if (protocol.length < 2) {
+                    sendError("could not handle PASS, no color received");
+                } else {
+                    player.doPass(getColor(protocol[1]));
+                }
+                break;
+            }
+
 
             case Protocol.ACCEPTED: {
                 if (protocol.length < 2) {
                     sendError("did not receive username");
                 } else {
-                    if (Objects.equals(protocol[1], player.getUsername())) {
-                        player.receiveMessage("username " +protocol[1]+ " is accepted \nif you want to queue send: QUEUE ");
-                    } else {
-                        sendError("accepted username does not match");
-                    }
+                    player.receiveMessage("username " + protocol[1] + " is accepted \nif you want to queue send: QUEUE ");
                 }
                 break;
             }
@@ -86,15 +101,11 @@ public class PlayerConnection extends SocketConnection {
                 if (protocol.length < 2) {
                     sendError("did not receive username");
                 } else {
-                    if (Objects.equals(protocol[1], player.getUsername())) {
                         player.receiveMessage("username " + protocol[1] + " is rejected\nsend new username using: LOGIN\"-<username>");
                         player.sendUsername();
-                    } else {
-                        sendError("rejected username does not match");
                     }
-                }
                 break;
-            }
+                }
 
             case Protocol.MAKEMOVE: {
                 player.strategy.determineMove();

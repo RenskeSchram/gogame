@@ -1,6 +1,7 @@
 package gogame.server;
 
 import gogame.Color;
+import gogame.Game;
 import gogame.Player;
 import gogame.SocketConnection;
 import java.io.*;
@@ -15,12 +16,6 @@ public class ServerPlayer extends Player {
 
 
     public ServerPlayer() {
-        try {
-            writer = new PrintWriter(new FileWriter("log_" + this.toString() + ".txt", true));
-            reader = new BufferedReader(new FileReader("log_" + this.toString() + ".txt"));
-        } catch (IOException e) {
-            System.err.println("Error creating log file: " + e.getMessage());
-        }
 
     }
 
@@ -41,5 +36,10 @@ public class ServerPlayer extends Player {
             writer.flush();
         }
 
+    }
+
+    public void quitGame() {
+        super.quitGame();
+        serverConnection.gameServer.quitGame(this);
     }
 }

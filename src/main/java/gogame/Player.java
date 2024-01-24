@@ -17,7 +17,7 @@ public abstract class Player {
      * Send pass to the board and add this ServerPlayer as parameter.
      */
     public void doPass() {
-        game.doPass(color);
+        game.doPass(this.color);
     }
 
     /**
@@ -69,4 +69,7 @@ public abstract class Player {
 
     public abstract void lookAtBoard();
 
+    public void quitGame(){
+        this.game = null;
+    }
 }

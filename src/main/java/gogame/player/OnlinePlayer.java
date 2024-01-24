@@ -22,23 +22,34 @@ public class OnlinePlayer extends Player {
      * @param location
      */
     public void doMove(int[] location, Color color) {
+        // play moves for both players in the game
         game.doMove(location, color);
+    }
+
+    public void doPass(Color color) {
+        // play moves for both players in the game
+        game.doPass(color);
     }
 
 
     @Override
     public void passGameUpdate(String gameUpdate) {
+        // do nothing, passing not needed for online player
     }
 
     @Override
     public void lookAtBoard() {
+        // do nothing
     }
 
+
     public void sendUsername() {
+        // send username based on online player strategy
         strategy.getUsername();
     }
 
     public void setStrategy(String type) {
+        // choose strategy
         if (type.equals("computer")){
             strategy = new ComputerStrategy(this);
         } else {
@@ -47,10 +58,12 @@ public class OnlinePlayer extends Player {
     }
 
     public void receiveMessage(String string) {
+        // print received messages via the TUI
         tui.printMessage(string);
     }
 
     public void makeConnection(Socket socket) throws IOException {
+        // create a PlayerConnection Object
         playerConnection = new PlayerConnection(socket, this);
     }
 }

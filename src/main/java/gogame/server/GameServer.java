@@ -15,6 +15,7 @@ public class GameServer {
     private final ServerSocket serverSocket;
     protected Map<ServerPlayer, Game> serverMap;
     protected List<ServerPlayer> queue;
+    int DIM = 9;
 
     /**
      * Constructor to create a new server which listens on the given port.
@@ -94,6 +95,10 @@ public class GameServer {
         } else {
             queue.remove(serverPlayer);
         }
+
+        System.out.println("[SERVERLOG] checking QUEUE");
+        System.out.println(Collections.singletonList(queue));
+
     }
 
     /**
@@ -103,7 +108,7 @@ public class GameServer {
      * @param secondPlayer
      */
     protected void startGame(ServerPlayer firstPlayer, ServerPlayer secondPlayer) {
-        Game game = new Game(firstPlayer, secondPlayer);
+        Game game = new Game(firstPlayer, secondPlayer, DIM);
         queue.remove(firstPlayer);
         serverMap.put(firstPlayer, game);
         firstPlayer.game = game;
@@ -111,6 +116,8 @@ public class GameServer {
         serverMap.put(secondPlayer, game);
         secondPlayer.game = game;
 
+        System.out.println("[SERVERLOG] checking ServerMap");
+        System.out.println(Collections.singletonList(serverMap));
     }
 
     /**
@@ -130,8 +137,19 @@ public class GameServer {
     public boolean correctUsername(String userName) {
         boolean correct = true;
         for (Player player : serverMap.keySet()) {
-            if (player.getUsername().equals(userName)) {correct = false; break;}
+            if (player.getUsername().equals(userName)) {
+                correct = false;
+                break;
+            }
         }
         return correct;
+    }
+
+    public void quitGame(ServerPlayer player) {
+        serverMap.remove(player);
+
+        System.out.println("[SERVERLOG] checking ServerMap");
+        System.out.println(Collections.singletonList(serverMap));
+
     }
 }

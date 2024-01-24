@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameTest {
     private Game game;
     private GameServer gameServer;
+    int DIM = 9;
     public int getRandomPort() {
         Random random = new Random();
         return random.nextInt(9999 - 1) + 1;
@@ -30,12 +31,12 @@ public class GameTest {
         ServerPlayer playerII = new ServerPlayer();
         playerII.serverConnection = new ServerConnection(new Socket(InetAddress.getByName("localhost"), PORT));
 
-        game = new Game(playerI, playerII);
+        game = new Game(playerI, playerII, DIM);
     }
 
     @Test
     public void testGetCoordinate() {
-        assertArrayEquals(game.getCoordinate(Board.DIM+2), new int[]{1, 2});
+        assertArrayEquals(game.getCoordinate(game.board.DIM+2), new int[]{1, 2});
     }
 
     @Test
@@ -58,21 +59,50 @@ public class GameTest {
 
 
         // Ko-rule
-        game.board.setField(Board.DIM - 2, Board.DIM - 1, Color.WHITE);
-        game.board.setField(Board.DIM - 1, Board.DIM - 2, Color.WHITE);
-        game.board.setField(Board.DIM - 2, Board.DIM - 2, Color.BLACK);
-        game.board.setField(Board.DIM - 1, Board.DIM - 3, Color.BLACK);
-        game.board.setField(Board.DIM - 3, Board.DIM - 3, Color.BLACK);
+        game.board.setField(game.board.DIM - 2, game.board.DIM - 1, Color.WHITE);
+        game.board.setField(game.board.DIM - 1, game.board.DIM - 2, Color.WHITE);
+        game.board.setField(game.board.DIM - 2, game.board.DIM - 2, Color.BLACK);
+        game.board.setField(game.board.DIM - 1, game.board.DIM - 3, Color.BLACK);
+        game.board.setField(game.board.DIM - 3, game.board.DIM - 3, Color.BLACK);
         System.out.println(game.board.toString());
 
-        game.doMove(new int[]{Board.DIM-3, Board.DIM-2} , Color.WHITE);
-        game.doMove(new int[]{Board.DIM-2, Board.DIM-4} , Color.BLACK);
-        game.doMove(new int[]{Board.DIM-2, Board.DIM-3} , Color.WHITE);
+        game.doMove(new int[]{game.board.DIM-3, game.board.DIM-2} , Color.WHITE);
+        game.doMove(new int[]{game.board.DIM-2, game.board.DIM-4} , Color.BLACK);
+        game.doMove(new int[]{game.board.DIM-2, game.board.DIM-3} , Color.WHITE);
         System.out.println(game.board.toString());
-        assertTrue(game.isKoFight(new int[]{Board.DIM-2, Board.DIM-2} , Color.BLACK));
-        game.doMove(new int[]{Board.DIM-2, Board.DIM-2}, Color.BLACK);
+        assertTrue(game.isKoFight(new int[]{game.board.DIM-2, game.board.DIM-2} , Color.BLACK));
+        game.doMove(new int[]{game.board.DIM-2, game.board.DIM-2}, Color.BLACK);
         assertSame(game.getTurn().color, Color.BLACK);
         System.out.println(game.board.toString());
+    }
+
+    @Test
+    public void testMultipleOwnSuicide() {
+        game.board.setField(game.board.DIM - 2, game.board.DIM - 9, Color.WHITE);
+        game.board.setField(game.board.DIM - 1, game.board.DIM - 8, Color.WHITE);
+        game.board.setField(game.board.DIM - 3, game.board.DIM - 8, Color.WHITE);
+        game.board.setField(game.board.DIM - 1, game.board.DIM - 7, Color.WHITE);
+        game.board.setField(game.board.DIM - 3, game.board.DIM - 7, Color.WHITE);
+        game.board.setField(game.board.DIM - 2, game.board.DIM - 6, Color.WHITE);
+        game.board.setField(game.board.DIM - 2, game.board.DIM - 8, Color.BLACK);
+        System.out.println(game.board.toString());
+
+        game.doMove(new int[]{7,2}, Color.BLACK);
+        System.out.println(game.board.toString());
+
+    }
+
+    @Test
+    public void testSingleOwnSuicide() {
+        game.board.setField(game.board.DIM - 2, game.board.DIM - 9, Color.WHITE);
+        game.board.setField(game.board.DIM - 1, game.board.DIM - 8, Color.WHITE);
+        game.board.setField(game.board.DIM - 3, game.board.DIM - 8, Color.WHITE);
+        game.board.setField(game.board.DIM - 2, game.board.DIM - 7, Color.WHITE);
+        System.out.println(game.board.toString());
+
+        game.doMove(new int[]{8,2}, Color.BLACK);
+        System.out.println(game.board.toString());
+
     }
 
     @Test

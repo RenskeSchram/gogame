@@ -28,21 +28,21 @@ public class SocketConnectionTest {
         int PORT = getRandomPort();
         gameServer = new GameServer(PORT);
         socketConnetion = new ServerConnection(new Socket(InetAddress.getByName("localhost"), PORT));
-        board = new Board();
+        board = new Board(9);
     }
 
     @Test
     public void testGetLocationArray(){
         // Test single number location
-        assertTrue(Arrays.equals(socketConnetion.getLocationArray("5", board), new int[]{4, 0}));
-        assertTrue(Arrays.equals(socketConnetion.getLocationArray("34", board), new int[]{6, 3}));
+        assertTrue(Arrays.equals(socketConnetion.getLocationArray("9", board), new int[]{8, 0}));
+        assertTrue(Arrays.equals(socketConnetion.getLocationArray("25", board), new int[]{6, 2}));
 
         // Test coordinate location
         assertTrue(Arrays.equals(socketConnetion.getLocationArray("5,0", board), new int[]{5, 0}));
         assertTrue(Arrays.equals(socketConnetion.getLocationArray("2,5", board), new int[]{2, 5}));
 
         //Test incorrect location input
-        assertTrue(Arrays.equals(socketConnetion.getLocationArray("25,0 ", board), new int[]{-1, -1}));
+        assertTrue(Arrays.equals(socketConnetion.getLocationArray("9,0 ", board), new int[]{-1, -1}));
         assertTrue(Arrays.equals(socketConnetion.getLocationArray("move", board), new int[]{-1, -1}));
         assertTrue(Arrays.equals(socketConnetion.getLocationArray("23,2s", board), new int[]{-1, -1}));
         assertTrue(Arrays.equals(socketConnetion.getLocationArray("23,2,4", board), new int[]{-1, -1}));

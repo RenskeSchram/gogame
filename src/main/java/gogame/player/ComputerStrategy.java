@@ -23,8 +23,7 @@ public class ComputerStrategy implements Strategy {
     public void determineMove() {
         //automated move determination...
 
-        //
-        player.getConnection().sendOutput(Protocol.MOVE + Protocol.SEPARATOR + "-1");
+        //player.getConnection().sendOutput(Protocol.MOVE + Protocol.SEPARATOR + "-1");
 
     }
 }

@@ -14,9 +14,9 @@ public class Game {
     /**
      * Constructor for new Game object with players and a new Board.
      */
-    public Game(Player firstPlayer, Player secondPlayer) {
-        board = new Board();
-        previousBoard = new Board();
+    public Game(Player firstPlayer, Player secondPlayer, int DIM) {
+        board = new Board(DIM);
+        previousBoard = new Board(DIM);
         players.add(firstPlayer);
         players.add(secondPlayer);
 
@@ -36,7 +36,7 @@ public class Game {
         turn = players.get(0);
 
         for (Player player : players) {
-            player.passGameUpdate(Protocol.GAMESTARTED + Protocol.SEPARATOR + players.get(0).getUsername() +"," + players.get(1).getUsername());
+            player.passGameUpdate(Protocol.GAMESTARTED + Protocol.SEPARATOR + players.get(0).getUsername() +"," + players.get(1).getUsername() + Protocol.SEPARATOR + board.DIM);
         }
 
         turn.passGameUpdate(Protocol.MAKEMOVE);
@@ -49,8 +49,8 @@ public class Game {
      * @return int[] variable with variable[1] = row and variable[2] = col
      */
     protected int[] getCoordinate(int location) {
-        int row = location / Board.DIM;
-        int col = location % Board.DIM;
+        int row = location / board.DIM;
+        int col = location % board.DIM;
         return new int[]{row, col};
     }
 
@@ -101,9 +101,11 @@ public class Game {
             // put the stone on the field
             board.setField(location[0], location[1], color);
             //check for and remove captured stones
-            //TODO: check for suicide
             board.removeCaptured(board.getCaptured(location[0], location[1]));
-
+            //single suicide (nog verplaatsen in code)
+            if (board.isSingleSuicide(location[0], location[1])) {
+                board.setField(location[0], location[1], Color.EMPTY);
+            }
             turn = otherTurn();
 
             // ask for new move to correct player
@@ -122,7 +124,7 @@ public class Game {
      *
      * @param color color of ServerPlayer who is passing
      */
-    protected void doPass(Color color) {
+    public void doPass(Color color) {
         if (isCorrectTurn(color) && active) {
             if (passed) {
                 end();
@@ -183,8 +185,8 @@ public class Game {
         active = false;
         for (Player player : players) {
             player.quitGame();
-            player.passGameUpdate(Protocol.PRINT);
             player.passGameUpdate(Protocol.GAMEOVER+Protocol.SEPARATOR+ board.getWinner());
+            player.passGameUpdate(Protocol.PRINT);
         }
 
 

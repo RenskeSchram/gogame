@@ -44,8 +44,11 @@ public class ServerConnection extends SocketConnection {
                 if (serverPlayer != null && protocol.length >= 2) {
                     if (gameServer.correctUsername(protocol[1]) && serverPlayer.getUsername() == null) {
                         serverPlayer.setUsername(protocol[1]);
+                        sendOutput(Protocol.ACCEPTED + Protocol.SEPARATOR + protocol[1]);
+                    } else {
+                        sendOutput(Protocol.REJECTED + Protocol.SEPARATOR + protocol[1]);
+
                     }
-                    sendAccepted(gameServer.correctUsername(protocol[1])&& serverPlayer.getUsername() != null);
                 } else {
                     sendError("could not handle LOGIN, no username provided");
                 }
@@ -101,20 +104,15 @@ public class ServerConnection extends SocketConnection {
                 sendOutput(Protocol.PRINT);
                 break;
             }
+            case Protocol.ERROR: {
+                System.out.println(input);
+            }
         }
     }
 
 
     public void sendQueued() {
         sendOutput(Protocol.QUEUED);
-    }
-
-    public void sendAccepted(boolean accepted) {
-        if (accepted) {
-            sendOutput(Protocol.ACCEPTED);
-        } else {
-            sendOutput(Protocol.REJECTED);
-        }
     }
 
     public void sendError(String message) {

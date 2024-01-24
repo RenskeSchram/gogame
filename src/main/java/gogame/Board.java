@@ -11,14 +11,15 @@ public class Board {
     /**
      * Initialisation parameters of the board.
      */
-    public static int DIM = 9;
+    public int DIM;
     public final Color[][] fields;
 
     /**
      * Constructor for an empty Board.
      * For all fields, set field to Color.EMPTY
      */
-    public Board() {
+    public Board(int DIM) {
+        this.DIM = DIM;
         fields = new Color[DIM][DIM];
         for (int row = 0; (row >= 0) && (row < DIM); row++) {
             for (int col = 0; (col >= 0) && (col < DIM); col++) {
@@ -142,6 +143,10 @@ public class Board {
         return group;
     }
 
+    protected boolean isSingleSuicide(int col, int row){
+        return hasLiberty(col, row);
+    }
+
     /**
      * Explore adjacent intersections of current and add to list if these belong to the same group.
      *
@@ -256,7 +261,7 @@ public class Board {
      ensures (\forall int i; (i >= 0 && i < DIM*DIM); \result.fields[i] == this.fields[i]);
      @*/
     public Board deepCopy() {
-        Board copy = new Board();
+        Board copy = new Board(DIM);
         for (int row = 0; row < DIM; row++) {
             for (int col = 0; col < DIM; col++) {
                 copy.setField(col, row, this.getField(col, row));
