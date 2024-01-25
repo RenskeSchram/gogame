@@ -31,17 +31,10 @@ public class OnlinePlayer extends Player {
         game.doPass(color);
     }
 
-
     @Override
     public void passGameUpdate(String gameUpdate) {
         // do nothing, passing not needed for online player
     }
-
-    @Override
-    public void lookAtBoard() {
-        // do nothing
-    }
-
 
     public void sendUsername() {
         // send username based on online player strategy
@@ -66,4 +59,10 @@ public class OnlinePlayer extends Player {
         // create a PlayerConnection Object
         playerConnection = new PlayerConnection(socket, this);
     }
+
+    public void getValidMoves() {
+
+    }
+
+
 }

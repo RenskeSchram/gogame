@@ -34,7 +34,8 @@ public class PlayerConnection extends SocketConnection {
             // HELLO handshake, ready to log in with username
             case Protocol.HELLO: {
                 if (protocol.length > 1) {
-                    player.receiveMessage(protocol[1]);
+                    //player.receiveMessage(protocol[1]);
+                    player.receiveMessage(printProtocolMessage(protocol));
                 }
                 player.sendUsername();
                 break;
@@ -42,7 +43,8 @@ public class PlayerConnection extends SocketConnection {
 
             // QUEUE: send queue protocol message
             case Protocol.QUEUED: {
-                player.receiveMessage("["+Protocol.QUEUED+ "]"+" you are currently queued \nif you want to leave the queue, send: QUEUE");
+                String queuedMessage = "you are currently queued \nif you want to leave the queue, send: QUEUE";
+                player.receiveMessage(printProtocolMessage(protocol) + queuedMessage);
                 break;
             }
             case Protocol.GAMESTARTED: {
@@ -50,7 +52,7 @@ public class PlayerConnection extends SocketConnection {
                     if (protocol.length < 3) {
                         sendError("could not handle GAMESTARTED, too little inputs received");
                     } else {
-                        player.receiveMessage(input);
+                        player.receiveMessage(printProtocolMessage(protocol));
                         // check gamesetup
                         int DIM = Integer.parseInt(protocol[2]);
                         if (protocol[1].split(",")[1].equals(player.getUsername())) {
@@ -71,7 +73,7 @@ public class PlayerConnection extends SocketConnection {
                     sendError("could not handle MOVE, too little inputs received");
                 } else {
                     player.doMove(getLocationArray(protocol[1], player.game.board),
-                                           getColor(protocol[2]));
+                                  getColor(protocol[2]));
                 }
                 break;
             }
@@ -92,7 +94,8 @@ public class PlayerConnection extends SocketConnection {
                 if (protocol.length < 2) {
                     sendError("did not receive username");
                 } else {
-                    player.receiveMessage("username " + protocol[1] + " is accepted \nif you want to queue send: QUEUE ");
+                    String acceptedMessage = "as your username if you want to queue send: QUEUE";
+                    player.receiveMessage(printProtocolMessage(protocol) + acceptedMessage);
                 }
                 break;
             }
@@ -101,24 +104,26 @@ public class PlayerConnection extends SocketConnection {
                 if (protocol.length < 2) {
                     sendError("did not receive username");
                 } else {
-                        player.receiveMessage("username " + protocol[1] + " is rejected\nsend new username using: LOGIN\"-<username>");
-                        player.sendUsername();
-                    }
-                break;
+                    String rejectedMessage = "as your username\nsend a new username using: LOGIN\"-<username>";
+                    player.receiveMessage(printProtocolMessage(protocol) + rejectedMessage);
+                    player.sendUsername();
                 }
+                break;
+            }
 
             case Protocol.MAKEMOVE: {
                 player.strategy.determineMove();
                 break;
             }
+
             case Protocol.GAMEOVER: {
-                player.receiveMessage(input);
+                player.receiveMessage(printProtocolMessage(protocol));
                 // TODO: handleGameOver: ask to reconnect to server?
                 break;
             }
 
             case Protocol.ERROR: {
-                player.receiveMessage(input);
+                player.receiveMessage(printProtocolMessage(protocol));
                 break;
             }
 
@@ -129,17 +134,24 @@ public class PlayerConnection extends SocketConnection {
 
             default: {
                 sendError("could not handle the input using the set protocol");
-                player.receiveMessage(Protocol.ERROR + Protocol.SEPARATOR + "received unhandled message, server is notified");
+                String defaultMessage = " received unhandled message, server is notified";
+                player.receiveMessage(Protocol.ERROR + defaultMessage);
             }
         }
     }
 
+    public String printProtocolMessage(String[] protocol) {
+        StringBuilder message = new StringBuilder();
+        for (String protocolSnippet : protocol) {
+            message.append(protocolSnippet).append(" ");
+        }
+        return message.toString();
+    }
 
     @Override
     public void sendOutput(String output) {
         super.sendOutput(output);
     }
-
 
     /**
      * Handles a disconnection of the connection.

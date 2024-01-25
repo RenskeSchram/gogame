@@ -2,9 +2,11 @@ package gogame.player;
 
 import gogame.Player;
 import gogame.Protocol;
+import java.util.List;
 
 public class ComputerStrategy implements Strategy {
     Player player;
+    int movesCount;
 
     ComputerStrategy(OnlinePlayer player){
         this.player = player;
@@ -23,7 +25,9 @@ public class ComputerStrategy implements Strategy {
     public void determineMove() {
         //automated move determination...
 
-        //player.getConnection().sendOutput(Protocol.MOVE + Protocol.SEPARATOR + "-1");
+        player.getConnection().sendOutput(Protocol.MOVE + Protocol.SEPARATOR + movesCount);
+        movesCount++;
 
     }
+
 }

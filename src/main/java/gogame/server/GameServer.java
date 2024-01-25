@@ -16,6 +16,7 @@ public class GameServer {
     protected Map<ServerPlayer, Game> serverMap;
     protected List<ServerPlayer> queue;
     int DIM = 9;
+    int gameCodeCounter = 0;
 
     /**
      * Constructor to create a new server which listens on the given port.
@@ -86,6 +87,7 @@ public class GameServer {
 
     /**
      * Add serverPlayer to serverMap.
+     *
      * @param serverPlayer serverPlayer to be added to the serverMap
      */
     protected void queueServerPlayer(ServerPlayer serverPlayer) {
@@ -98,6 +100,7 @@ public class GameServer {
 
         System.out.println("[SERVERLOG] checking QUEUE");
         System.out.println(Collections.singletonList(queue));
+        System.out.println(Collections.singletonList(serverMap) + "\n");
 
     }
 
@@ -116,8 +119,11 @@ public class GameServer {
         serverMap.put(secondPlayer, game);
         secondPlayer.game = game;
 
+        game.gameCode = gameCodeCounter;
+        gameCodeCounter++;
+
         System.out.println("[SERVERLOG] checking ServerMap");
-        System.out.println(Collections.singletonList(serverMap));
+        System.out.println(Collections.singletonList(serverMap) + "\n");
     }
 
     /**
@@ -150,6 +156,6 @@ public class GameServer {
 
         System.out.println("[SERVERLOG] checking ServerMap");
         System.out.println(Collections.singletonList(serverMap));
-
+        System.out.println(Collections.singletonList(serverMap) + "\n");
     }
 }

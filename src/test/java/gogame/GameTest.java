@@ -16,6 +16,7 @@ public class GameTest {
     private Game game;
     private GameServer gameServer;
     int DIM = 9;
+
     public int getRandomPort() {
         Random random = new Random();
         return random.nextInt(9999 - 1) + 1;
@@ -28,42 +29,39 @@ public class GameTest {
         this.gameServer = new GameServer(PORT);
         ServerPlayer playerI = new ServerPlayer();
         playerI.serverConnection = new ServerConnection(new Socket(InetAddress.getByName("localhost"), PORT));
+        playerI.serverConnection.gameServer = gameServer;
         ServerPlayer playerII = new ServerPlayer();
         playerII.serverConnection = new ServerConnection(new Socket(InetAddress.getByName("localhost"), PORT));
+        playerII.serverConnection.gameServer = gameServer;
 
         game = new Game(playerI, playerII, DIM);
     }
 
     @Test
-    public void testGetCoordinate() {
-        assertArrayEquals(game.getCoordinate(game.board.DIM+2), new int[]{1, 2});
-    }
-
-    @Test
     public void testIsValid() {
-        assertTrue(game.isValid(new int[]{1,6}, Color.BLACK));
+        assertTrue(game.isValidMove(new int[]{1,6}, Color.BLACK));
         game.doMove(new int[]{1,6}, Color.BLACK);
-        assertFalse(game.isValid(new int[]{1,6}, Color.BLACK));
-        assertFalse(game.isValid(new int[]{1,6}, Color.WHITE));
-        assertTrue(game.isValid(new int[]{2,6}, Color.WHITE));
+        assertFalse(game.isValidMove(new int[]{1,6}, Color.BLACK));
+        assertFalse(game.isValidMove(new int[]{1,6}, Color.WHITE));
+        assertTrue(game.isValidMove(new int[]{2,6}, Color.WHITE));
     }
 
     @Test
     public void testDoMove() {
         // Correct player
-        assertSame(game.board.getField(game.getCoordinate(6)[0], game.getCoordinate(6)[1]), Color.EMPTY);
-        game.doMove(game.getCoordinate(6), Color.BLACK);
-        assertSame(game.board.getField(game.getCoordinate(6)[0], game.getCoordinate(6)[1]), Color.BLACK);
+        assertSame(game.board.getField(new int[]{6,0}), Color.EMPTY);
+        game.doMove(new int[]{6,0}, Color.BLACK);
+        assertSame(game.board.getField(new int[]{6,0}), Color.BLACK);
 
         // Incorrect player
 
 
         // Ko-rule
-        game.board.setField(game.board.DIM - 2, game.board.DIM - 1, Color.WHITE);
-        game.board.setField(game.board.DIM - 1, game.board.DIM - 2, Color.WHITE);
-        game.board.setField(game.board.DIM - 2, game.board.DIM - 2, Color.BLACK);
-        game.board.setField(game.board.DIM - 1, game.board.DIM - 3, Color.BLACK);
-        game.board.setField(game.board.DIM - 3, game.board.DIM - 3, Color.BLACK);
+        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 1}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 2}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 2}, Color.BLACK);
+        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 3}, Color.BLACK);
+        game.board.setField(new int[]{game.board.DIM - 3, game.board.DIM - 3}, Color.BLACK);
         System.out.println(game.board.toString());
 
         game.doMove(new int[]{game.board.DIM-3, game.board.DIM-2} , Color.WHITE);
@@ -78,29 +76,33 @@ public class GameTest {
 
     @Test
     public void testMultipleOwnSuicide() {
-        game.board.setField(game.board.DIM - 2, game.board.DIM - 9, Color.WHITE);
-        game.board.setField(game.board.DIM - 1, game.board.DIM - 8, Color.WHITE);
-        game.board.setField(game.board.DIM - 3, game.board.DIM - 8, Color.WHITE);
-        game.board.setField(game.board.DIM - 1, game.board.DIM - 7, Color.WHITE);
-        game.board.setField(game.board.DIM - 3, game.board.DIM - 7, Color.WHITE);
-        game.board.setField(game.board.DIM - 2, game.board.DIM - 6, Color.WHITE);
-        game.board.setField(game.board.DIM - 2, game.board.DIM - 8, Color.BLACK);
+        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 9}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 8}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 3, game.board.DIM - 8}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 7}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 3, game.board.DIM - 7}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 6}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 8}, Color.BLACK);
         System.out.println(game.board.toString());
 
         game.doMove(new int[]{7,2}, Color.BLACK);
+        assertSame(game.board.getField(new int[]{7, 1}), Color.EMPTY);
+        assertSame(game.board.getField(new int[]{7, 2}), Color.EMPTY);
+
         System.out.println(game.board.toString());
 
     }
 
     @Test
     public void testSingleOwnSuicide() {
-        game.board.setField(game.board.DIM - 2, game.board.DIM - 9, Color.WHITE);
-        game.board.setField(game.board.DIM - 1, game.board.DIM - 8, Color.WHITE);
-        game.board.setField(game.board.DIM - 3, game.board.DIM - 8, Color.WHITE);
-        game.board.setField(game.board.DIM - 2, game.board.DIM - 7, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 9}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 8}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 3, game.board.DIM - 8}, Color.WHITE);
+        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 7}, Color.WHITE);
         System.out.println(game.board.toString());
 
-        game.doMove(new int[]{8,2}, Color.BLACK);
+        game.doMove(new int[]{7,1}, Color.BLACK);
+        assertSame(Color.EMPTY, game.board.getField(new int[]{7, 1}));
         System.out.println(game.board.toString());
 
     }

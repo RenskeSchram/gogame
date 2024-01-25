@@ -29,15 +29,6 @@ public class ServerPlayer extends Player {
         serverConnection.sendOutput(gameUpdate);
     }
 
-    @Override
-    public void lookAtBoard() {
-        if (writer != null) {
-            writer.println(game.board.toString());
-            writer.flush();
-        }
-
-    }
-
     public void quitGame() {
         super.quitGame();
         serverConnection.gameServer.quitGame(this);

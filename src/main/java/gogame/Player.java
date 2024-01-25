@@ -67,9 +67,12 @@ public abstract class Player {
 
     public abstract void passGameUpdate(String gameUpdate);
 
-    public abstract void lookAtBoard();
-
     public void quitGame(){
         this.game = null;
+    }
+
+    @Override
+    public String toString() {
+        return userName;
     }
 }
