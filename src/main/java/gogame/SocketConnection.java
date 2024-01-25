@@ -15,6 +15,7 @@ public abstract class SocketConnection {
 
     /**
      * Abstract constructor for a new SocketConnection object with buffered reader and writer.
+     *
      * @param socket the socket for establishing the connection
      * @throws IOException if there is an I/O exception while initializing the Reader/Writer objects
      */
@@ -58,6 +59,7 @@ public abstract class SocketConnection {
 
     /**
      * Sends message over the network in String format.
+     *
      * @param output the line of input to be sent.
      */
     public void sendOutput(String output) {
@@ -85,10 +87,11 @@ public abstract class SocketConnection {
     /**
      * Handles the start of a connection.
      */
-    protected void handleStart() {}
+    protected void handleStart() { }
 
     /**
      * Handles the received input message.
+     *
      * @param input line of input to be handled
      */
     protected abstract void handleInput(String input);
@@ -99,7 +102,6 @@ public abstract class SocketConnection {
     protected abstract void handleDisconnect();
 
     /**
-     *
      * @param input
      * @param board
      * @return
@@ -108,36 +110,36 @@ public abstract class SocketConnection {
         String[] splitInput = input.split(",");
         try {
             if (splitInput.length == 1) {
-                int row = (Integer.parseInt(splitInput[0]) -1) / board.DIM;
-                int col = (Integer.parseInt(splitInput[0]) -1) % board.DIM;
+                int row = (Integer.parseInt(splitInput[0]) - 1) / board.DIM;
+                int col = (Integer.parseInt(splitInput[0]) - 1) % board.DIM;
                 return new int[]{col, row};
 
             } else if (splitInput.length == 2) {
                 return new int[]{Integer.parseInt(splitInput[0]), Integer.parseInt(splitInput[1])};
 
             } else {
-                sendOutput(Protocol.ERROR + Protocol.SEPARATOR + "incorrect number of comma inputs for location (use format:  MOVE-<int> or MOVE-<int, int>)");
+                sendOutput(
+                        Protocol.ERROR + Protocol.SEPARATOR + "incorrect number of comma inputs for location (use format:  MOVE-<int> or MOVE-<int, int>)");
                 return new int[]{-1, -1};
             }
         } catch (NumberFormatException e) {
-            sendOutput(Protocol.ERROR + Protocol.SEPARATOR + "incorrect input for location (check format:  MOVE-<int> or MOVE-<int, int>)");
+            sendOutput(
+                    Protocol.ERROR + Protocol.SEPARATOR + "incorrect input for location (check format:  MOVE-<int> or MOVE-<int, int>)");
             return new int[]{-1, -1};
         }
 
     }
 
     protected Color getColor(String input) {
-        switch (input.toLowerCase()) {
-            case "white":
-                return Color.WHITE;
-            case "black":
-                return Color.BLACK;
-            case "empty":
-                return Color.EMPTY;
-            default:
+        return switch (input.toLowerCase()) {
+            case "white" -> Color.WHITE;
+            case "black" -> Color.BLACK;
+            case "empty" -> Color.EMPTY;
+            default -> {
                 sendOutput(Protocol.ERROR + Protocol.SEPARATOR + "color is not recognized");
-                return null;
-        }
+                yield null;
+            }
+        };
     }
 
     public void sendError(String errorMessage) {

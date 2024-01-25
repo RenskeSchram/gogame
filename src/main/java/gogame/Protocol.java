@@ -16,8 +16,8 @@ public class Protocol {
     public static final String GAMESTARTED = "GAME STARTED"; //<username, username>
     public static final String GAMEOVER = "GAME OVER"; //<message, username>
 
-    public static final String PASS = "PASS" ;
-    public static final String RESIGN = "RESIGN" ;
+    public static final String PASS = "PASS";
+    public static final String RESIGN = "RESIGN";
 
     public static final String PRINT = "PRINT";
 }

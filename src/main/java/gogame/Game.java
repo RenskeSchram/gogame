@@ -27,12 +27,12 @@ public class Game {
      * Initialize start of game by assigning colors and first turn to the players.
      */
     private void start() {
+
         try {
             Thread.sleep(3000);
         } catch (InterruptedException ie) {
             Thread.currentThread().interrupt();
         }
-
 
         // activate game
         active = true;

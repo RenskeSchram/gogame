@@ -105,7 +105,7 @@ public class GameServer {
     }
 
     /**
-     * Start a new game, remove assigned plauers from queue to serverMap with corresponding game.
+     * Start a new game, remove assigned players from queue to serverMap with corresponding game.
      *
      * @param firstPlayer
      * @param secondPlayer

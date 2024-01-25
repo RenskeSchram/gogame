@@ -67,7 +67,7 @@ public abstract class Player {
 
     public abstract void passGameUpdate(String gameUpdate);
 
-    public void quitGame(){
+    public void quitGame() {
         this.game = null;
     }
 

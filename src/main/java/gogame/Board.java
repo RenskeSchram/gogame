@@ -34,9 +34,7 @@ public class Board {
      * @param location location saved as int[] {col, row}
      * @return true if location is a valid field on the Board.
      */
-//    protected boolean isField(int col, int row) {
-//        return row >= 0 && row < DIM && col >= 0 && col < DIM;
-//    }
+
 
     protected boolean isField(int[] location) {
         return location[0] >= 0 && location[0] < DIM && location[1] >= 0 && location[1] < DIM;
@@ -46,16 +44,9 @@ public class Board {
      * Check if location is a valid field on the Board.
      *
      * @param location location saved as int[] {col, row}
-
      * @return true if location is a valid field on the Board.
      */
-//    protected boolean isEmpty(int col, int row) {
-//        if (isField(col, row)) {
-//            return getField(col, row) == Color.EMPTY;
-//        } else {
-//            return false;
-//        }
-//    }
+
 
     protected boolean isEmpty(int[] location) {
         if (isField(location)) {
@@ -69,14 +60,9 @@ public class Board {
      * Place the color on the given location (row, col) on the Board.
      *
      * @param location location saved as int[] {col, row}
-     * @param color color of placed move.
-     * //@requires isField(row, col)
+     * @param color    color of placed move.
+     *                 //@requires isField(row, col)
      */
-//    public void setField(int col, int row, Color color) {
-//        if (isField(col, row)) {
-//            this.fields[col][row] = color;
-//        }
-//    }
 
     public void setField(int[] location, Color color) {
         if (isField(location)) {
@@ -91,13 +77,7 @@ public class Board {
      * @return Color of the field with row and col
      * // requires: isField(row, col)
      */
-//    protected Color getField(int col, int row) {
-//        if (isField(col, row)) {
-//            return fields[col][row];
-//        } else {
-//            return null;
-//        }
-//    }
+
 
     protected Color getField(int[] location) {
         if (isField(location)) {
@@ -114,9 +94,7 @@ public class Board {
      * @param location location saved as int[] {col, row}
      * @return
      */
-//    public boolean isValid(int col, int row) {
-//        return isField(col, row) && isEmpty(col, row);
-//    }
+
 
     public boolean isValid(int[] location) {
         return isField(location) && isEmpty(location);
@@ -129,15 +107,7 @@ public class Board {
      * @param location location saved as int[] {col, row}
      * @return if the stone has a liberty (empty adjacent stone).
      */
-//    protected boolean hasLiberty(int col, int row) {
-//        boolean liberty = false;
-//        // get the color for all adjacent intersections
-//        for (int[] adjacent : getAdjacentStones(col, row)) {
-//            // check if color is EMPTY, meaning there is a liberty
-//            if (isEmpty(adjacent)) { liberty = true; }
-//        }
-//        return liberty;
-//    }
+
 
     protected boolean hasLiberty(int[] location) {
         boolean liberty = false;
@@ -149,12 +119,8 @@ public class Board {
         return liberty;
     }
 
-//
-//    protected boolean isSingleSuicide(int[] location){
-//        return !hasLiberty(location);
-//    }
 
-    protected boolean isSingleSuicide(int[] location){
+    protected boolean isSingleSuicide(int[] location) {
         return !hasLiberty(location);
     }
 
@@ -164,29 +130,9 @@ public class Board {
      * empty stones.
      *
      * @param location location saved as int[] {col, row}
-     * @param active activity status of game
-     *
+     * @param active   activity status of game
      * @return List of coordinates of intersections in group
      */
-//    protected List<int[]> getGroup(int col, int row, boolean active) {
-//        List<int[]> group = new ArrayList<>();
-//
-//        if (active) {
-//            if (getField(col, row) != Color.EMPTY) {
-//                group.add(new int[]{col, row});
-//            }
-//        } else {
-//            if (getField(col, row) == Color.EMPTY) {
-//                group.add(new int[]{col, row});
-//            }
-//        }
-//
-//        for (int[] adjacent : getAdjacentStones(col, row)) {
-//            exploreAdjacentStones(group, adjacent, getField(col, row));
-//        }
-//
-//        return group;
-//    }
 
     protected List<int[]> getGroup(int[] location, boolean active) {
         List<int[]> group = new ArrayList<>();
@@ -208,14 +154,12 @@ public class Board {
         return group;
     }
 
-
-
     /**
      * Explore adjacent intersections of current and add to list if these belong to the same group.
      *
-     * @param group group of intersections
+     * @param group   group of intersections
      * @param current current intersection to be checked
-     * @param color color of the group
+     * @param color   color of the group
      */
     private void exploreAdjacentStones(List<int[]> group, int[] current, Color color) {
         // check if the intersection is not already on the list and is the same color
@@ -235,7 +179,7 @@ public class Board {
     /**
      * Returns if coordinate is already in the list.
      *
-     * @param list list to check.
+     * @param list     list to check.
      * @param location location saved as int[] {col, row}
      * @return if coordinate is already in the list.
      */
@@ -254,26 +198,6 @@ public class Board {
      * @param location location saved as int[] {col, row}
      * @return adjacent field coordinates on the board.
      */
-//    protected List<int[]> getAdjacentStones(int col, int row) {
-//        List<int[]> adjacentStones = new ArrayList<>();
-//        int[] left = new int[]{col, row - 1};
-//        if (isField(left[0], left[1])) {
-//            adjacentStones.add(left);
-//        }
-//        int[] right = new int[]{col, row + 1};
-//        if (isField(right[0], right[1])) {
-//            adjacentStones.add(right);
-//        }
-//        int[] up = new int[]{col + 1, row};
-//        if (isField(up[0], up[1])) {
-//            adjacentStones.add(up);
-//        }
-//        int[] down = new int[]{col - 1, row};
-//        if (isField(down[0], down[1])) {
-//            adjacentStones.add(down);
-//        }
-//        return adjacentStones;
-//    }
 
     protected List<int[]> getAdjacentStones(int[] location) {
         List<int[]> adjacentStones = new ArrayList<>();
@@ -305,26 +229,6 @@ public class Board {
      * @param location location saved as int[] {col, row}
      * @return list of int[]{row, col} of captured stones
      */
-//    public List<int[]> getCaptured(int col, int row) {
-//        List<int[]> captured = new ArrayList<>();
-//
-//        for (int[] adjacent : getAdjacentStones(col, row)) {
-//            List<int[]> group = getGroup(adjacent[0], adjacent[1], true);
-//            boolean noliberty = true;
-//
-//            for (int[] stone : group) {
-//                if (hasLiberty(stone[0], stone[1])) {
-//                    noliberty = false;
-//                    break;
-//                }
-//            }
-//
-//            if (noliberty) {
-//                captured.addAll(group);
-//            }
-//        }
-//        return captured;
-//    }
 
     public List<int[]> getCaptured(int[] location) {
         List<int[]> captured = new ArrayList<>();
@@ -349,6 +253,7 @@ public class Board {
 
     /**
      * Set fields of captured stones to empty.
+     *
      * @param captured list of coordinates of captured stones.
      */
     public void removeCaptured(List<int[]> captured) {
@@ -430,7 +335,7 @@ public class Board {
             for (int col = 0; col < DIM; col++) {
 
                 // find next empty intersection on the board and create new group
-                if (getField(new int[] {col, row})== Color.EMPTY) {
+                if (getField(new int[]{col, row}) == Color.EMPTY) {
                     List<int[]> group = new ArrayList<>();
 
                     // find all adjacent empty intersections and add to group
@@ -458,7 +363,7 @@ public class Board {
         // for all stones in group get adjacent stone color
         List<Color> colors = new ArrayList<>();
         for (int[] stone : group) {
-            for (int [] adjacentStone : getAdjacentStones(stone)) {
+            for (int[] adjacentStone : getAdjacentStones(stone)) {
                 if (getField(adjacentStone) != Color.EMPTY) {
                     colors.add(getField(adjacentStone));
                 }
@@ -478,7 +383,7 @@ public class Board {
         } else {
             return Color.NEUTRAL;
         }
-}
+    }
 
     public void doResign(Color color) {
         for (int row = 0; (row >= 0) && (row < DIM); row++) {

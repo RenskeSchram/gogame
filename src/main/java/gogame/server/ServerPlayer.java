@@ -1,18 +1,13 @@
 package gogame.server;
 
-import gogame.Color;
-import gogame.Game;
 import gogame.Player;
 import gogame.SocketConnection;
-import java.io.*;
 
 /**
  * Server implementation of player in a game.
  */
 public class ServerPlayer extends Player {
     public ServerConnection serverConnection;
-    BufferedReader reader;
-    PrintWriter writer;
 
 
     public ServerPlayer() {
