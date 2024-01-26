@@ -8,5 +8,4 @@ public interface Strategy {
 
     void sendQueue();
 
-    void sendHello();
 }

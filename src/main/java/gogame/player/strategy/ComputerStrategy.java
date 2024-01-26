@@ -1,44 +1,86 @@
 package gogame.player.strategy;
 
+import gogame.Board;
 import gogame.Protocol;
 import gogame.player.OnlinePlayer;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 public class ComputerStrategy implements Strategy {
-    OnlinePlayer player;
 
-    public ComputerStrategy(OnlinePlayer player){
-        this.player = player;
+  OnlinePlayer player;
+
+  public ComputerStrategy(OnlinePlayer player) {
+    this.player = player;
+  }
+
+  @Override
+  public void getUsername() {
+    if (player.getUsername() == null) {
+      player.setUsername("computer");
+    } else {
+      player.setUsername(player.getUsername() + "r");
     }
-    @Override
-    public void getUsername() {
-        if (player.getUsername() == null) {
-            player.setUsername("Computer");
-        } else {
-            player.setUsername(player.getUsername() + "r");
-        }
-        player.getConnection().sendOutput(Protocol.LOGIN + Protocol.SEPARATOR + player.getUsername());
+    player.getConnection().sendOutput(Protocol.LOGIN + Protocol.SEPARATOR + player.getUsername());
+  }
+
+  public void sendQueue() {
+    player.getConnection().sendOutput(Protocol.QUEUE);
+  }
+
+  @Override
+  public void determineMove() {
+    int[] move = getImprovingTerritoryMove();
+    System.out.println(Arrays.toString(move));
+    if (move != null) {
+      sendMove(move);
+    } else {
+      sendPass();
     }
 
-    @Override
-    public void determineMove() {
-        player.getConnection().sendOutput(Protocol.MOVE + Protocol.SEPARATOR + gogame.Move.intersectionLocationToString(getRandomValidMove()));
-    }
+  }
 
-    @Override
-    public void sendQueue() {
-        player.getConnection().sendOutput(Protocol.QUEUE);
-    }
+  private void sendPass() {
+    player.getConnection().sendOutput(Protocol.PASS);
+  }
 
-    @Override
-    public void sendHello() {
-        player.getConnection().sendOutput(Protocol.HELLO);
-    }
+  public void sendMove(int[] move) {
+    player.getConnection().sendOutput(
+        Protocol.MOVE + Protocol.SEPARATOR + gogame.Move.intersectionLocationToString(move));
+  }
 
-    public int[] getRandomValidMove() {
-        List<int[]> validMoves = player.game.getValidMoves();
-        return validMoves.get(new Random().nextInt(validMoves.size()));
+  public int[] getImprovingTerritoryMove() {
+    int[] bestMove = getRandomMove(getValidMoves());
+    int bestTerritoryDifference = -10;
+
+    List<int[]> shuffledValidMoves = getValidMoves();
+    Collections.shuffle(shuffledValidMoves);
+
+    for (int[] move : shuffledValidMoves) {
+      player.game.handleValidMove(move, player.getColor());
+      Board testBoard = player.game.board.deepCopy();
+      if (getTerritoryDifference(testBoard) > bestTerritoryDifference) {
+        bestMove = move;
+        bestTerritoryDifference = getTerritoryDifference(testBoard);
+      }
     }
+    return bestMove;
+  }
+
+  protected int getTerritoryDifference(Board board) {
+    board.getFilledBoard();
+    return board.getNumberOfStones(player.getColor()) - board.getNumberOfStones(
+        player.getColor().other());
+  }
+
+  public int[] getRandomMove(List<int[]> possibleMoves) {
+    return possibleMoves.get(new Random().nextInt(possibleMoves.size()));
+  }
+
+  public List<int[]> getValidMoves() {
+    return player.game.getValidMoves();
+  }
 
 }
