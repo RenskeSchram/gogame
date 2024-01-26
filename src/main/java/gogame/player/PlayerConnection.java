@@ -1,10 +1,9 @@
 package gogame.player;
 
-import gogame.*;
+import gogame.Protocol;
+import gogame.SocketConnection;
 import java.io.IOException;
 import java.net.Socket;
-import gogame.SocketConnection;
-import java.util.Objects;
 
 public class PlayerConnection extends SocketConnection {
     public OnlinePlayer player;
@@ -41,6 +40,28 @@ public class PlayerConnection extends SocketConnection {
                 break;
             }
 
+            case Protocol.ACCEPTED: {
+                if (protocol.length < 2) {
+                    sendError("did not receive username");
+                } else {
+                    String acceptedMessage = "as your username if you want to queue send: QUEUE";
+                    player.receiveMessage(printProtocolMessage(protocol) + acceptedMessage);
+                    player.sendQueue();
+                }
+                break;
+            }
+
+            case Protocol.REJECTED: {
+                if (protocol.length < 2) {
+                    sendError("did not receive username");
+                } else {
+                    String rejectedMessage = "as your username\nsend a new username using: LOGIN\"-<username>";
+                    player.receiveMessage(printProtocolMessage(protocol) + rejectedMessage);
+                    player.sendUsername();
+                }
+                break;
+            }
+
             // QUEUE: send queue protocol message
             case Protocol.QUEUED: {
                 String queuedMessage = "you are currently queued \nif you want to leave the queue, send: QUEUE";
@@ -56,9 +77,9 @@ public class PlayerConnection extends SocketConnection {
                         // check gamesetup
                         int DIM = Integer.parseInt(protocol[2]);
                         if (protocol[1].split(",")[1].equals(player.getUsername())) {
-                            player.game = new Game(player, new OnlinePlayer(), DIM);
+                            player.game = new StrategyGame(player, new OnlinePlayer(), DIM);
                         } else {
-                            player.game = new Game(new OnlinePlayer(), player, DIM);
+                            player.game = new StrategyGame(new OnlinePlayer(), player, DIM);
                         }
                     }
                 } else {
@@ -85,28 +106,6 @@ public class PlayerConnection extends SocketConnection {
                     sendError("could not handle PASS, no color received");
                 } else {
                     player.doPass(getColor(protocol[1]));
-                }
-                break;
-            }
-
-
-            case Protocol.ACCEPTED: {
-                if (protocol.length < 2) {
-                    sendError("did not receive username");
-                } else {
-                    String acceptedMessage = "as your username if you want to queue send: QUEUE";
-                    player.receiveMessage(printProtocolMessage(protocol) + acceptedMessage);
-                }
-                break;
-            }
-
-            case Protocol.REJECTED: {
-                if (protocol.length < 2) {
-                    sendError("did not receive username");
-                } else {
-                    String rejectedMessage = "as your username\nsend a new username using: LOGIN\"-<username>";
-                    player.receiveMessage(printProtocolMessage(protocol) + rejectedMessage);
-                    player.sendUsername();
                 }
                 break;
             }

@@ -120,7 +120,7 @@ public class Board {
     }
 
 
-    protected boolean isSingleSuicide(int[] location) {
+    public boolean isSingleSuicide(int[] location) {
         return !hasLiberty(location);
     }
 

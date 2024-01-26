@@ -1,6 +1,7 @@
-package gogame.player;
+package gogame.player.strategy;
 
 import gogame.Protocol;
+import gogame.player.OnlinePlayer;
 import java.util.List;
 import java.util.Random;
 
@@ -23,6 +24,16 @@ public class ComputerStrategy implements Strategy {
     @Override
     public void determineMove() {
         player.getConnection().sendOutput(Protocol.MOVE + Protocol.SEPARATOR + gogame.Move.intersectionLocationToString(getRandomValidMove()));
+    }
+
+    @Override
+    public void sendQueue() {
+        player.getConnection().sendOutput(Protocol.QUEUE);
+    }
+
+    @Override
+    public void sendHello() {
+        player.getConnection().sendOutput(Protocol.HELLO);
     }
 
     public int[] getRandomValidMove() {

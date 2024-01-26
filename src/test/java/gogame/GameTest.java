@@ -57,37 +57,37 @@ public class GameTest {
 
 
         // Ko-rule
-        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 1}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 2}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 2}, Color.BLACK);
-        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 3}, Color.BLACK);
-        game.board.setField(new int[]{game.board.DIM - 3, game.board.DIM - 3}, Color.BLACK);
+        game.board.setField(new int[]{2, 1}, Color.WHITE);
+        game.board.setField(new int[]{1, 2}, Color.WHITE);
+        game.board.setField(new int[]{2, 2}, Color.BLACK);
+        game.board.setField(new int[]{1, 3}, Color.BLACK);
+        game.board.setField(new int[]{3, 3}, Color.BLACK);
         System.out.println(game.board.toString());
 
-        game.doMove(new int[]{game.board.DIM-3, game.board.DIM-2} , Color.WHITE);
-        game.doMove(new int[]{game.board.DIM-2, game.board.DIM-4} , Color.BLACK);
-        game.doMove(new int[]{game.board.DIM-2, game.board.DIM-3} , Color.WHITE);
+        game.doMove(new int[]{3, 2} , Color.WHITE);
+        game.doMove(new int[]{2, 4} , Color.BLACK);
+        game.doMove(new int[]{2, 3} , Color.WHITE);
         System.out.println(game.board.toString());
-        assertTrue(game.isKoFight(new int[]{game.board.DIM-2, game.board.DIM-2} , Color.BLACK));
-        game.doMove(new int[]{game.board.DIM-2, game.board.DIM-2}, Color.BLACK);
+        assertTrue(game.isKoFight(new int[]{2, 2} , Color.BLACK));
+        game.doMove(new int[]{2, 2}, Color.BLACK);
         assertSame(game.getTurn().color, Color.BLACK);
         System.out.println(game.board.toString());
     }
 
     @Test
     public void testMultipleOwnSuicide() {
-        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 9}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 8}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 3, game.board.DIM - 8}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 7}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 3, game.board.DIM - 7}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 6}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 8}, Color.BLACK);
-        System.out.println(game.board.toString());
+        game.board.setField(new int[]{2, 8}, Color.WHITE);
+        game.board.setField(new int[]{1, 7}, Color.WHITE);
+        game.board.setField(new int[]{3, 7}, Color.WHITE);
+        game.board.setField(new int[]{1, 6}, Color.WHITE);
+        game.board.setField(new int[]{3, 6}, Color.WHITE);
+        game.board.setField(new int[]{2, 5}, Color.WHITE);
+        game.board.setField(new int[]{2, 7}, Color.BLACK);
 
-        game.doMove(new int[]{7,2}, Color.BLACK);
-        assertSame(game.board.getField(new int[]{7, 1}), Color.EMPTY);
-        assertSame(game.board.getField(new int[]{7, 2}), Color.EMPTY);
+        System.out.println(game.board.toString());
+        assertSame(Color.EMPTY, game.board.getField(new int[]{2, 6}));
+        game.doMove(new int[]{2,6}, Color.BLACK);
+        assertSame(Color.EMPTY, game.board.getField(new int[]{2, 6}));
 
         System.out.println(game.board.toString());
 
@@ -95,14 +95,14 @@ public class GameTest {
 
     @Test
     public void testSingleOwnSuicide() {
-        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 9}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 1, game.board.DIM - 8}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 3, game.board.DIM - 8}, Color.WHITE);
-        game.board.setField(new int[]{game.board.DIM - 2, game.board.DIM - 7}, Color.WHITE);
+        game.board.setField(new int[]{2, 8}, Color.WHITE);
+        game.board.setField(new int[]{1, 7}, Color.WHITE);
+        game.board.setField(new int[]{3, 7}, Color.WHITE);
+        game.board.setField(new int[]{2, 6}, Color.WHITE);
         System.out.println(game.board.toString());
 
-        game.doMove(new int[]{7,1}, Color.BLACK);
-        assertSame(Color.EMPTY, game.board.getField(new int[]{7, 1}));
+        game.doMove(new int[]{2,7}, Color.BLACK);
+        assertSame(Color.EMPTY, game.board.getField(new int[]{2, 7}));
         System.out.println(game.board.toString());
 
     }

@@ -18,7 +18,7 @@ public class BoardTest {
     public void testIsField() {
         assertFalse(board.isField(new int[]{-1, 1}));
         assertTrue(board.isField(new int[]{0, 0}));
-        assertTrue(board.isField(new int[]{board.DIM - 1, board.DIM - 1}));
+        assertTrue(board.isField(new int[]{1, 1}));
         assertFalse(board.isField(new int[]{board.DIM, board.DIM}));
     }
 
@@ -46,80 +46,77 @@ public class BoardTest {
     @Test
     public void testHasLiberty() {
         //Test without edge
-        board.setField(new int[]{board.DIM - 2, board.DIM - 2}, Color.BLACK);
-        assertTrue(board.hasLiberty(new int[]{board.DIM - 2, board.DIM - 2}));
-        board.setField(new int[]{board.DIM - 2, board.DIM - 1}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 3, board.DIM - 2}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 2, board.DIM - 3}, Color.WHITE);
-        assertTrue(board.hasLiberty(new int[]{board.DIM - 2, board.DIM - 2}));
-        board.setField(new int[]{board.DIM - 1, board.DIM - 2}, Color.WHITE);
+        board.setField(new int[]{1, 2}, Color.BLACK);
+        assertTrue(board.hasLiberty(new int[]{1, 2}));
+        board.setField(new int[]{1, 1}, Color.WHITE);
+        board.setField(new int[]{2, 2}, Color.WHITE);
+        board.setField(new int[]{1, 3}, Color.WHITE);
+        assertTrue(board.hasLiberty(new int[]{1, 2}));
+        board.setField(new int[]{0, 2}, Color.WHITE);
         System.out.println(board.toString());
-        assertFalse(board.hasLiberty(new int[]{board.DIM - 2, board.DIM - 2}));
-        board.setField(new int[]{board.DIM - 1, board.DIM - 2}, Color.BLACK);
-        assertFalse(board.hasLiberty(new int[]{board.DIM - 2, board.DIM - 2}));
+        assertFalse(board.hasLiberty(new int[]{1, 2}));
+        board.setField(new int[]{0, 2}, Color.BLACK);
+        assertFalse(board.hasLiberty(new int[]{1, 2}));
 
         //Test with edge
-        assertTrue(board.hasLiberty(new int[]{board.DIM - 1, board.DIM - 2}));
-        board.setField(new int[]{board.DIM - 1, board.DIM - 1}, Color.WHITE);
-        assertTrue(board.hasLiberty(new int[]{board.DIM - 1, board.DIM - 2}));
-        board.setField(new int[]{board.DIM - 1, board.DIM - 3}, Color.WHITE);
+        assertTrue(board.hasLiberty(new int[]{0, 2}));
+        board.setField(new int[]{0, 1}, Color.WHITE);
+        assertTrue(board.hasLiberty(new int[]{0, 2}));
+        board.setField(new int[]{0, 3}, Color.WHITE);
         System.out.println(board.toString());
-        assertFalse(board.hasLiberty(new int[]{board.DIM - 1, board.DIM - 2}));
+        assertFalse(board.hasLiberty(new int[]{0, 2}));
     }
 
 
     @Test
     public void testGetGroup() {
-        board.setField(new int[]{board.DIM - 2, board.DIM - 2}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 2, board.DIM - 1}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 3, board.DIM - 2}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 2, board.DIM - 3}, Color.WHITE);
+        board.setField(new int[]{2, 2}, Color.WHITE);
+        board.setField(new int[]{2, 1}, Color.WHITE);
+        board.setField(new int[]{3, 2}, Color.WHITE);
+        board.setField(new int[]{2, 3}, Color.WHITE);
         System.out.println(board.toString());
-        assertEquals(board.getGroup(new int[]{board.DIM - 2, board.DIM - 1}, true).size(), 4);
+        assertEquals(board.getGroup(new int[]{2, 1}, true).size(), 4);
 
-        board.setField(new int[]{board.DIM - 2, board.DIM - 4}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 2, board.DIM - 5}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 3, board.DIM - 6}, Color.WHITE);
+        board.setField(new int[]{2, 4}, Color.WHITE);
+        board.setField(new int[]{2, 5}, Color.WHITE);
+        board.setField(new int[]{3, 6}, Color.WHITE);
         System.out.println(board.toString());
-        assertEquals(board.getGroup(new int[]{board.DIM - 2, board.DIM - 1}, true).size(), 6);
+        assertEquals(board.getGroup(new int[]{2, 1}, true).size(), 6);
     }
 
     @Test
     public void testGetCaptured() {
         //Test without edge
-        board.setField(new int[]{board.DIM - 2, board.DIM - 2}, Color.BLACK);
-        board.setField(new int[]{board.DIM - 2, board.DIM - 1}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 3, board.DIM - 2}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 2, board.DIM - 3}, Color.WHITE);
-        assertTrue(board.hasLiberty(new int[]{board.DIM - 2, board.DIM - 2}));
-        board.setField(new int[]{board.DIM - 1, board.DIM - 2}, Color.WHITE);
+        board.setField(new int[]{1, 2}, Color.BLACK);
+        board.setField(new int[]{1, 1}, Color.WHITE);
+        board.setField(new int[]{2, 2}, Color.WHITE);
+        board.setField(new int[]{1, 3}, Color.WHITE);
+        assertTrue(board.hasLiberty(new int[]{1, 2}));
+        board.setField(new int[]{0, 2}, Color.WHITE);
         System.out.println(board.toString());
-        assertFalse(board.hasLiberty(new int[]{board.DIM - 2, board.DIM - 2}));
+        assertFalse(board.hasLiberty(new int[]{1, 2}));
 
-        for (int[] stone : board.getCaptured(new int[]{board.DIM - 1, board.DIM - 2})) {
+        for (int[] stone : board.getCaptured(new int[]{0, 2})) {
             System.out.println(Arrays.toString(stone));
         }
 
-        assertEquals(1, board.getCaptured(new int[]{board.DIM - 1, board.DIM - 2}).size());
-        board.removeCaptured(board.getCaptured(new int[]{board.DIM - 1, board.DIM - 2}));
+        assertEquals(1, board.getCaptured(new int[]{0, 2}).size());
+        board.removeCaptured(board.getCaptured(new int[]{0, 2}));
         System.out.println(board.toString());
 
         // test with edge
-        board.setField(new int[]{board.DIM - 1, board.DIM - 1}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 1, board.DIM - 2}, Color.BLACK);
-        board.setField(new int[]{board.DIM - 2, board.DIM - 2}, Color.BLACK);
-        board.setField(new int[]{board.DIM - 1, board.DIM - 3}, Color.WHITE);
+        board.setField(new int[]{0, 1}, Color.WHITE);
+        board.setField(new int[]{0, 2}, Color.BLACK);
+        board.setField(new int[]{1, 2}, Color.BLACK);
+        board.setField(new int[]{0, 3}, Color.WHITE);
         System.out.println(board.toString());
 
-        for (int[] stone : board.getCaptured(new int[]{board.DIM - 3, board.DIM - 2})) {
+        for (int[] stone : board.getCaptured(new int[]{2, 2})) {
             System.out.println(Arrays.toString(stone));
         }
 
-        assertEquals(board.getCaptured(new int[]{board.DIM - 3, board.DIM - 2}).size(), 2);
-        board.removeCaptured(board.getCaptured(new int[]{board.DIM - 3, board.DIM - 2}));
-        System.out.println(board.toString());
-
-        board.getFilledBoard();
+        assertEquals(board.getCaptured(new int[]{2, 2}).size(), 2);
+        board.removeCaptured(board.getCaptured(new int[]{2, 2}));
         System.out.println(board.toString());
 
         // test two captures at the same time
@@ -127,11 +124,11 @@ public class BoardTest {
     }
     @Test
     public void testGetTerritory() {
-        board.setField(new int[]{board.DIM - 1, board.DIM - 1}, Color.BLACK);
-        board.setField(new int[]{board.DIM - 1, board.DIM - 2}, Color.BLACK);
-        board.setField(new int[]{board.DIM - 2, board.DIM - 2}, Color.BLACK);
-        board.setField(new int[]{board.DIM - 1, board.DIM - 3}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 3, board.DIM - 1}, Color.BLACK);
+        board.setField(new int[]{1, 1}, Color.BLACK);
+        board.setField(new int[]{1, 2}, Color.BLACK);
+        board.setField(new int[]{2, 2}, Color.BLACK);
+        board.setField(new int[]{1, 3}, Color.WHITE);
+        board.setField(new int[]{3, 1}, Color.BLACK);
 
         System.out.println(board.toString());
 
@@ -142,10 +139,10 @@ public class BoardTest {
         // filled edge case
         setUp();
 
-        board.setField(new int[]{board.DIM - 5, board.DIM - 4}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 4, board.DIM - 5}, Color.WHITE);
+        board.setField(new int[]{5, 4}, Color.WHITE);
+        board.setField(new int[]{4, 5}, Color.WHITE);
         for (int i = 1; i <= board.DIM; i++) {
-            board.setField(new int[]{board.DIM - i, board.DIM - 2}, Color.BLACK);
+            board.setField(new int[]{i, 2}, Color.BLACK);
         }
 
         System.out.println(board.toString());
@@ -157,15 +154,15 @@ public class BoardTest {
         // centre situation
         setUp();
 
-        board.setField(new int[]{board.DIM - 5, board.DIM - 4}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 4, board.DIM - 5}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 6, board.DIM - 6}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 4, board.DIM - 7}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 6, board.DIM - 5}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 5, board.DIM - 7}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 3, board.DIM - 6}, Color.WHITE);
-        board.setField(new int[]{board.DIM - 2, board.DIM - 6}, Color.BLACK);
-        board.setField(new int[]{board.DIM - 5, board.DIM - 6}, Color.BLACK);
+        board.setField(new int[]{5, 4}, Color.WHITE);
+        board.setField(new int[]{4, 5}, Color.WHITE);
+        board.setField(new int[]{6, 6}, Color.WHITE);
+        board.setField(new int[]{4, 7}, Color.WHITE);
+        board.setField(new int[]{6, 5}, Color.WHITE);
+        board.setField(new int[]{5, 7}, Color.WHITE);
+        board.setField(new int[]{3, 6}, Color.WHITE);
+        board.setField(new int[]{2, 6}, Color.BLACK);
+        board.setField(new int[]{5, 6}, Color.BLACK);
 
         System.out.println(board.toString());
         board.getFilledBoard();

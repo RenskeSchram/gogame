@@ -1,4 +1,6 @@
-package gogame.player;
+package gogame.player.strategy;
+
+import gogame.player.OnlinePlayer;
 
 public class HumanStrategy implements Strategy {
     OnlinePlayer player;
@@ -15,5 +17,16 @@ public class HumanStrategy implements Strategy {
     @Override
     public void determineMove() {
         player.receiveMessage("Send a new move using: MOVE~<int> or MOVE~<int, int>");
+    }
+
+    @Override
+    public void sendQueue() {
+        //player.receiveMessage("You are queued, if you want to leave the queue, send: QUEUE");
+
+    }
+
+    @Override
+    public void sendHello() {
+        player.receiveMessage("Send HELLO to verify the connection");
     }
 }

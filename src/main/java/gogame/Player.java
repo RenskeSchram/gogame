@@ -63,10 +63,6 @@ public abstract class Player {
         return this.userName;
     }
 
-    public abstract SocketConnection getConnection();
-
-    public abstract void passGameUpdate(String gameUpdate);
-
     public void quitGame() {
         this.game = null;
     }
@@ -75,4 +71,9 @@ public abstract class Player {
     public String toString() {
         return userName;
     }
+
+    public abstract SocketConnection getConnection();
+
+    public abstract void passGameUpdate(String gameUpdate);
+
 }

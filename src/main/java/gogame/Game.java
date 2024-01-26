@@ -12,9 +12,7 @@ public class Game {
     private boolean passed = false;
     Timer timer;
     TimerTask timeOutPass;
-    private TimerTask timeOutReminder;
-
-
+    int timeOutLength = 2000;
 
     /**
      * Constructor for new Game object with players and a new Board.
@@ -46,7 +44,32 @@ public class Game {
                 .getUsername() + Protocol.SEPARATOR + board.DIM);
         turn.passGameUpdate(Protocol.MAKEMOVE);
 
+        startTimer();
     }
+
+
+    /**
+     * End game. Stop possibility to make a move, calculate scores and call out winner.
+     */
+    private void end() {
+        // Inactivate the game
+        active = false;
+        for (Player player : players) {
+            player.quitGame();
+            player.passGameUpdate(Protocol.GAMEOVER + Protocol.SEPARATOR + board.getWinner());
+            player.passGameUpdate(Protocol.PRINT);
+        }
+    }
+
+    public void passGameUpdateToAll(String update) {
+        for (Player player : players) {
+            player.passGameUpdate(update);
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ///                                      Move checks                                         ///
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Check if the move is valid: valid coordinate on board and ko-rule.
@@ -87,6 +110,10 @@ public class Game {
         return Arrays.deepEquals(copyBoard.fields, previousBoard.fields);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ///                                      Making a move                                       ///
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Do the move if this is valid.
      *
@@ -101,9 +128,10 @@ public class Game {
                 // send move over network
                 passGameUpdateToAll(
                         Protocol.MOVE + Protocol.SEPARATOR + location[0] + "," + location[1] + Protocol.SEPARATOR + getTurn().getColor());
-
+                passed = false;
                 // set new previous board for ko-fight check
                 previousBoard = board.deepCopy();
+
                 // put the stone on the field
                 board.setField(location, color);
                 //check for and remove captured stones
@@ -114,7 +142,6 @@ public class Game {
                 }
 
                 // ask for new move to correct player
-                startTimer();
                 turn = otherTurn();
                 getTurn().passGameUpdate(Protocol.MAKEMOVE);
 
@@ -145,7 +172,6 @@ public class Game {
                 // switch turn and set passed to true.
                 turn = otherTurn();
                 passed = true;
-                startTimer();
             }
         }
 
@@ -171,6 +197,9 @@ public class Game {
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ///                                         Getters                                          ///
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Returns the players whose turn it is.
@@ -198,25 +227,6 @@ public class Game {
         }
     }
 
-    /**
-     * End game. Stop possibility to make a move, calculate scores and call out winner.
-     */
-    private void end() {
-        // Inactivate the game
-        active = false;
-        for (Player player : players) {
-            player.quitGame();
-            player.passGameUpdate(Protocol.GAMEOVER + Protocol.SEPARATOR + board.getWinner());
-            player.passGameUpdate(Protocol.PRINT);
-        }
-    }
-
-    public void passGameUpdateToAll(String update) {
-        for (Player player : players) {
-            player.passGameUpdate(update);
-        }
-    }
-
     public List<int[]> getValidMoves() {
         List<int []> validMoves = new ArrayList<>();
         for (int col = 0; col < board.DIM; col++) {
@@ -229,31 +239,26 @@ public class Game {
         return validMoves;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ///                                      GAME TIMER                                          ///
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-    private void startTimer() {
-        stopTimer();
+    protected void startTimer() {
         timer = new Timer();
         timeOutPass = new TimerTask() {
             @Override
             public void run() {
                 doPass(getTurn().getColor());
-                getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "you automatically passed as time run out");
+                getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "automated pass");
             }
         };
 
-        timeOutReminder = new TimerTask() {
-            @Override
-            public void run() {
-                getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "time is running out, you have 20 seconds left to make a move");
-            }
-        };
 
-        timer.schedule(timeOutReminder, 40000);
-        timer.schedule(timeOutPass, 10000);
+        timer.schedule(timeOutPass, timeOutLength);
     }
 
-    void stopTimer() {
+    protected void stopTimer() {
+
         if (timer != null) {
             timer.cancel();
             timer = null;
@@ -265,7 +270,7 @@ public class Game {
         }
     }
 
-    private void resetTimer() {
+    protected void resetTimer() {
         stopTimer();
         startTimer();
     }
@@ -275,4 +280,5 @@ public class Game {
     public String toString() {
         return "00" + gameCode;
     }
+
 }

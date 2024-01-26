@@ -3,6 +3,9 @@ package gogame.player;
 import gogame.Color;
 import gogame.Player;
 import gogame.SocketConnection;
+import gogame.player.strategy.ComputerStrategy;
+import gogame.player.strategy.HumanStrategy;
+import gogame.player.strategy.Strategy;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -13,6 +16,8 @@ public class OnlinePlayer extends Player {
 
     public OnlinePlayer(){
         strategy = new HumanStrategy(this);
+        strategy.sendHello();
+
     }
 
     @Override
@@ -25,6 +30,7 @@ public class OnlinePlayer extends Player {
      * @param location
      */
     public void doMove(int[] location, Color color) {
+        assert (game instanceof StrategyGame);
         // play moves for both players in the game
         game.doMove(location, color);
     }
@@ -64,5 +70,7 @@ public class OnlinePlayer extends Player {
     }
 
 
-
+    public void sendQueue() {
+        strategy.sendQueue();
+    }
 }

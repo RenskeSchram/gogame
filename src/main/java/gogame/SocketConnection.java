@@ -110,8 +110,10 @@ public abstract class SocketConnection {
         String[] splitInput = input.split(",");
         try {
             if (splitInput.length == 1) {
-                int row = (Integer.parseInt(splitInput[0]) - 1) / board.DIM;
-                int col = (Integer.parseInt(splitInput[0]) - 1) % board.DIM;
+                int col = (Integer.parseInt(splitInput[0])) % board.DIM;
+                System.out.println(col);
+                int row = (Integer.parseInt(splitInput[0])) / board.DIM;
+                System.out.println(row);
                 return new int[]{col, row};
 
             } else if (splitInput.length == 2) {

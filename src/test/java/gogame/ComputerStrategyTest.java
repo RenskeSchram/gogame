@@ -1,6 +1,6 @@
 package gogame;
 
-import gogame.player.ComputerStrategy;
+import gogame.player.strategy.ComputerStrategy;
 import gogame.player.OnlinePlayer;
 import gogame.player.PlayerConnection;
 import gogame.server.GameServer;
