@@ -183,7 +183,7 @@ public class Board {
      * @param location location saved as int[] {col, row}
      * @return if coordinate is already in the list.
      */
-    private boolean containsLocation(List<int[]> list, int[] location) {
+    static boolean containsLocation(List<int[]> list, int[] location) {
         for (int[] element : list) {
             if (Arrays.equals(element, location)) {
                 return true;

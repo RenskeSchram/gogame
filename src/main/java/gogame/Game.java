@@ -10,6 +10,11 @@ public class Game {
     private Player turn;
     protected boolean active = false;
     private boolean passed = false;
+    Timer timer;
+    TimerTask timeOutPass;
+    private TimerTask timeOutReminder;
+
+
 
     /**
      * Constructor for new Game object with players and a new Board.
@@ -27,12 +32,6 @@ public class Game {
      * Initialize start of game by assigning colors and first turn to the players.
      */
     private void start() {
-
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-        }
 
         // activate game
         active = true;
@@ -96,6 +95,8 @@ public class Game {
      */
     public void doMove(int[] location, Color color) {
         if (isValidTurn(color)) {
+            resetTimer();
+
             if (isValidMove(location, color)) {
                 // send move over network
                 passGameUpdateToAll(
@@ -113,6 +114,7 @@ public class Game {
                 }
 
                 // ask for new move to correct player
+                startTimer();
                 turn = otherTurn();
                 getTurn().passGameUpdate(Protocol.MAKEMOVE);
 
@@ -127,7 +129,6 @@ public class Game {
         }
     }
 
-
     /**
      * Do a passing move.
      *
@@ -135,6 +136,7 @@ public class Game {
      */
     public void doPass(Color color) {
         if (isValidTurn(color) && active) {
+            resetTimer();
             if (passed) {
                 end();
             } else {
@@ -143,6 +145,7 @@ public class Game {
                 // switch turn and set passed to true.
                 turn = otherTurn();
                 passed = true;
+                startTimer();
             }
         }
 
@@ -213,6 +216,60 @@ public class Game {
             player.passGameUpdate(update);
         }
     }
+
+    public List<int[]> getValidMoves() {
+        List<int []> validMoves = new ArrayList<>();
+        for (int col = 0; col < board.DIM; col++) {
+            for (int row = 0; row < board.DIM; row++) {
+                if (isValidMove(new int[]{col, row}, getTurn().getColor())) {
+                    validMoves.add(new int[]{col, row});
+                }
+            }
+        }
+        return validMoves;
+    }
+
+
+
+    private void startTimer() {
+        stopTimer();
+        timer = new Timer();
+        timeOutPass = new TimerTask() {
+            @Override
+            public void run() {
+                doPass(getTurn().getColor());
+                getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "you automatically passed as time run out");
+            }
+        };
+
+        timeOutReminder = new TimerTask() {
+            @Override
+            public void run() {
+                getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "time is running out, you have 20 seconds left to make a move");
+            }
+        };
+
+        timer.schedule(timeOutReminder, 40000);
+        timer.schedule(timeOutPass, 10000);
+    }
+
+    void stopTimer() {
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+
+        if (timeOutPass != null) {
+            timeOutPass.cancel();
+            timeOutPass = null;
+        }
+    }
+
+    private void resetTimer() {
+        stopTimer();
+        startTimer();
+    }
+
 
     @Override
     public String toString() {

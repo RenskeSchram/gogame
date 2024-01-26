@@ -115,5 +115,47 @@ public class GameTest {
         game.doPass(Color.WHITE);
         assertFalse(game.active);
     }
+    @Test
+    public void testStartTimer() {
+        assertNull(game.timer);
+        game.doMove(new int[]{1,1}, Color.BLACK);
+        assertNotNull(game.timer);
+        assertSame(Color.WHITE, game.getTurn().getColor());
+        try {
+            // check timing in Game, might have changed
+            Thread.sleep(11000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assertSame(Color.BLACK, game.getTurn().getColor());
+    }
+    @Test
+    public void testStopTimer() {
+        assertNull(game.timer);
+        assertNull(game.timeOutPass);
+
+        game.doMove(new int[]{1,1}, Color.BLACK);
+        assertSame(Color.WHITE, game.getTurn().getColor());
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        game.stopTimer();
+
+        try {
+            // check timing in Game, might have changed
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        assertSame(Color.WHITE, game.getTurn().getColor());
+
+        assertNull(game.timer);
+        assertNull(game.timeOutPass);
+
+    }
 
 }

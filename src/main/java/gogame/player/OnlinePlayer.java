@@ -1,16 +1,19 @@
 package gogame.player;
 
 import gogame.Color;
-import gogame.Game;
 import gogame.Player;
 import gogame.SocketConnection;
 import java.io.IOException;
 import java.net.Socket;
 
 public class OnlinePlayer extends Player {
-    PlayerConnection playerConnection;
+    public PlayerConnection playerConnection;
     public PlayerTUI tui;
-    Strategy strategy = new HumanStrategy(this);
+    public Strategy strategy;
+
+    public OnlinePlayer(){
+        strategy = new HumanStrategy(this);
+    }
 
     @Override
     public SocketConnection getConnection() {
@@ -60,9 +63,6 @@ public class OnlinePlayer extends Player {
         playerConnection = new PlayerConnection(socket, this);
     }
 
-    public void getValidMoves() {
-
-    }
 
 
 }

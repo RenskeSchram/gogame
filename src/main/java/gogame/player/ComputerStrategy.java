@@ -1,14 +1,13 @@
 package gogame.player;
 
-import gogame.Player;
 import gogame.Protocol;
 import java.util.List;
+import java.util.Random;
 
 public class ComputerStrategy implements Strategy {
-    Player player;
-    int movesCount;
+    OnlinePlayer player;
 
-    ComputerStrategy(OnlinePlayer player){
+    public ComputerStrategy(OnlinePlayer player){
         this.player = player;
     }
     @Override
@@ -23,11 +22,12 @@ public class ComputerStrategy implements Strategy {
 
     @Override
     public void determineMove() {
-        //automated move determination...
+        player.getConnection().sendOutput(Protocol.MOVE + Protocol.SEPARATOR + gogame.Move.intersectionLocationToString(getRandomValidMove()));
+    }
 
-        player.getConnection().sendOutput(Protocol.MOVE + Protocol.SEPARATOR + movesCount);
-        movesCount++;
-
+    public int[] getRandomValidMove() {
+        List<int[]> validMoves = player.game.getValidMoves();
+        return validMoves.get(new Random().nextInt(validMoves.size()));
     }
 
 }
