@@ -1,18 +1,22 @@
 package gogame;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Game {
 
   private final List<Player> players = new ArrayList<>();
   public Board board;
-  public int gameCode;
+  private int gameCode;
   private Board previousBoard;
   private Player turn;
   protected boolean active = false;
   private boolean passed = false;
-  Timer timer;
-  TimerTask timeOutPass;
+  private Timer timer;
+  private TimerTask timeOutPass;
   private static final int MOVE_DURATION = 5000;
 
   /**
@@ -61,7 +65,7 @@ public class Game {
     }
   }
 
-  public void passGameUpdateToAll(String update) {
+  protected void passGameUpdateToAll(String update) {
     for (Player player : players) {
       player.passGameUpdate(update);
     }
@@ -76,7 +80,7 @@ public class Game {
    *
    * @return true if the move is valid.
    */
-  public boolean isValidMove(int[] location, Color color) {
+  protected boolean isValidMove(int[] location, Color color) {
     return isValidTurn(color) && active && board.isValid(location) && !isKoFight(location,color);
   }
 
@@ -86,7 +90,7 @@ public class Game {
    * @param color color of placed stone.
    * @return true if the placed color is of the correct ServerPlayer at turn.
    */
-  private boolean isValidTurn(Color color) {
+  protected boolean isValidTurn(Color color) {
     return turn != null && color == turn.getColor();
   }
 
@@ -231,6 +235,19 @@ public class Game {
     }
   }
 
+  /**
+   * Set number of game to identify game.
+   * @param gameCode number of game
+   */
+  public void setGameCode(int gameCode) {
+    this.gameCode = gameCode;
+  }
+
+  /**
+   * Returns list of possible valid moves.
+   *
+   * @return list of possible valid moves
+   */
   public List<int[]> getValidMoves() {
     List<int []> validMoves = new ArrayList<>();
     for (int col = 0; col < board.DIM; col++) {
@@ -276,6 +293,14 @@ public class Game {
   protected void resetTimer() {
     stopTimer();
     startTimer();
+  }
+
+  public Timer getTimer() {
+    return timer;
+  }
+
+  public TimerTask getTimeOutPass() {
+    return timeOutPass;
   }
 
   @Override
