@@ -8,6 +8,7 @@ import java.net.Socket;
 public class PlayerConnection extends SocketConnection {
 
   public OnlinePlayer player;
+  protected StrategyGame game;
 
   /**
    * Abstract constructor for a new SocketConnection object with buffered reader and writer.
@@ -69,18 +70,21 @@ public class PlayerConnection extends SocketConnection {
         break;
       }
       case Protocol.GAMESTARTED: {
-        if (player.game == null) {
+        if (game == null) {
           if (protocol.length < 3) {
             sendError("could not handle GAME STARTED, too little inputs received");
           } else {
             player.receiveMessage(printProtocolMessage(protocol));
             int DIM = Integer.parseInt(protocol[2]);
             if (protocol[1].split(",")[1].equals(player.getUsername())) {
-              player.game = new StrategyGame(player, new OnlinePlayer(), DIM);
+              game = new StrategyGame(player, new OnlinePlayer(), DIM);
+              player.strategy.setGame(game);
               player.receiveMessage("Playing with BLACK");
             } else {
-              player.game = new StrategyGame(new OnlinePlayer(), player, DIM);
+              game = new StrategyGame(new OnlinePlayer(), player, DIM);
               player.receiveMessage("Playing with WHITE");
+              player.strategy.setGame(game);
+
             }
           }
         } else {
@@ -94,8 +98,7 @@ public class PlayerConnection extends SocketConnection {
         if (protocol.length < 3) {
           sendError("could not handle MOVE, too little inputs received");
         } else {
-          player.doMove(getLocationArray(protocol[1], player.game.board.DIM),
-              getColor(protocol[2]));
+          game.doMove(getLocationArray(protocol[1], game.board.DIM), getColor(protocol[2]));
         }
         break;
       }
@@ -105,7 +108,7 @@ public class PlayerConnection extends SocketConnection {
         if (protocol.length < 2) {
           sendError("could not handle PASS, no color received");
         } else {
-          player.doPass(getColor(protocol[1]));
+          game.doPass(getColor(protocol[1]));
         }
         break;
       }
@@ -126,7 +129,7 @@ public class PlayerConnection extends SocketConnection {
       }
 
       case Protocol.PRINT: {
-        player.receiveMessage(player.game.board.toString());
+        player.receiveMessage(game.board.toString());
         break;
       }
 

@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gogame.Game;
 import gogame.TestFunctions;
-import gogame.player.OnlinePlayer;
-import gogame.player.PlayerConnection;
 import gogame.player.strategy.ComputerStrategy;
 import gogame.server.GameServer;
 import java.io.IOException;

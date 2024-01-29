@@ -1,6 +1,7 @@
 package gogame.player.strategy;
 
 import gogame.player.OnlinePlayer;
+import gogame.player.StrategyGame;
 
 public class HumanStrategy implements Strategy {
 
@@ -23,5 +24,10 @@ public class HumanStrategy implements Strategy {
   @Override
   public void sendQueue() {
     player.receiveMessage("You are queued, if you want to leave the queue, send: QUEUE");
+  }
+
+  @Override
+  public void setGame(StrategyGame game) {
+    //
   }
 }

@@ -11,6 +11,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -21,7 +22,7 @@ import java.util.Scanner;
 public class GameServer {
 
   private final ServerSocket serverSocket;
-  protected Map<ServerPlayer, Game> serverMap;
+  protected Map<ServerPlayer, Game> gameMap;
   protected List<ServerPlayer> queue;
   int DIM = 9;
   int gameCodeCounter = 0;
@@ -36,7 +37,7 @@ public class GameServer {
    */
   public GameServer(int port) throws IOException {
     serverSocket = new ServerSocket(port);
-    serverMap = new HashMap<>();
+    gameMap = new HashMap<>();
     queue = new ArrayList<>();
     writer = new PrintWriter(new FileWriter("Serverlog.txt", true));
   }
@@ -101,9 +102,9 @@ public class GameServer {
   }
 
   /**
-   * Add serverPlayer to serverMap.
+   * Add serverPlayer to gameMap.
    *
-   * @param serverPlayer serverPlayer to be added to the serverMap
+   * @param serverPlayer serverPlayer to be added to the gameMap
    */
   protected void queueServerPlayer(ServerPlayer serverPlayer) {
     if (!queue.contains(serverPlayer)) {
@@ -112,45 +113,35 @@ public class GameServer {
     } else {
       queue.remove(serverPlayer);
     }
-
     System.out.println("[SERVERLOG] checking QUEUE");
     System.out.println(Collections.singletonList(queue));
   }
 
   /**
-   * Start a new game, remove assigned players from queue to serverMap with corresponding game.
+   * Start a new game, remove assigned players from queue to gameMap with corresponding game.
    *
    * @param firstPlayer
    * @param secondPlayer
    */
   protected void startGame(ServerPlayer firstPlayer, ServerPlayer secondPlayer) {
     Game game = new Game(firstPlayer, secondPlayer, DIM);
+
     queue.remove(firstPlayer);
-    serverMap.put(firstPlayer, game);
+    gameMap.put(firstPlayer, game);
     firstPlayer.game = game;
     queue.remove(secondPlayer);
-    serverMap.put(secondPlayer, game);
+    gameMap.put(secondPlayer, game);
     secondPlayer.game = game;
 
     game.setGameCode(gameCodeCounter);
+
+    log("[GAME STARTED] with gameCode 00" + gameCodeCounter + " and players "
+        + firstPlayer.getUsername() + " and " + secondPlayer.getUsername());
+
     gameCodeCounter++;
 
     System.out.println("[SERVERLOG] checking ServerMap");
-    System.out.println(Collections.singletonList(serverMap) + "\n");
-  }
-
-  /**
-   * Main function to retrieve port number and start create a new GameServer.
-   *
-   * @param args
-   * @throws IOException
-   */
-  public static void main(String[] args) throws IOException {
-    Scanner scanner = new Scanner(System.in);
-    System.out.print("server port number: ");
-    int port = scanner.nextInt();
-    GameServer gameServer = new GameServer(port);
-    gameServer.acceptConnections();
+    System.out.println(Collections.singletonList(gameMap) + "\n");
   }
 
   //TODO: what about idle players and players in game?
@@ -164,10 +155,11 @@ public class GameServer {
   }
 
   public void quitGame(ServerPlayer player) {
-    serverMap.remove(player);
+    gameMap.remove(player);
 
     System.out.println("[SERVERLOG] checking ServerMap");
-    System.out.println(Collections.singletonList(serverMap) + "\n");
+    System.out.println(Collections.singletonList(gameMap) + "\n");
+
   }
 
 
@@ -177,4 +169,32 @@ public class GameServer {
       writer.flush();
     }
   }
+
+  /**
+   * Main function to retrieve port number and start create a new GameServer.
+   *
+   * @param args
+   * @throws IOException
+   */
+  public static void main(String[] args) throws IOException {
+    Scanner scanner = new Scanner(System.in);
+
+    // Handling port input with retry
+    int port = 0;
+    boolean validPortInput = false;
+    while (!validPortInput) {
+      System.out.print("server port number: \n");
+      try {
+        port = scanner.nextInt();
+        validPortInput = true;
+      } catch (InputMismatchException e) {
+        System.err.println("Invalid port number. Please enter a valid port.");
+        scanner.nextLine();
+      }
+    }
+
+    GameServer gameServer = new GameServer(port);
+    gameServer.acceptConnections();
+  }
 }
+

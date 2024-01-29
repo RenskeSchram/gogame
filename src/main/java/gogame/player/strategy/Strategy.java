@@ -1,5 +1,7 @@
 package gogame.player.strategy;
 
+import gogame.player.StrategyGame;
+
 public interface Strategy {
 
   void getUsername();
@@ -8,4 +10,5 @@ public interface Strategy {
 
   void sendQueue();
 
+  void setGame(StrategyGame game);
 }

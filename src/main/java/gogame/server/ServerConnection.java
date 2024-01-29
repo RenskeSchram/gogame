@@ -72,7 +72,7 @@ public class ServerConnection extends SocketConnection {
 
       // MOVE: if player is in a game, send move to serverPlayer
       case Protocol.MOVE: {
-        if (protocol.length >= 2 && gameServer.serverMap.containsKey(serverPlayer)) {
+        if (protocol.length >= 2 && gameServer.gameMap.containsKey(serverPlayer)) {
           serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board.DIM),
               Color.EMPTY);
         } else {
@@ -83,7 +83,7 @@ public class ServerConnection extends SocketConnection {
 
       // PASS: if player is in a game, send pass to serverPlayer
       case Protocol.PASS: {
-        if (gameServer.serverMap.containsKey(serverPlayer)) {
+        if (gameServer.gameMap.containsKey(serverPlayer)) {
           serverPlayer.doPass();
         } else {
           sendError("could not handle PASS");
@@ -93,7 +93,7 @@ public class ServerConnection extends SocketConnection {
 
       // RESIGN: if player is in a game, send resign to serverPlayer
       case Protocol.RESIGN: {
-        if (gameServer.serverMap.containsKey(serverPlayer)) {
+        if (gameServer.gameMap.containsKey(serverPlayer)) {
           serverPlayer.doResign();
         } else {
           sendError("could not handle RESIGN");
@@ -103,7 +103,7 @@ public class ServerConnection extends SocketConnection {
 
       // RESIGN: if player is in a game, send resign to serverPlayer
       case Protocol.PRINT: {
-        System.out.println(serverPlayer.game.board.toString());
+        //System.out.println(serverPlayer.game.board.toString());
         sendOutput(Protocol.PRINT);
         break;
       }

@@ -4,6 +4,7 @@ import gogame.Board;
 import gogame.Color;
 import gogame.Protocol;
 import gogame.player.OnlinePlayer;
+import gogame.player.StrategyGame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.Random;
 
 public class ComputerStrategy implements Strategy {
 
+  StrategyGame strategyGame;
   OnlinePlayer player;
 
   public ComputerStrategy(OnlinePlayer player) {
@@ -30,6 +32,11 @@ public class ComputerStrategy implements Strategy {
 
   public void sendQueue() {
     player.getConnection().sendOutput(Protocol.QUEUE);
+  }
+
+  @Override
+  public void setGame(StrategyGame game) {
+    this.strategyGame = game;
   }
 
   @Override
@@ -52,7 +59,7 @@ public class ComputerStrategy implements Strategy {
         sendPass();
       }
     } else {
-      sendMove(move);
+      player.doMove(move);
       System.out.println(Arrays.toString(move) + player.getColor());
     }
   }
@@ -74,22 +81,22 @@ public class ComputerStrategy implements Strategy {
     Collections.shuffle(shuffledValidMoves);
 
     for (int[] move : shuffledValidMoves) {
-      Board testBoard = player.game.board.deepCopy();
-      player.game.handleValidMove(move, player.getColor());
-      if (getTerritoryDifference(player.game.board) > bestTerritoryDifference) {
+      Board testBoard = strategyGame.board.deepCopy();
+      strategyGame.handleValidMove(move, player.getColor());
+      if (getTerritoryDifference(strategyGame.board) > bestTerritoryDifference) {
         bestMove = move;
-        bestTerritoryDifference = getTerritoryDifference(player.game.board);
+        bestTerritoryDifference = getTerritoryDifference(strategyGame.board);
       }
-      player.game.board = testBoard;
+      strategyGame.board = testBoard;
     }
     return bestMove;
   }
 
   protected List<int[]> getCaptures(Color color, int numOfLiberties) {
     List<int[]> possibleCaptures = new ArrayList<>();
-    for (int[] stone : player.game.board.getStonesWithThisColor(color.other())) {
-      if (player.game.board.getLibertiesGroup(player.game.board.getGroup(stone, true)).size() == numOfLiberties) {
-        possibleCaptures.add(player.game.board.getLibertiesGroup(player.game.board.getGroup(stone, true)).get(0));
+    for (int[] stone : strategyGame.board.getStonesWithThisColor(color.other())) {
+      if (strategyGame.board.getLibertiesGroup(strategyGame.board.getGroup(stone, true)).size() == numOfLiberties) {
+        possibleCaptures.add(strategyGame.board.getLibertiesGroup(strategyGame.board.getGroup(stone, true)).get(0));
       }
     }
     return possibleCaptures;
@@ -106,7 +113,7 @@ public class ComputerStrategy implements Strategy {
   }
 
   public List<int[]> getValidMoves() {
-    return player.game.getValidMoves();
+    return strategyGame.getValidMoves();
   }
 
 }

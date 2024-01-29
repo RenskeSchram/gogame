@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 public class SocketConnectionTest {
 
   private SocketConnection socketConnetion;
-  private Board board;
 
   public int getRandomPort() {
     Random random = new Random();
@@ -28,7 +27,6 @@ public class SocketConnectionTest {
     int PORT = getRandomPort();
     new GameServer(PORT);
     socketConnetion = new ServerConnection(new Socket(InetAddress.getByName("localhost"), PORT));
-    board = new Board(9);
   }
 
   @Test

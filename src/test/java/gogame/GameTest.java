@@ -25,7 +25,6 @@ public class GameTest {
     return random.nextInt(9999 - 1) + 1;
   }
 
-
   @BeforeEach
   public void setUp() throws IOException {
     int PORT = getRandomPort();

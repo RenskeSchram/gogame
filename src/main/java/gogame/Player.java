@@ -7,7 +7,7 @@ public abstract class Player {
   public Game game;
 
   /**
-   * Send move to board and add this ServerPlayer as parameter.
+   * Send move to board.
    * @param intersection
    */
   public void doMove(int[] intersection, Color color) {

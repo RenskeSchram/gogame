@@ -1,7 +1,7 @@
 package gogame.player;
 
-import gogame.Color;
 import gogame.Player;
+import gogame.Protocol;
 import gogame.SocketConnection;
 import gogame.player.strategy.ComputerStrategy;
 import gogame.player.strategy.HumanStrategy;
@@ -19,24 +19,24 @@ public class OnlinePlayer extends Player {
     strategy = new HumanStrategy(this);
   }
 
+  public void makeConnection(Socket socket) throws IOException {
+    playerConnection = new PlayerConnection(socket, this);
+  }
+
   @Override
   public SocketConnection getConnection() {
     return playerConnection;
   }
 
-  /**
-   * Send move to board and add this ServerPlayer as parameter.
-   * @param location
-   */
-  public void doMove(int[] location, Color color) {
+
+  public void doMove(int[] location) {
     assert game instanceof StrategyGame;
-    // play moves for both players in the game
-    game.doMove(location, color);
+    playerConnection.sendOutput(
+        Protocol.MOVE + Protocol.SEPARATOR + gogame.Move.intersectionLocationToString(location));
   }
 
-  public void doPass(Color color) {
-    // play moves for both players in the game
-    game.doPass(color);
+  public void doPass() {
+    playerConnection.sendOutput(Protocol.PASS);
   }
 
   @Override
@@ -49,6 +49,10 @@ public class OnlinePlayer extends Player {
     strategy.getUsername();
   }
 
+  public void sendQueue() {
+    strategy.sendQueue();
+  }
+
   public void setStrategy(String type) {
     // choose strategy
     if (type.equals("computer")){
@@ -59,17 +63,6 @@ public class OnlinePlayer extends Player {
   }
 
   public void receiveMessage(String string) {
-    // print received messages via the TUI
     tui.printMessage(string);
-  }
-
-  public void makeConnection(Socket socket) throws IOException {
-    // create a PlayerConnection Object
-    playerConnection = new PlayerConnection(socket, this);
-  }
-
-
-  public void sendQueue() {
-    strategy.sendQueue();
   }
 }
