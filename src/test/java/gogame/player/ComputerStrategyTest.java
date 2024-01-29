@@ -1,9 +1,11 @@
-package gogame;
+package gogame.player;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import gogame.Game;
+import gogame.TestFunctions;
 import gogame.player.OnlinePlayer;
 import gogame.player.PlayerConnection;
 import gogame.player.strategy.ComputerStrategy;

@@ -79,8 +79,10 @@ public class PlayerConnection extends SocketConnection {
             int DIM = Integer.parseInt(protocol[2]);
             if (protocol[1].split(",")[1].equals(player.getUsername())) {
               player.game = new StrategyGame(player, new OnlinePlayer(), DIM);
+              player.receiveMessage("Playing with BLACK");
             } else {
               player.game = new StrategyGame(new OnlinePlayer(), player, DIM);
+              player.receiveMessage("Playing with WHITE");
             }
           }
         } else {

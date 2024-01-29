@@ -13,7 +13,7 @@ public class Game {
   private boolean passed = false;
   Timer timer;
   TimerTask timeOutPass;
-  private static final int MOVE_DURATION = 2000;
+  private static final int MOVE_DURATION = 5000;
 
   /**
    * Constructor for new Game object with players and a new Board.
@@ -49,16 +49,6 @@ public class Game {
   }
 
   /**
-   * Get the username of the player.
-   *
-   * @param index the index of the player in the player list
-   * @return the username of the player
-   */
-  private String getPlayerUsername(int index) {
-    return players.get(index).getUsername();
-  }
-
-  /**
    * End game. Stop possibility to make a move, calculate scores and call out winner.
    */
   private void end() {
@@ -86,9 +76,8 @@ public class Game {
    *
    * @return true if the move is valid.
    */
-  protected boolean isValidMove(int[] location, Color color) {
-    return isValidTurn(color) && active && board.isValid(location) && !isKoFight(location,
-        color);
+  public boolean isValidMove(int[] location, Color color) {
+    return isValidTurn(color) && active && board.isValid(location) && !isKoFight(location,color);
   }
 
   /**
@@ -170,7 +159,6 @@ public class Game {
       board.setField(location, Color.EMPTY);
     }
   }
-
 
   /**
    * Do a passing move.

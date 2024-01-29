@@ -44,7 +44,7 @@ public class ServerConnection extends SocketConnection {
       // LOGIN: username received. If correct (not existing) send accept and set username for ServerPlayer
       case Protocol.LOGIN: {
         if (serverPlayer != null && protocol.length >= 2) {
-          if (gameServer.correctUsername(
+          if (gameServer.usernameAvailable(
               protocol[1]) && serverPlayer.getUsername() == null) {
             serverPlayer.setUsername(protocol[1]);
             sendOutput(Protocol.ACCEPTED + Protocol.SEPARATOR + protocol[1]);
@@ -62,7 +62,9 @@ public class ServerConnection extends SocketConnection {
       case Protocol.QUEUE: {
         if (serverPlayer != null && serverPlayer.getUsername() != null) {
           gameServer.queueServerPlayer(serverPlayer);
-          sendQueued();
+          if (gameServer.queue.contains(serverPlayer)) {
+            sendQueued();
+          }
         } else {
           sendError("correct LOGIN required to queue");
         }
@@ -112,13 +114,8 @@ public class ServerConnection extends SocketConnection {
     }
   }
 
-
   public void sendQueued() {
     sendOutput(Protocol.QUEUED);
-  }
-
-  public void sendError(String message) {
-    sendOutput(Protocol.ERROR + Protocol.SEPARATOR + message);
   }
 
   /**

@@ -9,7 +9,7 @@ import java.net.Socket;
  */
 public abstract class SocketConnection {
 
-  private final Socket socket;
+  protected final Socket socket;
   private final BufferedReader in;
   private final BufferedWriter out;
   private boolean active = false;

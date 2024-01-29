@@ -78,8 +78,6 @@ public class Board {
    * @return Color of the field with row and col
    * // requires: isField(row, col)
    */
-
-
   protected Color getField(int[] intersection) {
     if (isField(intersection)) {
       return fields[intersection[0]][intersection[1]];
@@ -95,8 +93,6 @@ public class Board {
    * @param intersection intersection saved as int[] {col, row}
    * @return
    */
-
-
   public boolean isValid(int[] intersection) {
     return isField(intersection) && isEmpty(intersection);
   }
@@ -109,20 +105,17 @@ public class Board {
    * @return if the stone has a liberty (empty adjacent stone).
    */
 
-
-  protected boolean hasLiberty(int[] intersection) {
-    boolean liberty = false;
-    // get the color for all adjacent intersections
-    for (int[] adjacent : getAdjacentIntersections(intersection)) {
-      // check if color is EMPTY, meaning there is a liberty
-      if (isEmpty(adjacent)) { liberty = true; }
-    }
-    return liberty;
-  }
-
-
+//  protected boolean hasLiberty(int[] intersection) {
+//    boolean liberty = false;
+//    // get the color for all adjacent intersections
+//    for (int[] adjacent : getAdjacentIntersections(intersection)) {
+//      // check if color is EMPTY, meaning there is a liberty
+//      if (isEmpty(adjacent)) { liberty = true; }
+//    }
+//    return liberty;
+//  }
   public boolean isSingleSuicide(int[] intersection) {
-    return !hasLiberty(intersection);
+    return getLibertiesGroup(getGroup(intersection, true)).isEmpty();
   }
 
   /**
@@ -135,7 +128,7 @@ public class Board {
    * @return List of coordinates of intersections in group
    */
 
-  protected List<int[]> getGroup(int[] intersection, boolean active) {
+  public List<int[]> getGroup(int[] intersection, boolean active) {
     List<int[]> group = new ArrayList<>();
 
     if (active) {
@@ -236,20 +229,32 @@ public class Board {
 
     for (int[] adjacent : getAdjacentIntersections(intersection)) {
       List<int[]> group = getGroup(adjacent, true);
-      boolean noliberty = true;
 
-      for (int[] stone : group) {
-        if (hasLiberty(stone)) {
-          noliberty = false;
-          break;
-        }
-      }
-
-      if (noliberty) {
+      if (getLibertiesGroup(group).isEmpty()) {
         captured.addAll(group);
       }
     }
     return captured;
+  }
+
+  public List<int[]> getLibertiesGroup(List<int[]> group) {
+    List<int[]> groupLiberties = new ArrayList<>();
+    for (int[] stone : group) {
+      if (!getLibertiesStone(stone).isEmpty()) {
+        groupLiberties.addAll(getLibertiesStone(stone));
+      }
+    }
+    return groupLiberties;
+  }
+
+  public List<int[]> getLibertiesStone(int[] stone) {
+    List<int[]> stoneLiberties = new ArrayList<>();
+    for (int[] adjacent : getAdjacentIntersections(stone)) {
+      if (isEmpty(adjacent)) {
+        stoneLiberties.add(adjacent);
+      }
+    }
+    return stoneLiberties;
   }
 
   /**
@@ -308,25 +313,25 @@ public class Board {
     getFilledBoard();
 
     // return winner
-    if (getNumberOfStones(Color.WHITE) > getNumberOfStones(Color.BLACK)) {
+    if (getStonesWithThisColor(Color.WHITE).size() > getStonesWithThisColor(Color.BLACK).size()) {
       return Color.WHITE;
-    } else if (getNumberOfStones(Color.WHITE) < getNumberOfStones(Color.BLACK)) {
+    } else if (getStonesWithThisColor(Color.WHITE).size() < getStonesWithThisColor(Color.BLACK).size()) {
       return Color.BLACK;
     } else {
       return Color.NEUTRAL;
     }
   }
 
-  public int getNumberOfStones(Color color) {
-    int stoneCount = 0;
+  public List<int[]> getStonesWithThisColor(Color color) {
+    List<int[]> stoneWithThisColor = new ArrayList<>();
     for (int row = 0; row < DIM; row++) {
       for (int col = 0; col < DIM; col++) {
         if (getField(new int[]{col, row}) == color) {
-          stoneCount++;
+          stoneWithThisColor.add(new int[]{col, row});
         }
       }
     }
-    return stoneCount;
+    return stoneWithThisColor;
   }
 
 

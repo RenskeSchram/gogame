@@ -1,5 +1,7 @@
-package gogame;
+package gogame.player;
 
+import gogame.Game;
+import gogame.Protocol;
 import gogame.player.OnlinePlayer;
 import gogame.player.PlayerConnection;
 import gogame.player.PlayerTUI;

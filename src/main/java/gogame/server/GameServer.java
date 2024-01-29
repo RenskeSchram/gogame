@@ -6,7 +6,12 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Networking server for accepting connections from online players.
@@ -101,7 +106,6 @@ public class GameServer {
 
     System.out.println("[SERVERLOG] checking QUEUE");
     System.out.println(Collections.singletonList(queue));
-
   }
 
   /**
@@ -140,15 +144,14 @@ public class GameServer {
     gameServer.acceptConnections();
   }
 
-  public boolean correctUsername(String userName) {
-    boolean correct = true;
-    for (Player player : serverMap.keySet()) {
-      if (player.getUsername().equals(userName)) {
-        correct = false;
-        break;
+  //TODO: what about idle players and players in game?
+  public boolean usernameAvailable(String userName) {
+    for (Player player : queue) {
+      if (userName.equalsIgnoreCase(player.getUsername())) {
+        return false;
       }
     }
-    return correct;
+    return true;
   }
 
   public void quitGame(ServerPlayer player) {
