@@ -33,8 +33,7 @@ public class ServerConnection extends SocketConnection {
         if (serverPlayer == null) {
           serverPlayer = new ServerPlayer();
           serverPlayer.serverConnection = this;
-          sendOutput(
-              Protocol.HELLO + Protocol.SEPARATOR + "please provide a username using: LOGIN<username>");
+          sendOutput(Protocol.HELLO);
         } else {
           sendError("Hello to you too! We have exchanged HELLOs before right?");
         }
@@ -63,7 +62,7 @@ public class ServerConnection extends SocketConnection {
         if (serverPlayer != null && serverPlayer.getUsername() != null) {
           gameServer.queueServerPlayer(serverPlayer);
           if (gameServer.queue.contains(serverPlayer)) {
-            sendQueued();
+            sendOutput(Protocol.QUEUED);
           }
         } else {
           sendError("correct LOGIN required to queue");
@@ -74,7 +73,7 @@ public class ServerConnection extends SocketConnection {
       // MOVE: if player is in a game, send move to serverPlayer
       case Protocol.MOVE: {
         if (protocol.length >= 2 && gameServer.serverMap.containsKey(serverPlayer)) {
-          serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board),
+          serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board.DIM),
               Color.EMPTY);
         } else {
           sendError("could not handle MOVE");
@@ -112,10 +111,6 @@ public class ServerConnection extends SocketConnection {
         System.out.println(input);
       }
     }
-  }
-
-  public void sendQueued() {
-    sendOutput(Protocol.QUEUED);
   }
 
   /**

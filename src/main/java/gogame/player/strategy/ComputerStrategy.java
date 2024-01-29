@@ -45,7 +45,8 @@ public class ComputerStrategy implements Strategy {
     }
 
     if (move == null) {
-      if (getTerritoryDifference(player.game.board) < 0) {
+      if (!getValidMoves().isEmpty()) {
+        System.out.println("random move");
         sendMove(getRandomMove(getValidMoves()));
       } else {
         sendPass();

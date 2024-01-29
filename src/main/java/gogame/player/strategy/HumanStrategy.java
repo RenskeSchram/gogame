@@ -12,7 +12,7 @@ public class HumanStrategy implements Strategy {
 
   @Override
   public void getUsername() {
-    //player.receiveMessage("Send a username using: LOGIN~<username>");
+    player.receiveMessage("Send a username using: LOGIN~<username>");
   }
 
   @Override
@@ -22,6 +22,6 @@ public class HumanStrategy implements Strategy {
 
   @Override
   public void sendQueue() {
-    //player.receiveMessage("You are queued, if you want to leave the queue, send: QUEUE");
+    player.receiveMessage("You are queued, if you want to leave the queue, send: QUEUE");
   }
 }

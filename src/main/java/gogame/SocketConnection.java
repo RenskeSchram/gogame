@@ -88,7 +88,7 @@ public abstract class SocketConnection {
   /**
    * Handles the start of a connection.
    */
-  protected void handleStart() { }
+  protected void handleStart() {}
 
   /**
    * Handles the received input message.
@@ -102,18 +102,19 @@ public abstract class SocketConnection {
    */
   protected abstract void handleDisconnect();
 
+
   /**
    * @param input
-   * @param board
+   * @param DIM
    * @return
    */
-  protected int[] getLocationArray(String input, Board board) {
+  protected int[] getLocationArray(String input, int DIM) {
     String[] splitInput = input.split(",");
     try {
       if (splitInput.length == 1) {
-        int col = Integer.parseInt(splitInput[0]) % board.DIM;
+        int col = Integer.parseInt(splitInput[0]) % DIM;
         System.out.println(col);
-        int row = Integer.parseInt(splitInput[0]) / board.DIM;
+        int row = Integer.parseInt(splitInput[0]) / DIM;
         System.out.println(row);
         return new int[]{col, row};
 
@@ -132,7 +133,6 @@ public abstract class SocketConnection {
               + "(check format:  MOVE-<int> or MOVE-<int, int>)");
       return new int[]{-1, -1};
     }
-
   }
 
   protected Color getColor(String input) {

@@ -29,7 +29,7 @@ public class OnlinePlayer extends Player {
    * @param location
    */
   public void doMove(int[] location, Color color) {
-    assert (game instanceof StrategyGame);
+    assert game instanceof StrategyGame;
     // play moves for both players in the game
     game.doMove(location, color);
   }

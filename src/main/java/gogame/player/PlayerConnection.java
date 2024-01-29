@@ -34,7 +34,6 @@ public class PlayerConnection extends SocketConnection {
       // HELLO handshake, ready to log in with username
       case Protocol.HELLO: {
         if (protocol.length > 1) {
-          //player.receiveMessage(protocol[1]);
           player.receiveMessage(printProtocolMessage(protocol));
         }
         player.sendUsername();
@@ -75,7 +74,6 @@ public class PlayerConnection extends SocketConnection {
             sendError("could not handle GAME STARTED, too little inputs received");
           } else {
             player.receiveMessage(printProtocolMessage(protocol));
-            // check gamesetup
             int DIM = Integer.parseInt(protocol[2]);
             if (protocol[1].split(",")[1].equals(player.getUsername())) {
               player.game = new StrategyGame(player, new OnlinePlayer(), DIM);
@@ -96,7 +94,7 @@ public class PlayerConnection extends SocketConnection {
         if (protocol.length < 3) {
           sendError("could not handle MOVE, too little inputs received");
         } else {
-          player.doMove(getLocationArray(protocol[1], player.game.board),
+          player.doMove(getLocationArray(protocol[1], player.game.board.DIM),
               getColor(protocol[2]));
         }
         break;
@@ -119,7 +117,6 @@ public class PlayerConnection extends SocketConnection {
 
       case Protocol.GAMEOVER: {
         player.receiveMessage(printProtocolMessage(protocol));
-        // TODO: handleGameOver: ask to reconnect to server?
         break;
       }
 

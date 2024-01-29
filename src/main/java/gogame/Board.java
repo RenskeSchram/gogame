@@ -15,18 +15,21 @@ public class Board {
   public int DIM;
   public final Color[][] fields;
 
+
   /**
    * Constructor for an empty Board.
    * For all fields, set field to Color.EMPTY
    */
   public Board(int DIM) {
     this.DIM = DIM;
+
     fields = new Color[DIM][DIM];
     for (int row = 0; (row >= 0) && (row < DIM); row++) {
       for (int col = 0; (col >= 0) && (col < DIM); col++) {
         setField(new int[]{col, row}, Color.EMPTY);
       }
     }
+
   }
 
   /**
@@ -65,9 +68,16 @@ public class Board {
    *                 //@requires isField(row, col)
    */
 
-  public void setField(int[] intersection, Color color) {
+  protected void setField(int[] intersection, Color color) {
     if (isField(intersection)) {
       this.fields[intersection[0]][intersection[1]] = color;
+      if (color == Color.WHITE || color == Color.BLACK) {
+        //go.placeStone(intersection, color);
+      } else if (color == Color.EMPTY) {
+        //go.removeStone(intersection);
+      } else {
+        // Color.NEUTRAL not possible on Go board. Or implement with different color.
+      }
     }
   }
 
@@ -368,7 +378,7 @@ public class Board {
    * @param group list with intersection coordinates
    * @return the assigned color of the territory
    */
-  public Color getTerritoryColor(List<int[]> group) {
+  protected Color getTerritoryColor(List<int[]> group) {
     // for all stones in group get adjacent stone color
     List<Color> colors = new ArrayList<>();
     for (int[] stone : group) {
@@ -394,7 +404,7 @@ public class Board {
     }
   }
 
-  public void doResign(Color color) {
+  protected void doResign(Color color) {
     for (int row = 0; (row >= 0) && (row < DIM); row++) {
       for (int col = 0; (col >= 0) && (col < DIM); col++) {
         setField(new int[]{col, row}, color.other());

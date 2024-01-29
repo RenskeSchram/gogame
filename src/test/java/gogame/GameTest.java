@@ -19,8 +19,6 @@ import org.junit.jupiter.api.Test;
 public class GameTest {
 
   private Game game;
-  private GameServer gameServer;
-  int DIM = 9;
 
   public int getRandomPort() {
     Random random = new Random();
@@ -31,7 +29,7 @@ public class GameTest {
   @BeforeEach
   public void setUp() throws IOException {
     int PORT = getRandomPort();
-    this.gameServer = new GameServer(PORT);
+    GameServer gameServer = new GameServer(PORT);
     ServerPlayer playerI = new ServerPlayer();
     playerI.serverConnection = new ServerConnection(
         new Socket(InetAddress.getByName("localhost"), PORT));
@@ -41,6 +39,7 @@ public class GameTest {
         new Socket(InetAddress.getByName("localhost"), PORT));
     playerII.serverConnection.gameServer = gameServer;
 
+    int DIM = 9;
     game = new Game(playerI, playerII, DIM);
   }
 
@@ -124,7 +123,7 @@ public class GameTest {
 
   @Test
   public void testStartTimer() {
-    assertNotNull(game.timer);
+    assertNotNull(game.getTimer());
     game.doMove(new int[]{1, 1}, Color.BLACK);
     assertSame(Color.WHITE, game.getTurn().getColor());
     try {
@@ -138,8 +137,8 @@ public class GameTest {
 
   @Test
   public void testStopTimer() {
-    assertNotNull(game.timer);
-    assertNotNull(game.timeOutPass);
+    assertNotNull(game.getTimer());
+    assertNotNull(game.getTimeOutPass());
 
     game.doMove(new int[]{1, 1}, Color.BLACK);
     assertSame(Color.WHITE, game.getTurn().getColor());
@@ -160,8 +159,8 @@ public class GameTest {
     }
     assertSame(Color.WHITE, game.getTurn().getColor());
 
-    assertNull(game.timer);
-    assertNull(game.timeOutPass);
+    assertNull(game.getTimer());
+    assertNull(game.getTimeOutPass());
 
   }
 

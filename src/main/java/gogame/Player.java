@@ -8,10 +8,10 @@ public abstract class Player {
 
   /**
    * Send move to board and add this ServerPlayer as parameter.
-   * @param location
+   * @param intersection
    */
-  public void doMove(int[] location, Color color) {
-    game.doMove(location, this.color);
+  public void doMove(int[] intersection, Color color) {
+    game.doMove(intersection, this.color);
   }
 
   /**

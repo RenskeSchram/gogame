@@ -34,20 +34,20 @@ public class SocketConnectionTest {
   @Test
   public void testGetLocationArray() {
     // Test single number location
-    assertArrayEquals(socketConnetion.getLocationArray("9", board), new int[]{0, 1});
-    assertArrayEquals(socketConnetion.getLocationArray("10", board), new int[]{1, 1});
-    assertArrayEquals(socketConnetion.getLocationArray("0", board), new int[]{0, 0});
-    assertArrayEquals(socketConnetion.getLocationArray("80", board), new int[]{8, 8});
+    assertArrayEquals(socketConnetion.getLocationArray("9", 9), new int[]{0, 1});
+    assertArrayEquals(socketConnetion.getLocationArray("10", 9), new int[]{1, 1});
+    assertArrayEquals(socketConnetion.getLocationArray("0", 9), new int[]{0, 0});
+    assertArrayEquals(socketConnetion.getLocationArray("80", 9), new int[]{8, 8});
 
     // Test coordinate location
-    assertArrayEquals(socketConnetion.getLocationArray("5,0", board), new int[]{5, 0});
-    assertArrayEquals(socketConnetion.getLocationArray("2,5", board), new int[]{2, 5});
+    assertArrayEquals(socketConnetion.getLocationArray("5,0", 9), new int[]{5, 0});
+    assertArrayEquals(socketConnetion.getLocationArray("2,5", 9), new int[]{2, 5});
 
     //Test incorrect location input
-    assertArrayEquals(socketConnetion.getLocationArray("9,0 ", board), new int[]{-1, -1});
-    assertArrayEquals(socketConnetion.getLocationArray("move", board), new int[]{-1, -1});
-    assertArrayEquals(socketConnetion.getLocationArray("23,2s", board), new int[]{-1, -1});
-    assertArrayEquals(socketConnetion.getLocationArray("23,2,4", board), new int[]{-1, -1});
+    assertArrayEquals(socketConnetion.getLocationArray("9,0 ", 9), new int[]{-1, -1});
+    assertArrayEquals(socketConnetion.getLocationArray("move", 9), new int[]{-1, -1});
+    assertArrayEquals(socketConnetion.getLocationArray("23,2s", 9), new int[]{-1, -1});
+    assertArrayEquals(socketConnetion.getLocationArray("23,2,4", 9), new int[]{-1, -1});
   }
 
   @Test

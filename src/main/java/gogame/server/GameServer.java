@@ -2,7 +2,9 @@ package gogame.server;
 
 import gogame.Game;
 import gogame.Player;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -23,6 +25,8 @@ public class GameServer {
   protected List<ServerPlayer> queue;
   int DIM = 9;
   int gameCodeCounter = 0;
+  PrintWriter writer;
+
 
   /**
    * Constructor to create a new server which listens on the given port.
@@ -34,6 +38,7 @@ public class GameServer {
     serverSocket = new ServerSocket(port);
     serverMap = new HashMap<>();
     queue = new ArrayList<>();
+    writer = new PrintWriter(new FileWriter("Serverlog.txt", true));
   }
 
   /**
@@ -54,8 +59,10 @@ public class GameServer {
         Socket socket = serverSocket.accept();
         handleConnection(socket);
       } catch (SocketException ignored) {
+        log("IOException using acceptConnections()");
       }
-    }
+
+      }
   }
 
   /**
@@ -67,6 +74,8 @@ public class GameServer {
         serverSocket.close();
       }
     } catch (IOException ignored) {
+      log("IOException using close()");
+
     }
   }
 
@@ -123,7 +132,7 @@ public class GameServer {
     serverMap.put(secondPlayer, game);
     secondPlayer.game = game;
 
-    game.gameCode = gameCodeCounter;
+    game.setGameCode(gameCodeCounter);
     gameCodeCounter++;
 
     System.out.println("[SERVERLOG] checking ServerMap");
@@ -159,5 +168,13 @@ public class GameServer {
 
     System.out.println("[SERVERLOG] checking ServerMap");
     System.out.println(Collections.singletonList(serverMap) + "\n");
+  }
+
+
+  protected void log(String logMessage) {
+    if (writer != null) {
+      writer.println(logMessage);
+      writer.flush();
+    }
   }
 }
