@@ -67,10 +67,13 @@ public class ServerConnection extends SocketConnection {
     if (protocol.length >= 2) {
       if (gameServer.usernameAvailable(protocol[1]) && serverPlayer.getUsername() == null) {
         serverPlayer.setUsername(protocol[1]);
+        gameServer.loginPlayer(serverPlayer);
         sendOutput(Protocol.ACCEPTED + Protocol.SEPARATOR + protocol[1]);
       } else {
-        sendError("Could not handle LOGIN, no username provided");
+        sendOutput(Protocol.REJECTED + Protocol.SEPARATOR + protocol[1]);
       }
+    } else {
+      sendError("Could not handle LOGIN, no username provided");
     }
   }
 
@@ -87,7 +90,7 @@ public class ServerConnection extends SocketConnection {
   }
 
   private void handleMoveProtocol(String[] protocol) {
-    if (protocol.length >= 2 && gameServer.gameMap.containsKey(serverPlayer)) {
+    if (protocol.length >= 2 && gameServer.serverMap.containsKey(serverPlayer)) {
       serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board.DIM), Color.EMPTY);
     } else {
       sendError("Could not handle MOVE");
@@ -95,7 +98,7 @@ public class ServerConnection extends SocketConnection {
   }
 
   private void handlePassProtocol(String[] protocol) {
-    if (gameServer.gameMap.containsKey(serverPlayer)) {
+    if (gameServer.serverMap.containsKey(serverPlayer)) {
       serverPlayer.doPass();
     } else {
       sendError("Could not handle PASS");
@@ -103,7 +106,7 @@ public class ServerConnection extends SocketConnection {
   }
 
   private void handleResignProtocol(String[] protocol) {
-    if (gameServer.gameMap.containsKey(serverPlayer)) {
+    if (gameServer.serverMap.containsKey(serverPlayer)) {
       serverPlayer.doResign();
     } else {
       sendError("Could not handle RESIGN");
@@ -129,5 +132,6 @@ public class ServerConnection extends SocketConnection {
   @Override
   protected void handleDisconnect() {
     System.out.println(String.format("%-20s", "[DISCONNECTED]") + serverPlayer.getUsername());
+    gameServer.handleDisconnect(serverPlayer);
   }
 }

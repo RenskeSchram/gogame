@@ -8,7 +8,7 @@ public class GameServerTUI {
 
   GameServer gameServer;
 
-  boolean run = true;
+  boolean runTui = true;
 
   public void runTUI() throws IOException {
     Scanner scanner = new Scanner(System.in);
@@ -27,10 +27,9 @@ public class GameServerTUI {
     }
 
     gameServer = new GameServer(port);
-    gameServer.acceptConnections();
-    System.out.println(String.format("%-20s", "[SERVER STARTED]") + String.format("%-20s", "port: "+ port));
+    System.out.println(String.format("%-20s", "[SERVER STARTED]") + String.format("%-20s", "PORT: "+ port));
 
-    while (run) {
+    while (runTui) {
       String systemTuiInput = scanner.nextLine();
       handleGameServerInput(systemTuiInput);
     }
@@ -40,7 +39,10 @@ public class GameServerTUI {
     switch (systemTuiInput) {
       case "exit":
         gameServer.stopServer();
-        run = false;
+        runTui = false;
+        break;
+      case "print":
+        System.out.println(gameServer.toString());
         break;
       default:
         //ignore message

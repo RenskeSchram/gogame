@@ -4,7 +4,6 @@ import gogame.Game;
 import gogame.Player;
 import gogame.Protocol;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,12 +16,11 @@ import java.util.Map;
  */
 public class GameServer extends SocketServer {
 
-  protected Map<ServerPlayer, Game> gameMap;
+  protected Map<ServerPlayer, Game> serverMap;
   protected List<ServerPlayer> queue;
   int standardBoardDIM = 9;
   int gameCodeCounter = 0;
-  PrintWriter writer;
-
+  boolean runServer;
 
   /**
    * Constructor to create a new server which listens on the given port.
@@ -32,13 +30,30 @@ public class GameServer extends SocketServer {
    */
   public GameServer(int port) throws IOException {
     super(port);
-    gameMap = new HashMap<>();
+    runServer = true;
+    serverMap = new HashMap<>();
     queue = new ArrayList<>();
+    startServer();
   }
 
+  private void startServer() {
+    Thread acceptConnectionsThread = new Thread(() -> {
+      try {
+        acceptConnections();
+      } catch (IOException e) {
+        e.printStackTrace(); //
+      }
+    });
+    acceptConnectionsThread.start();
+  }
+
+
   public void stopServer() {
-    //TODO: quit all games
-    //TODO: send error: server stopped
+    runServer = false;
+
+    // TODO: Close all active connections, games etc.
+
+    super.close();
   }
 
   /**
@@ -54,9 +69,12 @@ public class GameServer extends SocketServer {
     serverConnection.sendOutput(Protocol.HELLO + Protocol.SEPARATOR + "You connected to Renske's GameServer. Please login to proceed.");
   }
 
-  //TODO: what about idle players and players in game?
+  public void loginPlayer(ServerPlayer serverPlayer) {
+    serverMap.put(serverPlayer, null);
+  }
+
   public boolean usernameAvailable(String userName) {
-    for (Player player : queue) {
+    for (Player player : serverMap.keySet()) {
       if (userName.equalsIgnoreCase(player.getUsername())) {
         return false;
       }
@@ -103,10 +121,10 @@ public class GameServer extends SocketServer {
     Game game = new Game(firstPlayer, secondPlayer, standardBoardDIM);
 
     queue.remove(firstPlayer);
-    gameMap.put(firstPlayer, game);
+    serverMap.replace(firstPlayer, game);
     firstPlayer.game = game;
     queue.remove(secondPlayer);
-    gameMap.put(secondPlayer, game);
+    serverMap.replace(secondPlayer, game);
     secondPlayer.game = game;
 
     game.setGameCode(gameCodeCounter);
@@ -117,17 +135,34 @@ public class GameServer extends SocketServer {
     gameCodeCounter++;
 
     System.out.println(
-        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(gameMap));
+        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(serverMap));
   }
 
-  public void quitGame(ServerPlayer player) {
-    gameMap.remove(player);
+  public void quitGame(ServerPlayer serverPlayer) {
+    serverMap.replace(serverPlayer, null);
 
     System.out.println(
-        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(gameMap));
+        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(serverMap));
 
   }
 
+  public void handleDisconnect(ServerPlayer serverPlayer) {
+    serverMap.get(serverPlayer).doResign(serverPlayer.getColor());
+    serverMap.remove(serverPlayer);
+  }
 
+  @Override
+  public String toString() {
+    StringBuilder serverString = new StringBuilder();
+    serverString.append("Renske's GameServer");
+    if (!serverMap.isEmpty()) {
+      serverString.append(" (").append(serverMap.size()).append(" online players are connected)");
+      for (ServerPlayer player : serverMap.keySet()) {
+        serverString.append("\n     ").append(player.getUsername()).append(" in Game ")
+            .append(serverMap.get(player).toString());
+      }
+    }
+    return serverString.toString();
+  }
 }
 
