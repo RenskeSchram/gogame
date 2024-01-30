@@ -170,8 +170,6 @@ public class BoardTest {
     System.out.println(board.toString());
     board.getFilledBoard();
     System.out.println(board.toString());
-
   }
-
 
 }

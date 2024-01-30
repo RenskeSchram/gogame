@@ -3,21 +3,16 @@ package gogame;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class Game {
-
   private final List<Player> players = new ArrayList<>();
+  protected final TimerManager timerManager;
   public Board board;
-  private int gameCode;
   private Board previousBoard;
   private Player turn;
   protected boolean active = false;
   private boolean passed = false;
-  private Timer timer;
-  private TimerTask timeOutPass;
-  private static final int MOVE_DURATION = 5000;
+  private int gameCode;
 
   /**
    * Constructor for new Game object with players and a new Board.
@@ -27,6 +22,7 @@ public class Game {
     previousBoard = new Board(DIM);
     players.add(firstPlayer);
     players.add(secondPlayer);
+    timerManager = new TimerManager(this);
 
     start();
   }
@@ -49,7 +45,7 @@ public class Game {
         .getUsername() + Protocol.SEPARATOR + board.DIM);
     turn.passGameUpdate(Protocol.MAKEMOVE);
 
-    startTimer();
+    timerManager.startTimer();
   }
 
   /**
@@ -58,10 +54,10 @@ public class Game {
   private void end() {
     // Inactivate the game
     active = false;
+    timerManager.stopTimer();
     for (Player player : players) {
       player.quitGame();
       player.passGameUpdate(Protocol.GAMEOVER + Protocol.SEPARATOR + board.getWinner());
-      player.passGameUpdate(Protocol.PRINT);
     }
   }
 
@@ -125,8 +121,8 @@ public class Game {
    */
   public void doMove(int[] location, Color color) {
 
-    if (isValidTurn(color)) {
-      resetTimer();
+    if (isValidTurn(color) && active) {
+      timerManager.resetTimer();
 
       if (isValidMove(location, color)) {
         passGameUpdateToAll(Protocol.MOVE + Protocol.SEPARATOR + location[0] + "," + location[1]
@@ -147,8 +143,7 @@ public class Game {
 
 
     } else {
-      getPlayer(color).passGameUpdate(
-          Protocol.ERROR + Protocol.SEPARATOR + "wait for your turn to make a move");
+      getPlayer(color).passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "wait for your turn to make a move");
     }
 
   }
@@ -171,20 +166,17 @@ public class Game {
    */
   public void doPass(Color color) {
     if (isValidTurn(color) && active) {
-      resetTimer();
+      timerManager.resetTimer();
       if (passed) {
         end();
       } else {
-        // send move to players
         passGameUpdateToAll(Protocol.PASS + Protocol.SEPARATOR + getTurn().getColor());
-        // switch turn and set passed to true.
         turn = otherTurn();
         passed = true;
+        getTurn().passGameUpdate(Protocol.MAKEMOVE);
       }
-    }
 
-    // ask for new move to correct player
-    getTurn().passGameUpdate(Protocol.MAKEMOVE);
+    }
   }
 
   public void doResign(Color color) {
@@ -258,49 +250,6 @@ public class Game {
       }
     }
     return validMoves;
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  ///                                      GAME TIMER                                          ///
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-
-  protected void startTimer() {
-    timer = new Timer();
-    timeOutPass = new TimerTask() {
-      @Override
-      public void run() {
-        getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "automated pass");
-        doPass(getTurn().getColor());
-      }
-    };
-
-    timer.schedule(timeOutPass, MOVE_DURATION);
-  }
-
-  protected void stopTimer() {
-
-    if (timer != null) {
-      timer.cancel();
-      timer = null;
-    }
-
-    if (timeOutPass != null) {
-      timeOutPass.cancel();
-      timeOutPass = null;
-    }
-  }
-
-  protected void resetTimer() {
-    stopTimer();
-    startTimer();
-  }
-
-  public Timer getTimer() {
-    return timer;
-  }
-
-  public TimerTask getTimeOutPass() {
-    return timeOutPass;
   }
 
   @Override

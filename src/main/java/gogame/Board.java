@@ -38,8 +38,6 @@ public class Board {
    * @param intersection intersection saved as int[] {col, row}
    * @return true if intersection is a valid field on the Board.
    */
-
-
   protected boolean isField(int[] intersection) {
     return intersection[0] >= 0 && intersection[0] < DIM && intersection[1] >= 0 && intersection[1] < DIM;
   }
@@ -50,8 +48,6 @@ public class Board {
    * @param intersection intersection saved as int[] {col, row}
    * @return true if intersection is a valid field on the Board.
    */
-
-
   protected boolean isEmpty(int[] intersection) {
     if (isField(intersection)) {
       return getField(intersection) == Color.EMPTY;
@@ -67,7 +63,6 @@ public class Board {
    * @param color    color of placed move.
    *                 //@requires isField(row, col)
    */
-
   protected void setField(int[] intersection, Color color) {
     if (isField(intersection)) {
       this.fields[intersection[0]][intersection[1]] = color;
@@ -114,16 +109,6 @@ public class Board {
    * @param intersection intersection saved as int[] {col, row}
    * @return if the stone has a liberty (empty adjacent stone).
    */
-
-//  protected boolean hasLiberty(int[] intersection) {
-//    boolean liberty = false;
-//    // get the color for all adjacent intersections
-//    for (int[] adjacent : getAdjacentIntersections(intersection)) {
-//      // check if color is EMPTY, meaning there is a liberty
-//      if (isEmpty(adjacent)) { liberty = true; }
-//    }
-//    return liberty;
-//  }
   public boolean isSingleSuicide(int[] intersection) {
     return getLibertiesGroup(getGroup(intersection, true)).isEmpty();
   }
@@ -137,7 +122,6 @@ public class Board {
    * @param active   activity status of game
    * @return List of coordinates of intersections in group
    */
-
   public List<int[]> getGroup(int[] intersection, boolean active) {
     List<int[]> group = new ArrayList<>();
 
@@ -179,7 +163,6 @@ public class Board {
     }
   }
 
-
   /**
    * Returns if coordinate is already in the list.
    *
@@ -202,7 +185,6 @@ public class Board {
    * @param intersection intersection saved as int[] {col, row}
    * @return adjacent field coordinates on the board.
    */
-
   protected List<int[]> getAdjacentIntersections(int[] intersection) {
     List<int[]> adjacentStones = new ArrayList<>();
     int[] left = new int[]{intersection[0], intersection[1] - 1};
@@ -223,7 +205,6 @@ public class Board {
     }
     return adjacentStones;
   }
-
 
   /**
    * Return the captured stones. All adjacent stones of the placed stone are checked for being

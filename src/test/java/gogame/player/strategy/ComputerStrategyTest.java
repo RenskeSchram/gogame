@@ -1,4 +1,4 @@
-package gogame.player;
+package gogame.player.strategy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gogame.Game;
 import gogame.TestFunctions;
-import gogame.player.strategy.ComputerStrategy;
+import gogame.player.OnlinePlayer;
+import gogame.player.PlayerConnection;
 import gogame.server.GameServer;
 import java.io.IOException;
 import java.net.InetAddress;

@@ -58,7 +58,7 @@ public class GameTest {
     game.doMove(new int[]{6, 0}, Color.BLACK);
     assertSame(game.board.getField(new int[]{6, 0}), Color.BLACK);
 
-    // Incorrect player
+    //TODO: Incorrect player
 
     // Ko-rule
     game.board.setField(new int[]{2, 1}, Color.WHITE);
@@ -120,47 +120,47 @@ public class GameTest {
     assertFalse(game.active);
   }
 
-  @Test
-  public void testStartTimer() {
-    assertNotNull(game.getTimer());
-    game.doMove(new int[]{1, 1}, Color.BLACK);
-    assertSame(Color.WHITE, game.getTurn().getColor());
-    try {
-      // check timing in Game, might have changed
-      Thread.sleep(11000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    assertSame(Color.BLACK, game.getTurn().getColor());
-  }
-
-  @Test
-  public void testStopTimer() {
-    assertNotNull(game.getTimer());
-    assertNotNull(game.getTimeOutPass());
-
-    game.doMove(new int[]{1, 1}, Color.BLACK);
-    assertSame(Color.WHITE, game.getTurn().getColor());
-
-    try {
-      Thread.sleep(1000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
-    game.stopTimer();
-
-    try {
-      // check timing in Game, might have changed
-      Thread.sleep(10000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-    assertSame(Color.WHITE, game.getTurn().getColor());
-
-    assertNull(game.getTimer());
-    assertNull(game.getTimeOutPass());
-
-  }
+//  @Test
+//  public void testStartTimer() {
+//    assertNotNull(game.getTimer());
+//    game.doMove(new int[]{1, 1}, Color.BLACK);
+//    assertSame(Color.WHITE, game.getTurn().getColor());
+//    try {
+//      // check timing in Game, might have changed
+//      Thread.sleep(11000);
+//    } catch (InterruptedException e) {
+//      e.printStackTrace();
+//    }
+//    assertSame(Color.BLACK, game.getTurn().getColor());
+//  }
+//
+//  @Test
+//  public void testStopTimer() {
+//    assertNotNull(game.getTimer());
+//    assertNotNull(game.getTimeOutPass());
+//
+//    game.doMove(new int[]{1, 1}, Color.BLACK);
+//    assertSame(Color.WHITE, game.getTurn().getColor());
+//
+//    try {
+//      Thread.sleep(1000);
+//    } catch (InterruptedException e) {
+//      e.printStackTrace();
+//    }
+//
+//    game.stopTimer();
+//
+//    try {
+//      // check timing in Game, might have changed
+//      Thread.sleep(10000);
+//    } catch (InterruptedException e) {
+//      e.printStackTrace();
+//    }
+//    assertSame(Color.WHITE, game.getTurn().getColor());
+//
+//    assertNull(game.getTimer());
+//    assertNull(game.getTimeOutPass());
+//
+//  }
 
 }

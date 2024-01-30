@@ -2,29 +2,23 @@ package gogame.server;
 
 import gogame.Game;
 import gogame.Player;
-import java.io.FileWriter;
+import gogame.Protocol;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 
 /**
  * Networking server for accepting connections from online players.
  */
-public class GameServer {
-
-  private final ServerSocket serverSocket;
+public class GameServer extends SocketServer {
   protected Map<ServerPlayer, Game> gameMap;
   protected List<ServerPlayer> queue;
-  int DIM = 9;
+  int standardBoardDIM = 9;
   int gameCodeCounter = 0;
   PrintWriter writer;
 
@@ -36,48 +30,14 @@ public class GameServer {
    * @throws IOException if an I/O error occurs when opening the socket
    */
   public GameServer(int port) throws IOException {
-    serverSocket = new ServerSocket(port);
+    super(port);
     gameMap = new HashMap<>();
     queue = new ArrayList<>();
-    writer = new PrintWriter(new FileWriter("Serverlog.txt", true));
   }
 
-  /**
-   * @return the port on which this server listens for connections.
-   */
-  protected int getPort() {
-    return serverSocket.getLocalPort();
-  }
-
-  /**
-   * Accepts connections and starts a new thread for each connection.
-   *
-   * @throws IOException if an I/O error occurs when waiting for a connection
-   */
-  protected void acceptConnections() throws IOException {
-    while (!serverSocket.isClosed()) {
-      try {
-        Socket socket = serverSocket.accept();
-        handleConnection(socket);
-      } catch (SocketException ignored) {
-        log("IOException using acceptConnections()");
-      }
-
-      }
-  }
-
-  /**
-   * Closes the server socket.
-   */
-  protected synchronized void close() {
-    try {
-      if (!serverSocket.isClosed()) {
-        serverSocket.close();
-      }
-    } catch (IOException ignored) {
-      log("IOException using close()");
-
-    }
+  public static void stop() {
+    //TODO: quit all games
+    //TODO: send error: server stopped
   }
 
   /**
@@ -90,6 +50,7 @@ public class GameServer {
     ServerConnection serverConnection = new ServerConnection(socket);
     serverConnection.gameServer = this;
     serverConnection.start();
+    serverConnection.sendOutput(Protocol.HELLO + Protocol.SEPARATOR + "You connected to Renske's GameServer. Please login to proceed.");
   }
 
   /**
@@ -113,8 +74,8 @@ public class GameServer {
     } else {
       queue.remove(serverPlayer);
     }
-    System.out.println("[SERVERLOG] checking QUEUE");
-    System.out.println(Collections.singletonList(queue));
+    System.out.println(
+        String.format("%-20s", "[CURRENT QUEUE]") + Collections.singletonList(queue));
   }
 
   /**
@@ -124,7 +85,7 @@ public class GameServer {
    * @param secondPlayer
    */
   protected void startGame(ServerPlayer firstPlayer, ServerPlayer secondPlayer) {
-    Game game = new Game(firstPlayer, secondPlayer, DIM);
+    Game game = new Game(firstPlayer, secondPlayer, standardBoardDIM);
 
     queue.remove(firstPlayer);
     gameMap.put(firstPlayer, game);
@@ -134,14 +95,14 @@ public class GameServer {
     secondPlayer.game = game;
 
     game.setGameCode(gameCodeCounter);
-
-    log("[GAME STARTED] with gameCode 00" + gameCodeCounter + " and players "
-        + firstPlayer.getUsername() + " and " + secondPlayer.getUsername());
+    System.out.println(
+        String.format("%-20s", "[GAME STARTED]") + "with gameCode 00" + gameCodeCounter
+            + " and players " + firstPlayer.getUsername() + " and " + secondPlayer.getUsername());
 
     gameCodeCounter++;
 
-    System.out.println("[SERVERLOG] checking ServerMap");
-    System.out.println(Collections.singletonList(gameMap) + "\n");
+    System.out.println(
+        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(gameMap));
   }
 
   //TODO: what about idle players and players in game?
@@ -157,44 +118,11 @@ public class GameServer {
   public void quitGame(ServerPlayer player) {
     gameMap.remove(player);
 
-    System.out.println("[SERVERLOG] checking ServerMap");
-    System.out.println(Collections.singletonList(gameMap) + "\n");
+    System.out.println(
+        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(gameMap));
 
   }
 
 
-  protected void log(String logMessage) {
-    if (writer != null) {
-      writer.println(logMessage);
-      writer.flush();
-    }
-  }
-
-  /**
-   * Main function to retrieve port number and start create a new GameServer.
-   *
-   * @param args
-   * @throws IOException
-   */
-  public static void main(String[] args) throws IOException {
-    Scanner scanner = new Scanner(System.in);
-
-    // Handling port input with retry
-    int port = 0;
-    boolean validPortInput = false;
-    while (!validPortInput) {
-      System.out.print("server port number: \n");
-      try {
-        port = scanner.nextInt();
-        validPortInput = true;
-      } catch (InputMismatchException e) {
-        System.err.println("Invalid port number. Please enter a valid port.");
-        scanner.nextLine();
-      }
-    }
-
-    GameServer gameServer = new GameServer(port);
-    gameServer.acceptConnections();
-  }
 }
 

@@ -31,7 +31,7 @@ public abstract class SocketConnection {
    */
   public void start() {
     if (active) {
-      throw new IllegalStateException("Cannot start a SocketConnection twice");
+      System.err.println("IllegalStateException. Cannot start a SocketConnection twice");
     }
     active = true;
     Thread thread = new Thread(this::receiveInput);
@@ -51,7 +51,7 @@ public abstract class SocketConnection {
         handleInput(inputLine);
       }
     } catch (IOException e) {
-      // exception ignored, connection is closed
+      System.err.println("IOException. Received incorrect input");
     } finally {
       close();
       handleDisconnect();
@@ -64,13 +64,15 @@ public abstract class SocketConnection {
    * @param output the line of input to be sent.
    */
   public void sendOutput(String output) {
-    try {
-      out.write(output);
-      out.newLine();
-      out.flush();
-    } catch (IOException e) {
-      // connection is closed
-      close();
+    if (output != "") {
+      try {
+        out.write(output);
+        out.newLine();
+        out.flush();
+      } catch (IOException e) {
+        System.err.println("IOException. Received output not correctly send");
+        close();
+      }
     }
   }
 
@@ -80,8 +82,8 @@ public abstract class SocketConnection {
   protected void close() {
     try {
       socket.close();
-    } catch (IOException ignored) {
-      // exception ignored, connection is closed
+    } catch (IOException e) {
+      System.err.println("IOException. Socket was not correctly closed");
     }
   }
 

@@ -2,8 +2,8 @@ package gogame;
 
 public class Move {
 
-  int[] intersectionLocation;
-  Color color;
+  protected int[] intersectionLocation;
+  protected Color color;
 
   public Move(int[] intersectionLocation, Color color) {
     this.intersectionLocation = intersectionLocation;

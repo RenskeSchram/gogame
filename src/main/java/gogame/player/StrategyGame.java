@@ -14,21 +14,7 @@ public class StrategyGame extends Game {
    */
   public StrategyGame(Player firstPlayer, Player secondPlayer, int DIM) {
     super(firstPlayer, secondPlayer, DIM);
+    timerManager.useTimer = false;
   }
 
-  @Override
-  protected void startTimer() {
-    //do nothing
-  }
-
-  @Override
-  protected void stopTimer() {
-    //do nothing
-  }
-
-  @Override
-  protected void resetTimer() {
-    //do nothing
-
-  }
 }

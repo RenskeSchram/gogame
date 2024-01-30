@@ -10,34 +10,33 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class PlayerTUI {
-
-  OnlinePlayer onlinePlayer;
   boolean run = true;
+
   public void runTUI() {
     Scanner scanner = new Scanner(System.in);
 
     InetAddress server = null;
-    boolean validServerInput = false;
-    while (!validServerInput) {
+    boolean validServer = false;
+    while (!validServer) {
       System.out.print("server:     \n");
       try {
         server = InetAddress.getByName(scanner.nextLine());
-        validServerInput = true;
+        validServer = true;
       } catch (UnknownHostException e) {
         System.err.println("Invalid server address. Please enter a valid address.");
       }
     }
 
     int PORT = 0;
-    boolean validPortInput = false;
-    while (!validPortInput) {
+    boolean validPort = false;
+    while (!validPort) {
       System.out.print("port:       \n");
       try {
         PORT = scanner.nextInt();
-        validPortInput = true;
+        validPort = true;
       } catch (InputMismatchException e) {
         System.err.println("Invalid port. Please enter a valid port.");
-        scanner.nextLine(); // Consume the invalid input to avoid an infinite loop
+        scanner.nextLine();
       }
     }
 
@@ -73,10 +72,8 @@ public class PlayerTUI {
     System.out.println(message);
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     PlayerTUI playerTUI = new PlayerTUI();
     playerTUI.runTUI();
   }
-
-
 }

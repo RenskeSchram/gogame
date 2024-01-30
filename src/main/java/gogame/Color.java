@@ -15,7 +15,6 @@ public enum Color {
    *
    * @return the other color is this mark is not EMPTY
    */
-  //@ ensures this == BLACK ==> \result == WHITE && this == WHITE ==> \result == BLACK;
   public Color other() {
     if (this == BLACK) {
       return WHITE;

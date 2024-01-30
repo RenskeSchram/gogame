@@ -23,7 +23,7 @@ public class HumanStrategy implements Strategy {
 
   @Override
   public void sendQueue() {
-    player.receiveMessage("You are queued, if you want to leave the queue, send: QUEUE");
+    //
   }
 
   @Override

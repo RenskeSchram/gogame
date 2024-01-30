@@ -59,6 +59,7 @@ public class ComputerStrategy implements Strategy {
         sendPass();
       }
     } else {
+
       player.doMove(move);
       System.out.println(Arrays.toString(move) + player.getColor());
     }
