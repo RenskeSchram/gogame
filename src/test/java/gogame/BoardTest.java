@@ -129,47 +129,51 @@ public class BoardTest {
 
   @Test
   public void testGetTerritory() {
+    board.setField(new int[]{1, 0}, Color.BLACK);
+    board.setField(new int[]{2, 1}, Color.BLACK);
     board.setField(new int[]{1, 1}, Color.BLACK);
-    board.setField(new int[]{1, 2}, Color.BLACK);
-    board.setField(new int[]{2, 2}, Color.BLACK);
-    board.setField(new int[]{1, 3}, Color.WHITE);
-    board.setField(new int[]{3, 1}, Color.BLACK);
+    board.setField(new int[]{1, 2}, Color.WHITE);
+    board.setField(new int[]{3, 0}, Color.BLACK);
 
     System.out.println(board.toString());
+    assertEquals(4, board.getStonesWithThisColor(Color.BLACK).size());
 
     board.getFilledBoard();
     System.out.println(board.toString());
+    assertEquals(5, board.getStonesWithThisColor(Color.BLACK).size());
 
     // filled edge case
     setUp();
 
-    board.setField(new int[]{5, 4}, Color.WHITE);
-    board.setField(new int[]{4, 5}, Color.WHITE);
-    for (int i = 1; i <= board.DIM; i++) {
-      board.setField(new int[]{i, 2}, Color.BLACK);
+    board.setField(new int[]{4, 3}, Color.WHITE);
+    board.setField(new int[]{3, 4}, Color.WHITE);
+    for (int i = 0; i <= board.DIM; i++) {
+      board.setField(new int[]{i, 1}, Color.BLACK);
     }
 
-    System.out.println(board.toString());
+    assertEquals(9, board.getStonesWithThisColor(Color.BLACK).size());
 
     board.getFilledBoard();
     System.out.println(board.toString());
+    assertEquals(18, board.getStonesWithThisColor(Color.BLACK).size());
 
     // centre situation
     setUp();
 
-    board.setField(new int[]{5, 4}, Color.WHITE);
-    board.setField(new int[]{4, 5}, Color.WHITE);
-    board.setField(new int[]{6, 6}, Color.WHITE);
-    board.setField(new int[]{4, 7}, Color.WHITE);
-    board.setField(new int[]{6, 5}, Color.WHITE);
-    board.setField(new int[]{5, 7}, Color.WHITE);
+    board.setField(new int[]{4, 3}, Color.WHITE);
+    board.setField(new int[]{3, 4}, Color.WHITE);
+    board.setField(new int[]{5, 5}, Color.WHITE);
     board.setField(new int[]{3, 6}, Color.WHITE);
-    board.setField(new int[]{2, 6}, Color.BLACK);
-    board.setField(new int[]{5, 6}, Color.BLACK);
+    board.setField(new int[]{5, 4}, Color.WHITE);
+    board.setField(new int[]{4, 6}, Color.WHITE);
+    board.setField(new int[]{2, 5}, Color.WHITE);
+    board.setField(new int[]{1, 5}, Color.BLACK);
 
-    System.out.println(board.toString());
+    assertEquals(7, board.getStonesWithThisColor(Color.WHITE).size());
+
     board.getFilledBoard();
     System.out.println(board.toString());
+    assertEquals(10, board.getStonesWithThisColor(Color.WHITE).size());
   }
 
 }

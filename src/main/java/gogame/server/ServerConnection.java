@@ -26,7 +26,7 @@ public class ServerConnection extends SocketConnection {
    */
   @Override
   public void handleInput(String input) {
-    System.out.println(String.format("%-20s", "[RECEIVED MESSAGE]") + input);
+    System.out.println(String.format("%-20s", "[MESSAGE " + serverPlayer.getUsername() + "]") + input);
 
     String[] protocol = input.split(Protocol.SEPARATOR);
     switch (protocol[0]) {
@@ -69,19 +69,20 @@ public class ServerConnection extends SocketConnection {
         serverPlayer.setUsername(protocol[1]);
         sendOutput(Protocol.ACCEPTED + Protocol.SEPARATOR + protocol[1]);
       } else {
-        sendError("GAMESERVER could not handle LOGIN, no username provided");
+        sendError("Could not handle LOGIN, no username provided");
       }
     }
   }
 
   private void handleQueueProtocol() {
     if (serverPlayer != null && serverPlayer.getUsername() != null) {
-      gameServer.queueServerPlayer(serverPlayer);
+        gameServer.handleQueue(serverPlayer);
+
       if (gameServer.queue.contains(serverPlayer)) {
         sendOutput(Protocol.QUEUED);
       }
     } else {
-      sendError("GAMESERVER correct LOGIN required to queue");
+      sendError("Correct LOGIN required to queue");
     }
   }
 
@@ -89,7 +90,7 @@ public class ServerConnection extends SocketConnection {
     if (protocol.length >= 2 && gameServer.gameMap.containsKey(serverPlayer)) {
       serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board.DIM), Color.EMPTY);
     } else {
-      sendError("GAMESERVER could not handle MOVE");
+      sendError("Could not handle MOVE");
     }
   }
 
@@ -97,7 +98,7 @@ public class ServerConnection extends SocketConnection {
     if (gameServer.gameMap.containsKey(serverPlayer)) {
       serverPlayer.doPass();
     } else {
-      sendError("GAMESERVER could not handle PASS");
+      sendError("Could not handle PASS");
     }
   }
 
@@ -105,7 +106,7 @@ public class ServerConnection extends SocketConnection {
     if (gameServer.gameMap.containsKey(serverPlayer)) {
       serverPlayer.doResign();
     } else {
-      sendError("GAMESERVER could not handle RESIGN");
+      sendError("Could not handle RESIGN");
     }
   }
 
@@ -127,6 +128,6 @@ public class ServerConnection extends SocketConnection {
    */
   @Override
   protected void handleDisconnect() {
-    // Perform any cleanup or notification on disconnect
+    System.out.println(String.format("%-20s", "[DISCONNECTED]") + serverPlayer.getUsername());
   }
 }

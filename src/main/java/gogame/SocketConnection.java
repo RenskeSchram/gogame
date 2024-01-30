@@ -115,9 +115,7 @@ public abstract class SocketConnection {
     try {
       if (splitInput.length == 1) {
         int col = Integer.parseInt(splitInput[0]) % DIM;
-        System.out.println(col);
         int row = Integer.parseInt(splitInput[0]) / DIM;
-        System.out.println(row);
         return new int[]{col, row};
 
       } else if (splitInput.length == 2) {

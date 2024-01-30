@@ -16,6 +16,7 @@ import java.util.Map;
  * Networking server for accepting connections from online players.
  */
 public class GameServer extends SocketServer {
+
   protected Map<ServerPlayer, Game> gameMap;
   protected List<ServerPlayer> queue;
   int standardBoardDIM = 9;
@@ -35,7 +36,7 @@ public class GameServer extends SocketServer {
     queue = new ArrayList<>();
   }
 
-  public static void stop() {
+  public void stopServer() {
     //TODO: quit all games
     //TODO: send error: server stopped
   }
@@ -53,13 +54,19 @@ public class GameServer extends SocketServer {
     serverConnection.sendOutput(Protocol.HELLO + Protocol.SEPARATOR + "You connected to Renske's GameServer. Please login to proceed.");
   }
 
-  /**
-   * Check queue and start game if two players are queued.
-   */
-  private void checkQueue() {
-    if (queue.size() >= 2) {
-      startGame(queue.get(0), queue.get(1));
+  //TODO: what about idle players and players in game?
+  public boolean usernameAvailable(String userName) {
+    for (Player player : queue) {
+      if (userName.equalsIgnoreCase(player.getUsername())) {
+        return false;
+      }
     }
+    return true;
+  }
+
+  public void handleQueue(ServerPlayer serverPlayer) {
+    queueServerPlayer(serverPlayer);
+    checkQueue();
   }
 
   /**
@@ -70,12 +77,20 @@ public class GameServer extends SocketServer {
   protected void queueServerPlayer(ServerPlayer serverPlayer) {
     if (!queue.contains(serverPlayer)) {
       queue.add(serverPlayer);
-      checkQueue();
     } else {
       queue.remove(serverPlayer);
     }
     System.out.println(
         String.format("%-20s", "[CURRENT QUEUE]") + Collections.singletonList(queue));
+  }
+
+  /**
+   * Check queue and start game if two players are queued.
+   */
+  void checkQueue() {
+    if (queue.size() >= 2) {
+      startGame(queue.get(0), queue.get(1));
+    }
   }
 
   /**
@@ -103,16 +118,6 @@ public class GameServer extends SocketServer {
 
     System.out.println(
         String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(gameMap));
-  }
-
-  //TODO: what about idle players and players in game?
-  public boolean usernameAvailable(String userName) {
-    for (Player player : queue) {
-      if (userName.equalsIgnoreCase(player.getUsername())) {
-        return false;
-      }
-    }
-    return true;
   }
 
   public void quitGame(ServerPlayer player) {

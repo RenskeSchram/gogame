@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 public class GameServerTUI {
 
+  GameServer gameServer;
+
   boolean run = true;
 
   public void runTUI() throws IOException {
@@ -24,9 +26,9 @@ public class GameServerTUI {
       }
     }
 
-    GameServer gameServer = new GameServer(port);
+    gameServer = new GameServer(port);
     gameServer.acceptConnections();
-    System.out.println(String.format("%-20s", "[SERVER STATED]") + String.format("%-20s", "port: "+ port));
+    System.out.println(String.format("%-20s", "[SERVER STARTED]") + String.format("%-20s", "port: "+ port));
 
     while (run) {
       String systemTuiInput = scanner.nextLine();
@@ -37,7 +39,7 @@ public class GameServerTUI {
   private void handleGameServerInput(String systemTuiInput) {
     switch (systemTuiInput) {
       case "exit":
-        GameServer.stop();
+        gameServer.stopServer();
         run = false;
         break;
       default:

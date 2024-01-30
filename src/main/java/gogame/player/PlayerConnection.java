@@ -9,7 +9,7 @@ import java.net.Socket;
 
 public class PlayerConnection extends SocketConnection {
 
-  private final OnlinePlayer player;
+  OnlinePlayer player;
   private StrategyGame game;
 
   public PlayerConnection(Socket socket, OnlinePlayer player) throws IOException {
@@ -173,7 +173,7 @@ public class PlayerConnection extends SocketConnection {
 
   @Override
   protected void handleDisconnect() {
-    // Handle disconnection if needed
+    System.out.println(String.format("%-20s", "[DISCONNECTED FROM SERVER]"));
   }
 }
 
