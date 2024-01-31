@@ -61,7 +61,15 @@ public class PlayerTUI {
 
     while (run) {
       String message = scanner.nextLine();
-      onlinePlayer.playerConnection.sendOutput(message);
+
+      if (message.equalsIgnoreCase("help")) {
+        System.out.println(this);
+      } else if (message.equalsIgnoreCase("disconnect")) {
+        //TODO: stop serverconnection.
+        run = false;
+      } else {
+        onlinePlayer.playerConnection.sendOutput(message);
+      }
     }
   }
 
@@ -75,5 +83,21 @@ public class PlayerTUI {
   public static void main(String[] args) {
     PlayerTUI playerTUI = new PlayerTUI();
     playerTUI.runTUI();
+  }
+
+  @Override
+  public String toString() {
+    return
+        "Renske's Player TUI commands:\n" +
+            "   LOGIN~<username>............ print current state of GameServer \n" +
+            "   QUEUE ...................... set board DIM for new Games \n" +
+            "   MOVE~<int,int> of MOVE~<int> send a move \n" +
+            "   MOVE........................ send a pass \n" +
+            "   RESIGN ..................... resign from the Game \n" +
+            "   PRINT ...................... print current state of Board \n" +
+            "   DISCONNECT ..................disconnect and stop \n" +
+            "   HELP ....................... help (this menu) \n";
+
+
   }
 }

@@ -18,8 +18,8 @@ public class GameServer extends SocketServer {
 
   protected Map<ServerPlayer, Game> serverMap;
   protected List<ServerPlayer> queue;
-  int standardBoardDIM = 9;
-  int gameCodeCounter = 0;
+  private int serverBoardDIM;
+  private int gameCodeCounter = 0;
   boolean runServer;
 
   /**
@@ -30,6 +30,7 @@ public class GameServer extends SocketServer {
    */
   public GameServer(int port) throws IOException {
     super(port);
+    serverBoardDIM = 9;
     runServer = true;
     serverMap = new HashMap<>();
     queue = new ArrayList<>();
@@ -118,7 +119,7 @@ public class GameServer extends SocketServer {
    * @param secondPlayer
    */
   protected void startGame(ServerPlayer firstPlayer, ServerPlayer secondPlayer) {
-    Game game = new Game(firstPlayer, secondPlayer, standardBoardDIM);
+    Game game = new Game(firstPlayer, secondPlayer, serverBoardDIM);
 
     queue.remove(firstPlayer);
     serverMap.replace(firstPlayer, game);
@@ -149,6 +150,14 @@ public class GameServer extends SocketServer {
   public void handleDisconnect(ServerPlayer serverPlayer) {
     serverMap.get(serverPlayer).doResign(serverPlayer.getColor());
     serverMap.remove(serverPlayer);
+  }
+
+  public void setServerBoardDIM(int DIM) {
+    serverBoardDIM = DIM;
+
+  }
+  public int getServerBoardDIM() {
+    return serverBoardDIM;
   }
 
   @Override

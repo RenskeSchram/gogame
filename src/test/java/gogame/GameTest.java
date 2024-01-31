@@ -54,18 +54,18 @@ public class GameTest {
   @Test
   public void testDoMove() {
     // Correct player
-    assertSame(game.board.getField(new int[]{6, 0}), Color.EMPTY);
+    assertSame(game.board.getStone(new int[]{6, 0}), Color.EMPTY);
     game.doMove(new int[]{6, 0}, Color.BLACK);
-    assertSame(game.board.getField(new int[]{6, 0}), Color.BLACK);
+    assertSame(game.board.getStone(new int[]{6, 0}), Color.BLACK);
 
     //TODO: Incorrect player
 
     // Ko-rule
-    game.board.setField(new int[]{2, 1}, Color.WHITE);
-    game.board.setField(new int[]{1, 2}, Color.WHITE);
-    game.board.setField(new int[]{2, 2}, Color.BLACK);
-    game.board.setField(new int[]{1, 3}, Color.BLACK);
-    game.board.setField(new int[]{3, 3}, Color.BLACK);
+    game.board.setStone(new int[]{2, 1}, Color.WHITE);
+    game.board.setStone(new int[]{1, 2}, Color.WHITE);
+    game.board.setStone(new int[]{2, 2}, Color.BLACK);
+    game.board.setStone(new int[]{1, 3}, Color.BLACK);
+    game.board.setStone(new int[]{3, 3}, Color.BLACK);
     System.out.println(game.board.toString());
 
     game.doMove(new int[]{3, 2}, Color.WHITE);
@@ -80,18 +80,18 @@ public class GameTest {
 
   @Test
   public void testMultipleOwnSuicide() {
-    game.board.setField(new int[]{2, 8}, Color.WHITE);
-    game.board.setField(new int[]{1, 7}, Color.WHITE);
-    game.board.setField(new int[]{3, 7}, Color.WHITE);
-    game.board.setField(new int[]{1, 6}, Color.WHITE);
-    game.board.setField(new int[]{3, 6}, Color.WHITE);
-    game.board.setField(new int[]{2, 5}, Color.WHITE);
-    game.board.setField(new int[]{2, 7}, Color.BLACK);
+    game.board.setStone(new int[]{2, 8}, Color.WHITE);
+    game.board.setStone(new int[]{1, 7}, Color.WHITE);
+    game.board.setStone(new int[]{3, 7}, Color.WHITE);
+    game.board.setStone(new int[]{1, 6}, Color.WHITE);
+    game.board.setStone(new int[]{3, 6}, Color.WHITE);
+    game.board.setStone(new int[]{2, 5}, Color.WHITE);
+    game.board.setStone(new int[]{2, 7}, Color.BLACK);
 
     System.out.println(game.board.toString());
-    assertSame(Color.EMPTY, game.board.getField(new int[]{2, 6}));
+    assertSame(Color.EMPTY, game.board.getStone(new int[]{2, 6}));
     game.doMove(new int[]{2, 6}, Color.BLACK);
-    assertSame(Color.EMPTY, game.board.getField(new int[]{2, 6}));
+    assertSame(Color.EMPTY, game.board.getStone(new int[]{2, 6}));
 
     System.out.println(game.board.toString());
 
@@ -99,14 +99,14 @@ public class GameTest {
 
   @Test
   public void testSingleOwnSuicide() {
-    game.board.setField(new int[]{2, 8}, Color.WHITE);
-    game.board.setField(new int[]{1, 7}, Color.WHITE);
-    game.board.setField(new int[]{3, 7}, Color.WHITE);
-    game.board.setField(new int[]{2, 6}, Color.WHITE);
+    game.board.setStone(new int[]{2, 8}, Color.WHITE);
+    game.board.setStone(new int[]{1, 7}, Color.WHITE);
+    game.board.setStone(new int[]{3, 7}, Color.WHITE);
+    game.board.setStone(new int[]{2, 6}, Color.WHITE);
     System.out.println(game.board.toString());
 
     game.doMove(new int[]{2, 7}, Color.BLACK);
-    assertSame(Color.EMPTY, game.board.getField(new int[]{2, 7}));
+    assertSame(Color.EMPTY, game.board.getStone(new int[]{2, 7}));
     System.out.println(game.board.toString());
 
   }

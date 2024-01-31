@@ -42,7 +42,7 @@ public class Game {
 
     passGameUpdateToAll(Protocol.GAMESTARTED + Protocol.SEPARATOR + players.get(0)
         .getUsername() + "," + players.get(1)
-        .getUsername() + Protocol.SEPARATOR + board.DIM);
+        .getUsername() + Protocol.SEPARATOR + board.getDIM());
     turn.passGameUpdate(Protocol.MAKEMOVE);
 
     timerManager.startTimer();
@@ -102,11 +102,11 @@ public class Game {
     Board copyBoard = board.deepCopy();
 
     // do to-be-tested move
-    copyBoard.setField(location, color);
+    copyBoard.setStone(location, color);
 
     // check if this moves results in a similar board as one move ago, if so: Ko-fight
     copyBoard.removeCaptured(copyBoard.getCaptured(location));
-    return Arrays.deepEquals(copyBoard.fields, previousBoard.fields);
+    return Arrays.deepEquals(copyBoard.getIntersections(), previousBoard.getIntersections());
   }
 
   ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -150,12 +150,12 @@ public class Game {
 
   public void handleValidMove(int[] location, Color color) {
     // put the stone on the field
-    board.setField(location, color);
+    board.setStone(location, color);
     //check for and remove captured stones
     board.removeCaptured(board.getCaptured(location));
     //single suicide (nog verplaatsen in code)
-    if (board.isSingleSuicide(location)) {
-      board.setField(location, Color.EMPTY);
+    if (board.isSuicide(location)) {
+      board.setStone(location, Color.EMPTY);
     }
   }
 
@@ -180,7 +180,7 @@ public class Game {
   }
 
   public void doResign(Color color) {
-    board.doResign(color);
+    //TODO: add that color who resigned automatically loses
     end();
   }
 
@@ -242,8 +242,8 @@ public class Game {
    */
   public List<int[]> getValidMoves() {
     List<int []> validMoves = new ArrayList<>();
-    for (int col = 0; col < board.DIM; col++) {
-      for (int row = 0; row < board.DIM; row++) {
+    for (int col = 0; col < board.getDIM(); col++) {
+      for (int row = 0; row < board.getDIM(); row++) {
         if (isValidMove(new int[]{col, row}, getTurn().getColor())) {
           validMoves.add(new int[]{col, row});
         }

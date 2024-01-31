@@ -35,15 +35,37 @@ public class GameServerTUI {
     }
   }
 
-  private void handleGameServerInput(String systemTuiInput) {
-    switch (systemTuiInput) {
+  private void handleGameServerInput(String tuiInput) {
+    String[] splittedTuiInput = tuiInput.split(" ");
+
+    switch (splittedTuiInput[0]) {
+
       case "exit":
         gameServer.stopServer();
         runTui = false;
         break;
+
       case "print":
         System.out.println(gameServer.toString());
         break;
+
+      case "setdim":
+        try {
+          gameServer.setServerBoardDIM(Integer.parseInt(splittedTuiInput[1]));
+        } catch (NumberFormatException e) {
+          System.err.println("Could not set new DIM");
+        }
+        System.out.println("Current board DIM = " + gameServer.getServerBoardDIM());
+        break;
+
+      case "getdim":
+        System.out.println("Current board DIM = " + gameServer.getServerBoardDIM());
+        break;
+
+      case "help":
+        System.out.println(this);
+        break;
+
       default:
         //ignore message
         break;
@@ -55,4 +77,14 @@ public class GameServerTUI {
     gameServerTUI.runTUI();
   }
 
+  @Override
+  public String toString() {
+    return
+        "Renske's GameServer TUI commands:\n" +
+            "   print ...................... print current state of GameServer \n" +
+            "   setdim <int> ............... set board DIM for new Games \n" +
+            "   getdim ..................... get currently applied board DIM \n" +
+            "   help ....................... help (this menu) \n" +
+            "   exit ....................... exit TUI and stop GameServer \n";
+  }
 }

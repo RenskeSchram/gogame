@@ -91,7 +91,7 @@ public class ServerConnection extends SocketConnection {
 
   private void handleMoveProtocol(String[] protocol) {
     if (protocol.length >= 2 && gameServer.serverMap.containsKey(serverPlayer)) {
-      serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board.DIM), Color.EMPTY);
+      serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board.getDIM()), Color.EMPTY);
     } else {
       sendError("Could not handle MOVE");
     }

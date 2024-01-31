@@ -96,8 +96,8 @@ public class ComputerStrategy implements Strategy {
   protected List<int[]> getCaptures(Color color, int numOfLiberties) {
     List<int[]> possibleCaptures = new ArrayList<>();
     for (int[] stone : strategyGame.board.getStonesWithThisColor(color.other())) {
-      if (strategyGame.board.getLibertiesGroup(strategyGame.board.getGroup(stone, true)).size() == numOfLiberties) {
-        possibleCaptures.add(strategyGame.board.getLibertiesGroup(strategyGame.board.getGroup(stone, true)).get(0));
+      if (strategyGame.board.getLibertiesOfGroup(strategyGame.board.getGroup(stone, true)).size() == numOfLiberties) {
+        possibleCaptures.add(strategyGame.board.getLibertiesOfGroup(strategyGame.board.getGroup(stone, true)).get(0));
       }
     }
     return possibleCaptures;

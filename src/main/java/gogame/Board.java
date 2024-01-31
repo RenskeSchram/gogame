@@ -2,7 +2,9 @@ package gogame;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Board for the Go Game.
@@ -12,25 +14,67 @@ public class Board {
   /**
    * Initialisation parameters of the board.
    */
-  public int DIM;
-  public final Color[][] fields;
+  private final int DIM;
+  private final Color[][] intersections;
 
 
   /**
    * Constructor for an empty Board.
-   * For all fields, set field to Color.EMPTY
+   * For all intersections, set to Color.EMPTY
    */
   public Board(int DIM) {
     this.DIM = DIM;
-
-    fields = new Color[DIM][DIM];
-    for (int row = 0; (row >= 0) && (row < DIM); row++) {
-      for (int col = 0; (col >= 0) && (col < DIM); col++) {
-        setField(new int[]{col, row}, Color.EMPTY);
+    intersections = new Color[DIM][DIM];
+    for (int row = 0; row < DIM; row++) {
+      for (int col = 0; col < DIM; col++) {
+        setStone(new int[]{col, row}, Color.EMPTY);
       }
     }
-
   }
+
+
+  public int getDIM(){
+    return DIM;
+  }
+
+  public Color[][] getIntersections() {
+    return intersections;
+  }
+
+  /**
+   * Creates a deep copy of this board's intersections.
+   */
+  public Board deepCopy() {
+    Board copy = new Board(DIM);
+    for (int row = 0; row < DIM; row++) {
+      for (int col = 0; col < DIM; col++) {
+        copy.setStone(new int[]{col, row}, this.getStone(new int[]{col, row}));
+      }
+    }
+    return copy;
+  }
+
+  /**
+   * Returns a String representation of the intersections array.
+   *
+   * @return a String representation of the intersections array.
+   */
+  public String toString() {
+    StringBuilder stringBoard = new StringBuilder();
+    for (int row = 0; row < DIM; row++) {
+      for (int col = 0; col < DIM; col++) {
+        stringBoard.append(intersections[col][row].toSymbol()).append("  ");
+      }
+      stringBoard.append("\n");
+    }
+    stringBoard.append("\n");
+    return stringBoard.toString();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  ///                                  Intersections & Stones                                    ///
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   /**
    * Check if intersection is a valid intersection on the Board.
@@ -38,8 +82,9 @@ public class Board {
    * @param intersection intersection saved as int[] {col, row}
    * @return true if intersection is a valid field on the Board.
    */
-  protected boolean isField(int[] intersection) {
-    return intersection[0] >= 0 && intersection[0] < DIM && intersection[1] >= 0 && intersection[1] < DIM;
+  protected boolean isIntersection(int[] intersection) {
+    return intersection[0] >= 0 && intersection[0] < DIM && intersection[1] >= 0
+        && intersection[1] < DIM;
   }
 
   /**
@@ -48,12 +93,39 @@ public class Board {
    * @param intersection intersection saved as int[] {col, row}
    * @return true if intersection is a valid field on the Board.
    */
-  protected boolean isEmpty(int[] intersection) {
-    if (isField(intersection)) {
-      return getField(intersection) == Color.EMPTY;
+  protected boolean isEmptyIntersection(int[] intersection) {
+    if (isIntersection(intersection)) {
+      return getStone(intersection) == Color.EMPTY;
     } else {
       return false;
     }
+  }
+
+  /**
+   * Returns adjacent intersection coordinates on the board.
+   *
+   * @param intersection intersection saved as int[] {col, row}
+   * @return adjacent field coordinates on the board.
+   */
+  protected List<int[]> getAdjacentIntersections(int[] intersection) {
+    List<int[]> adjacentIntersections = new ArrayList<>();
+    int[] left = new int[]{intersection[0], intersection[1] - 1};
+    if (isIntersection(left)) {
+      adjacentIntersections.add(left);
+    }
+    int[] right = new int[]{intersection[0], intersection[1] + 1};
+    if (isIntersection(right)) {
+      adjacentIntersections.add(right);
+    }
+    int[] up = new int[]{intersection[0] + 1, intersection[1]};
+    if (isIntersection(up)) {
+      adjacentIntersections.add(up);
+    }
+    int[] down = new int[]{intersection[0] - 1, intersection[1]};
+    if (isIntersection(down)) {
+      adjacentIntersections.add(down);
+    }
+    return adjacentIntersections;
   }
 
   /**
@@ -61,11 +133,11 @@ public class Board {
    *
    * @param intersection intersection saved as int[] {col, row}
    * @param color    color of placed move.
-   *                 //@requires isField(row, col)
+   *                 //@requires isIntersection(row, col)
    */
-  protected void setField(int[] intersection, Color color) {
-    if (isField(intersection)) {
-      this.fields[intersection[0]][intersection[1]] = color;
+  protected void setStone(int[] intersection, Color color) {
+    if (isIntersection(intersection)) {
+      this.intersections[intersection[0]][intersection[1]] = color;
       if (color == Color.WHITE || color == Color.BLACK) {
         //go.placeStone(intersection, color);
       } else if (color == Color.EMPTY) {
@@ -81,37 +153,48 @@ public class Board {
    *
    * @param intersection intersection saved as int[] {col, row}
    * @return Color of the field with row and col
-   * // requires: isField(row, col)
+   * // requires: isIntersection(row, col)
    */
-  protected Color getField(int[] intersection) {
-    if (isField(intersection)) {
-      return fields[intersection[0]][intersection[1]];
+  protected Color getStone(int[] intersection) {
+    if (isIntersection(intersection)) {
+      return intersections[intersection[0]][intersection[1]];
     } else {
       return null;
     }
   }
 
-  /**
-   * Returns if it is a valid move to make on the board.
-   * // requires: isField(row, col) && isEmpty(row, col)
-   *
-   * @param intersection intersection saved as int[] {col, row}
-   * @return
-   */
-  public boolean isValid(int[] intersection) {
-    return isField(intersection) && isEmpty(intersection);
+  public List<int[]> getStonesWithThisColor(Color color) {
+    List<int[]> stoneWithThisColor = new ArrayList<>();
+    for (int row = 0; row < DIM; row++) {
+      for (int col = 0; col < DIM; col++) {
+
+        if (getStone(new int[]{col, row}) == color) {
+          stoneWithThisColor.add(new int[]{col, row});
+        }
+      }
+    }
+    return stoneWithThisColor;
   }
 
-
   /**
-   * Returns if the stone has a liberty (empty adjacent stone).
+   * Get a List of intersections with liberties for the stone.
    *
-   * @param intersection intersection saved as int[] {col, row}
-   * @return if the stone has a liberty (empty adjacent stone).
+   * @param stone to be checked.
+   * @return a List of intersections with liberties for the group.
    */
-  public boolean isSingleSuicide(int[] intersection) {
-    return getLibertiesGroup(getGroup(intersection, true)).isEmpty();
+  public List<int[]> getLibertiesOfStone(int[] stone) {
+    List<int[]> stoneLiberties = new ArrayList<>();
+    for (int[] adjacent : getAdjacentIntersections(stone)) {
+      if (isEmptyIntersection(adjacent)) {
+        stoneLiberties.add(adjacent);
+      }
+    }
+    return stoneLiberties;
   }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  ///                                      Groups                                                ///
+  //////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Get the group of stones (or empty intersections). If the game is active, groups are formed by
@@ -126,17 +209,17 @@ public class Board {
     List<int[]> group = new ArrayList<>();
 
     if (active) {
-      if (getField(intersection) != Color.EMPTY) {
+      if (getStone(intersection) != Color.EMPTY) {
         group.add(intersection);
       }
     } else {
-      if (getField(intersection) == Color.EMPTY) {
+      if (getStone(intersection) == Color.EMPTY) {
         group.add(intersection);
       }
     }
 
     for (int[] adjacent : getAdjacentIntersections(intersection)) {
-      exploreAdjacentStones(group, adjacent, getField(intersection));
+      addStonesToGroup(group, adjacent, getStone(intersection));
     }
 
     return group;
@@ -149,29 +232,53 @@ public class Board {
    * @param current current intersection to be checked
    * @param color   color of the group
    */
-  private void exploreAdjacentStones(List<int[]> group, int[] current, Color color) {
+  private void addStonesToGroup(List<int[]> group, int[] current, Color color) {
     // check if the intersection is not already on the list and is the same color
-    if (!containsIntersection(group, current) && (getField(current) == color)) {
+    if (!containsIntersection(group, current) && (getStone(current) == color)) {
       group.add(current);
 
       // recursive check for all adjacent intersections of new to the group added intersections
       for (int[] adjacent : getAdjacentIntersections(current)) {
-        if (getField(adjacent) == getField(current)) {
-          exploreAdjacentStones(group, adjacent, color);
+        if (getStone(adjacent) == getStone(current)) {
+          addStonesToGroup(group, adjacent, color);
         }
       }
     }
   }
 
   /**
-   * Returns if coordinate is already in the list.
+   * Get a List of intersections with liberties for the group.
    *
-   * @param list     list to check.
-   * @param intersection intersection saved as int[] {col, row}
-   * @return if coordinate is already in the list.
+   * @param group group to be checked.
+   * @return a List of intersections with liberties for the group.
    */
-  static boolean containsIntersection(List<int[]> list, int[] intersection) {
-    for (int[] element : list) {
+  public List<int[]> getLibertiesOfGroup(List<int[]> group) {
+    Set<List<Integer>> groupLibertiesSet = new HashSet<>();
+
+    for (int[] stone : group) {
+      List<int[]> libertiesOfStone = getLibertiesOfStone(stone);
+      for (int[] liberty : libertiesOfStone) {
+        groupLibertiesSet.add(Arrays.asList(liberty[0], liberty[1]));
+      }
+    }
+
+    List<int[]> groupLibertiesList = new ArrayList<>();
+    for (List<Integer> liberty : groupLibertiesSet) {
+      groupLibertiesList.add(new int[]{liberty.get(0), liberty.get(1)});
+    }
+
+    return groupLibertiesList;
+  }
+
+  /**
+   * Returns if coordinate is already in the group.
+   *
+   * @param group          list to check.
+   * @param intersection  intersection saved as int[] {col, row}
+   * @return true if coordinate is already in the list.
+   */
+  static boolean containsIntersection(List<int[]> group, int[] intersection) {
+    for (int[] element : group) {
       if (Arrays.equals(element, intersection)) {
         return true;
       }
@@ -180,30 +287,60 @@ public class Board {
   }
 
   /**
-   * Returns adjacent field coordinates on the board.
+   * Get the assigned color of the territory.
+   *
+   * @param group list with intersection coordinates
+   * @return the assigned color of the territory
+   */
+  protected Color getTerritoryColor(List<int[]> group) {
+    // for all stones in group get adjacent stone color
+    List<Color> colors = new ArrayList<>();
+    for (int[] stone : group) {
+      for (int[] adjacentStone : getAdjacentIntersections(stone)) {
+        if (getStone(adjacentStone) != Color.EMPTY) {
+          colors.add(getStone(adjacentStone));
+        }
+      }
+    }
+    // check if the colors surrounding the group are all the same
+    // if true, the territory belongs to that color, otherwise the territory is neutral.
+    boolean correctTerritory = true;
+    for (Color color : colors) {
+      if (color != colors.get(0)) {
+        correctTerritory = false;
+        break;
+      }
+    }
+    if (correctTerritory && !colors.isEmpty()) {
+      return colors.get(0);
+    } else {
+      return Color.NEUTRAL;
+    }
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  ///                                      Board Rules                                           ///
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Returns if it is a valid move to make on the board.
    *
    * @param intersection intersection saved as int[] {col, row}
-   * @return adjacent field coordinates on the board.
+   * @return
    */
-  protected List<int[]> getAdjacentIntersections(int[] intersection) {
-    List<int[]> adjacentStones = new ArrayList<>();
-    int[] left = new int[]{intersection[0], intersection[1] - 1};
-    if (isField(left)) {
-      adjacentStones.add(left);
-    }
-    int[] right = new int[]{intersection[0], intersection[1] + 1};
-    if (isField(right)) {
-      adjacentStones.add(right);
-    }
-    int[] up = new int[]{intersection[0] + 1, intersection[1]};
-    if (isField(up)) {
-      adjacentStones.add(up);
-    }
-    int[] down = new int[]{intersection[0] - 1, intersection[1]};
-    if (isField(down)) {
-      adjacentStones.add(down);
-    }
-    return adjacentStones;
+  public boolean isValid(int[] intersection) {
+    return isIntersection(intersection) && isEmptyIntersection(intersection);
+  }
+
+
+  /**
+   * Returns if the stone has a liberty (empty adjacent stone).
+   *
+   * @param intersection intersection saved as int[] {col, row}
+   * @return if the stone has a liberty (empty adjacent stone).
+   */
+  public boolean isSuicide(int[] intersection) {
+    return getLibertiesOfGroup(getGroup(intersection, true)).isEmpty();
   }
 
   /**
@@ -221,78 +358,55 @@ public class Board {
     for (int[] adjacent : getAdjacentIntersections(intersection)) {
       List<int[]> group = getGroup(adjacent, true);
 
-      if (getLibertiesGroup(group).isEmpty()) {
+      if (getLibertiesOfGroup(group).isEmpty()) {
         captured.addAll(group);
       }
     }
     return captured;
   }
 
-  public List<int[]> getLibertiesGroup(List<int[]> group) {
-    List<int[]> groupLiberties = new ArrayList<>();
-    for (int[] stone : group) {
-      if (!getLibertiesStone(stone).isEmpty()) {
-        groupLiberties.addAll(getLibertiesStone(stone));
-      }
-    }
-    return groupLiberties;
-  }
-
-  public List<int[]> getLibertiesStone(int[] stone) {
-    List<int[]> stoneLiberties = new ArrayList<>();
-    for (int[] adjacent : getAdjacentIntersections(stone)) {
-      if (isEmpty(adjacent)) {
-        stoneLiberties.add(adjacent);
-      }
-    }
-    return stoneLiberties;
-  }
-
   /**
-   * Set fields of captured stones to empty.
+   * Set intersections of capturedGroup stones to empty.
    *
-   * @param captured list of coordinates of captured stones.
+   * @param capturedGroup list of coordinates of capturedGroup stones.
    */
-  public void removeCaptured(List<int[]> captured) {
-    for (int[] capture : captured) {
-      setField(capture, Color.EMPTY);
+  public void removeCaptured(List<int[]> capturedGroup) {
+    for (int[] capture : capturedGroup) {
+      setStone(capture, Color.EMPTY);
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  ///                                         Scoring                                            ///
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
 
   /**
-   * Creates a deep copy of this field.
+   * Determining the final territories and assign a Color to all intersections on the board.
    */
-    /*@ ensures \result != this;
-     ensures (\forall int i; (i >= 0 && i < DIM*DIM); \result.fields[i] == this.fields[i]);
-     @*/
-  public Board deepCopy() {
-    Board copy = new Board(DIM);
+  public void getFilledBoard() {
     for (int row = 0; row < DIM; row++) {
       for (int col = 0; col < DIM; col++) {
-        copy.setField(new int[]{col, row}, this.getField(new int[]{col, row}));
+
+        // find next empty intersection on the board and create new group
+        if (getStone(new int[]{col, row}) == Color.EMPTY) {
+          List<int[]> group = new ArrayList<>();
+
+          // find all adjacent empty intersections and add to group
+          addStonesToGroup(group, new int[]{col, row}, Color.EMPTY);
+
+          // get and set territory color for group
+          if (!group.isEmpty()) {
+            Color territoryColor = getTerritoryColor(group);
+            for (int[] emptySpot : group) {
+              setStone(emptySpot, territoryColor);
+            }
+          }
+        }
       }
     }
-    return copy;
   }
 
-
-  /**
-   * Returns a String representation of the fields array.
-   *
-   * @return
-   */
-  public String toString() {
-    StringBuilder stringBoard = new StringBuilder();
-    for (int row = 0; row < DIM; row++) {
-      for (int col = 0; col < DIM; col++) {
-        stringBoard.append(fields[col][row].toSymbol()).append("  ");
-      }
-      stringBoard.append("\n");
-    }
-    stringBoard.append("\n");
-    return stringBoard.toString();
-  }
 
   /**
    * Determine winner of the board, by determining the final territories and counting the stones.
@@ -313,83 +427,4 @@ public class Board {
     }
   }
 
-  public List<int[]> getStonesWithThisColor(Color color) {
-    List<int[]> stoneWithThisColor = new ArrayList<>();
-    for (int row = 0; row < DIM; row++) {
-      for (int col = 0; col < DIM; col++) {
-        if (getField(new int[]{col, row}) == color) {
-          stoneWithThisColor.add(new int[]{col, row});
-        }
-      }
-    }
-    return stoneWithThisColor;
-  }
-
-
-  /**
-   * Determining the final territories and assign a Color to all intersections on the board.
-   */
-  public void getFilledBoard() {
-    // loop over the board
-    for (int row = 0; row < DIM; row++) {
-      for (int col = 0; col < DIM; col++) {
-
-        // find next empty intersection on the board and create new group
-        if (getField(new int[]{col, row}) == Color.EMPTY) {
-          List<int[]> group = new ArrayList<>();
-
-          // find all adjacent empty intersections and add to group
-          exploreAdjacentStones(group, new int[]{col, row}, Color.EMPTY);
-
-          // get and set territory color for group
-          if (!group.isEmpty()) {
-            Color territoryColor = getTerritoryColor(group);
-            for (int[] emptySpot : group) {
-              setField(emptySpot, territoryColor);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   * Get the assigned color of the territory.
-   *
-   * @param group list with intersection coordinates
-   * @return the assigned color of the territory
-   */
-  protected Color getTerritoryColor(List<int[]> group) {
-    // for all stones in group get adjacent stone color
-    List<Color> colors = new ArrayList<>();
-    for (int[] stone : group) {
-      for (int[] adjacentStone : getAdjacentIntersections(stone)) {
-        if (getField(adjacentStone) != Color.EMPTY) {
-          colors.add(getField(adjacentStone));
-        }
-      }
-    }
-    // check if the colors surrounding the group are all the same
-    // if true, the territory belongs to that color, otherwise the territory is neutral.
-    boolean correctTerritory = true;
-    for (Color color : colors) {
-      if (color != colors.get(0)) {
-        correctTerritory = false;
-        break;
-      }
-    }
-    if (correctTerritory && !colors.isEmpty()) {
-      return colors.get(0);
-    } else {
-      return Color.NEUTRAL;
-    }
-  }
-
-  protected void doResign(Color color) {
-    for (int row = 0; (row >= 0) && (row < DIM); row++) {
-      for (int col = 0; (col >= 0) && (col < DIM); col++) {
-        setField(new int[]{col, row}, color.other());
-      }
-    }
-  }
 }

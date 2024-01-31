@@ -124,7 +124,7 @@ public class PlayerConnection extends SocketConnection {
 
   private void handleMove(String[] protocol) {
     if (protocol.length >= 3) {
-      game.doMove(getLocationArray(protocol[1], game.board.DIM), getColor(protocol[2]));
+      game.doMove(getLocationArray(protocol[1], game.board.getDIM()), getColor(protocol[2]));
     } else {
       sendError("could not handle MOVE, too little inputs received");
     }
