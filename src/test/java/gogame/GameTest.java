@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import gogame.server.GameServer;
 import gogame.server.ServerConnection;
 import gogame.server.ServerPlayer;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Random;
@@ -18,6 +20,8 @@ import org.junit.jupiter.api.Test;
 public class GameTest {
 
   private Game game;
+  private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
+
 
   public int getRandomPort() {
     Random random = new Random();
@@ -40,12 +44,14 @@ public class GameTest {
     int DIM = 9;
     game = new Game(playerI, playerII, DIM);
 
+    System.setOut(new PrintStream(outputStreamCaptor));
   }
 
   @AfterEach
   public void reset() {
     System.setOut(System.out);
   }
+
 
   @Test
   public void testIsValidMove() {

@@ -10,10 +10,11 @@ public class Game {
   private Player turn;
   public Board board;
   private Board previousBoard;
-  protected final MoveTimer moveTimer;
   private boolean active = false;
   private boolean passed = false;
+  protected boolean useTimer = true;
   private int gameCode;
+
 
   /**
    * Constructor for new Game object with players and a new Board.
@@ -23,7 +24,6 @@ public class Game {
     previousBoard = new Board(DIM);
     players.add(firstPlayer);
     players.add(secondPlayer);
-    moveTimer = new MoveTimer(this);
 
     start();
   }
@@ -114,7 +114,7 @@ public class Game {
         .getUsername() + Protocol.SEPARATOR + board.getDIM());
     turn.passGameUpdate(Protocol.MAKEMOVE);
 
-    moveTimer.startTimer();
+    //startTimer();
   }
 
   /**
@@ -122,7 +122,7 @@ public class Game {
    */
   protected void end(Color color) {
     active = false;
-    moveTimer.stopTimer();
+    //stopTimer();
     for (Player player : players) {
       player.quitGame();
       player.passGameUpdate(Protocol.GAMEOVER + Protocol.SEPARATOR + color);
@@ -150,7 +150,7 @@ public class Game {
   public void doMove(int[] location, Color color) {
 
     if (isValidTurn(color) && active) {
-      moveTimer.resetTimer();
+      //resetTimer();
 
       if (isValidMove(location, color)) {
         passGameUpdateToAll(Protocol.MOVE + Protocol.SEPARATOR + location[0] + "," + location[1]
@@ -193,7 +193,7 @@ public class Game {
    */
   public void doPass(Color color) {
     if (isValidTurn(color) && active) {
-      moveTimer.resetTimer();
+      //resetTimer();
       if (passed) {
         end(board.getWinner());
       } else {
@@ -253,4 +253,5 @@ public class Game {
     copyBoard.removeCaptured(copyBoard.getCaptured(location));
     return Arrays.deepEquals(copyBoard.getIntersections(), previousBoard.getIntersections());
   }
+
 }

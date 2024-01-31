@@ -3,26 +3,27 @@ package gogame;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MoveTimer {
-
+public class MoveTimer extends Thread {
   private final Game game;
   private Timer timer;
   private TimerTask timeOutPass;
-  private final int MOVE_DURATION = 60000;
+  private final int MOVE_DURATION = 2000;
   public boolean useTimer = true;
 
   public MoveTimer(Game game) {
     this.game = game;
   }
 
-  protected void startTimer() {
+  protected synchronized void startTimer() {
     if (useTimer) {
       timer = new Timer();
       timeOutPass = new TimerTask() {
         @Override
         public void run() {
-          game.getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "automated pass");
-          game.doPass(game.getTurn().getColor());
+          synchronized (game) {
+            game.getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "automated pass");
+            game.doPass(game.getTurn().getColor());
+          }
         }
       };
 
@@ -30,8 +31,7 @@ public class MoveTimer {
     }
   }
 
-
-  protected void stopTimer() {
+  protected synchronized void stopTimer() {
     if (useTimer && timer != null) {
       timer.cancel();
       timer = null;
@@ -42,7 +42,6 @@ public class MoveTimer {
       timeOutPass = null;
     }
   }
-
 
   protected void resetTimer() {
     stopTimer();
@@ -56,6 +55,4 @@ public class MoveTimer {
   public TimerTask getTimeOutPass() {
     return timeOutPass;
   }
-
-
 }

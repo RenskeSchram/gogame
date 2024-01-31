@@ -14,7 +14,7 @@ public class StrategyGame extends Game {
    */
   public StrategyGame(Player firstPlayer, Player secondPlayer, int DIM) {
     super(firstPlayer, secondPlayer, DIM);
-    moveTimer.useTimer = false;
+    this.useTimer = false;
   }
 
 }
