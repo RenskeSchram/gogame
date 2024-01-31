@@ -3,7 +3,7 @@ package gogame;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class TimerManager {
+public class MoveTimer {
 
   private final Game game;
   private Timer timer;
@@ -11,7 +11,7 @@ public class TimerManager {
   private final int MOVE_DURATION = 60000;
   public boolean useTimer = true;
 
-  public TimerManager(Game game) {
+  public MoveTimer(Game game) {
     this.game = game;
   }
 

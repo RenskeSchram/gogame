@@ -40,8 +40,6 @@ public class ServerConnectionTest {
     testPlayer = new ServerPlayer();
 
     System.setOut(new PrintStream(outputStreamCaptor));
-
-
   }
 
   @AfterEach

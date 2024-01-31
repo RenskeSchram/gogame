@@ -5,12 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Game {
+
   private final List<Player> players = new ArrayList<>();
-  protected final TimerManager timerManager;
+  private Player turn;
   public Board board;
   private Board previousBoard;
-  private Player turn;
-  protected boolean active = false;
+  protected final MoveTimer moveTimer;
+  private boolean active = false;
   private boolean passed = false;
   private int gameCode;
 
@@ -22,9 +23,77 @@ public class Game {
     previousBoard = new Board(DIM);
     players.add(firstPlayer);
     players.add(secondPlayer);
-    timerManager = new TimerManager(this);
+    moveTimer = new MoveTimer(this);
 
     start();
+  }
+
+  /**
+   * Set number of game to identify game.
+   * @param gameCode number of game
+   */
+  public void setGameCode(int gameCode) {
+    this.gameCode = gameCode;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+  public boolean getActive() {
+    return active;
+  }
+
+  @Override
+  public String toString() {
+    return "00" + gameCode;
+  }
+
+  /**
+   * Returns the players whose turn it is.
+   *
+   * @return the players whose turn it is.
+   */
+  protected Player getTurn() {
+    return turn;
+  }
+
+  /**
+   * Return ServerPlayer who is not at turn.
+   *
+   * @return ServerPlayer who is not at turn
+   */
+  private Player otherTurn() {
+    if (turn == players.get(0)) {
+      return players.get(1);
+    } else {
+      return players.get(0);
+    }
+  }
+
+  /**
+   * Returns if the placed color is of the correct ServerPlayer at turn.
+   *
+   * @param color color of placed stone.
+   * @return true if the placed color is of the correct ServerPlayer at turn.
+   */
+  protected boolean isValidTurn(Color color) {
+    return turn != null && color == turn.getColor();
+  }
+  /**
+   * Returns the color of the player.
+   *
+   * @return the color of the player.
+   */
+  protected Player getPlayer(Color color) {
+    if (color.equals(Color.BLACK)) {
+      return players.get(0);
+    } else if (color.equals(Color.WHITE)) {
+      return players.get(0);
+    } else {
+      System.out.println(
+          Protocol.ERROR + Protocol.SEPARATOR + "color does not belong to a player");
+      return null;
+    }
   }
 
   /**
@@ -45,21 +114,21 @@ public class Game {
         .getUsername() + Protocol.SEPARATOR + board.getDIM());
     turn.passGameUpdate(Protocol.MAKEMOVE);
 
-    timerManager.startTimer();
+    moveTimer.startTimer();
   }
 
   /**
    * End game. Stop possibility to make a move, calculate scores and call out winner.
    */
-  private void end() {
-    // Inactivate the game
+  protected void end(Color color) {
     active = false;
-    timerManager.stopTimer();
+    moveTimer.stopTimer();
     for (Player player : players) {
       player.quitGame();
-      player.passGameUpdate(Protocol.GAMEOVER + Protocol.SEPARATOR + board.getWinner());
+      player.passGameUpdate(Protocol.GAMEOVER + Protocol.SEPARATOR + color);
     }
   }
+
 
   protected void passGameUpdateToAll(String update) {
     for (Player player : players) {
@@ -67,51 +136,10 @@ public class Game {
     }
   }
 
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  ///                                      Move checks                                         ///
-  ////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  ///                                         GamePlay/Moves                                     ///
+  //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * Check if the move is valid: valid coordinate on board and ko-rule.
-   *
-   * @return true if the move is valid.
-   */
-  protected boolean isValidMove(int[] location, Color color) {
-    return isValidTurn(color) && active && board.isValid(location) && !isKoFight(location,color);
-  }
-
-  /**
-   * Returns if the placed color is of the correct ServerPlayer at turn.
-   *
-   * @param color color of placed stone.
-   * @return true if the placed color is of the correct ServerPlayer at turn.
-   */
-  protected boolean isValidTurn(Color color) {
-    return turn != null && color == turn.getColor();
-  }
-
-
-  /**
-   * Check and return true if the move results in a Ko-fight.
-   *
-   * @param location index of intersection of move
-   * @param color    color of move
-   * @return true if the move results in a Ko-fight
-   */
-  protected boolean isKoFight(int[] location, Color color) {
-    Board copyBoard = board.deepCopy();
-
-    // do to-be-tested move
-    copyBoard.setStone(location, color);
-
-    // check if this moves results in a similar board as one move ago, if so: Ko-fight
-    copyBoard.removeCaptured(copyBoard.getCaptured(location));
-    return Arrays.deepEquals(copyBoard.getIntersections(), previousBoard.getIntersections());
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  ///                                      Making a move                                       ///
-  ////////////////////////////////////////////////////////////////////////////////////////////////
 
   /**
    * Do the move if this is valid.
@@ -122,7 +150,7 @@ public class Game {
   public void doMove(int[] location, Color color) {
 
     if (isValidTurn(color) && active) {
-      timerManager.resetTimer();
+      moveTimer.resetTimer();
 
       if (isValidMove(location, color)) {
         passGameUpdateToAll(Protocol.MOVE + Protocol.SEPARATOR + location[0] + "," + location[1]
@@ -140,7 +168,6 @@ public class Game {
         getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "invalid move, try again");
         getTurn().passGameUpdate(Protocol.MAKEMOVE);
       }
-
 
     } else {
       getPlayer(color).passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "wait for your turn to make a move");
@@ -166,9 +193,9 @@ public class Game {
    */
   public void doPass(Color color) {
     if (isValidTurn(color) && active) {
-      timerManager.resetTimer();
+      moveTimer.resetTimer();
       if (passed) {
-        end();
+        end(board.getWinner());
       } else {
         passGameUpdateToAll(Protocol.PASS + Protocol.SEPARATOR + getTurn().getColor());
         turn = otherTurn();
@@ -180,59 +207,16 @@ public class Game {
   }
 
   public void doResign(Color color) {
-    //TODO: add that color who resigned automatically loses
-    end();
+    end(color.other());
   }
 
   /**
-   * Return ServerPlayer who is not at turn.
+   * Check if the move is valid: valid coordinate on board and ko-rule.
    *
-   * @return ServerPlayer who is not at turn
+   * @return true if the move is valid.
    */
-  private Player otherTurn() {
-    if (turn == players.get(0)) {
-      return players.get(1);
-    } else {
-      return players.get(0);
-    }
-  }
-
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-  ///                                         Getters                                          ///
-  ////////////////////////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Returns the players whose turn it is.
-   *
-   * @return the players whose turn it is.
-   */
-  protected Player getTurn() {
-    return turn;
-  }
-
-  /**
-   * Returns the color of the player.
-   *
-   * @return the color of the player.
-   */
-  protected Player getPlayer(Color color) {
-    if (color.equals(Color.BLACK)) {
-      return players.get(0);
-    } else if (color.equals(Color.WHITE)) {
-      return players.get(0);
-    } else {
-      System.out.println(
-          Protocol.ERROR + Protocol.SEPARATOR + "color does not belong to a player");
-      return null;
-    }
-  }
-
-  /**
-   * Set number of game to identify game.
-   * @param gameCode number of game
-   */
-  public void setGameCode(int gameCode) {
-    this.gameCode = gameCode;
+  protected boolean isValidMove(int[] location, Color color) {
+    return isValidTurn(color) && active && board.isValid(location) && !isKoFight(location, color);
   }
 
   /**
@@ -252,19 +236,21 @@ public class Game {
     return validMoves;
   }
 
-  @Override
-  public String toString() {
-    return "00" + gameCode;
-  }
-
   /**
-   * Handle exceptions by logging the error message.
-   * @param e       the exception
-   * @param message the error message
+   * Check and return true if the move results in a Ko-fight.
+   *
+   * @param location index of intersection of move
+   * @param color    color of move
+   * @return true if the move results in a Ko-fight
    */
-  private void handleException(Exception e, String message) {
-    System.err.println(message);
-    e.printStackTrace();
-  }
+  protected boolean isKoFight(int[] location, Color color) {
+    Board copyBoard = board.deepCopy();
 
+    // do to-be-tested move
+    copyBoard.setStone(location, color);
+
+    // check if this moves results in a similar board as one move ago, if so: Ko-fight
+    copyBoard.removeCaptured(copyBoard.getCaptured(location));
+    return Arrays.deepEquals(copyBoard.getIntersections(), previousBoard.getIntersections());
+  }
 }

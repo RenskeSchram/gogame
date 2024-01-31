@@ -1,8 +1,6 @@
 package gogame;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -13,6 +11,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Random;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,14 +39,24 @@ public class GameTest {
 
     int DIM = 9;
     game = new Game(playerI, playerII, DIM);
+
+  }
+
+  @AfterEach
+  public void reset() {
+    System.setOut(System.out);
   }
 
   @Test
-  public void testIsValid() {
+  public void testIsValidMove() {
+    //correct
     assertTrue(game.isValidMove(new int[]{1, 6}, Color.BLACK));
     game.doMove(new int[]{1, 6}, Color.BLACK);
-    assertFalse(game.isValidMove(new int[]{1, 6}, Color.BLACK));
+    // invalid turn
+    assertFalse(game.isValidMove(new int[]{1, 7}, Color.BLACK));
+    // invalid move
     assertFalse(game.isValidMove(new int[]{1, 6}, Color.WHITE));
+    // correct move
     assertTrue(game.isValidMove(new int[]{2, 6}, Color.WHITE));
   }
 
@@ -58,24 +67,20 @@ public class GameTest {
     game.doMove(new int[]{6, 0}, Color.BLACK);
     assertSame(game.board.getStone(new int[]{6, 0}), Color.BLACK);
 
-    //TODO: Incorrect player
+    //Incorrect player
+    game.doMove(new int[]{7, 0}, Color.BLACK);
+    assertSame(game.board.getStone(new int[]{7, 0}), Color.EMPTY);
+    game.doMove(new int[]{7, 0}, Color.WHITE);
+    assertSame(game.board.getStone(new int[]{7, 0}), Color.WHITE);
 
-    // Ko-rule
-    game.board.setStone(new int[]{2, 1}, Color.WHITE);
-    game.board.setStone(new int[]{1, 2}, Color.WHITE);
-    game.board.setStone(new int[]{2, 2}, Color.BLACK);
-    game.board.setStone(new int[]{1, 3}, Color.BLACK);
-    game.board.setStone(new int[]{3, 3}, Color.BLACK);
-    System.out.println(game.board.toString());
+    //game inactive
+    game.setActive(false);
+    game.doMove(new int[]{8, 0}, Color.BLACK);
+    assertSame(game.board.getStone(new int[]{8, 0}), Color.EMPTY);
+    game.setActive(true);
+    game.doMove(new int[]{8, 0}, Color.BLACK);
+    assertSame(game.board.getStone(new int[]{8, 0}), Color.BLACK);
 
-    game.doMove(new int[]{3, 2}, Color.WHITE);
-    game.doMove(new int[]{2, 4}, Color.BLACK);
-    game.doMove(new int[]{2, 3}, Color.WHITE);
-    System.out.println(game.board.toString());
-    assertTrue(game.isKoFight(new int[]{2, 2}, Color.BLACK));
-    game.doMove(new int[]{2, 2}, Color.BLACK);
-    assertSame(game.getTurn().color, Color.BLACK);
-    System.out.println(game.board.toString());
   }
 
   @Test
@@ -114,53 +119,44 @@ public class GameTest {
   @Test
   public void testDoPass() {
     game.doPass(Color.BLACK);
-    assertTrue(game.active);
+    assertTrue(game.getActive());
     assertSame(game.getTurn().color, Color.WHITE);
     game.doPass(Color.WHITE);
-    assertFalse(game.active);
+    assertFalse(game.getActive());
   }
 
-//  @Test
-//  public void testStartTimer() {
-//    assertNotNull(game.getTimer());
-//    game.doMove(new int[]{1, 1}, Color.BLACK);
-//    assertSame(Color.WHITE, game.getTurn().getColor());
-//    try {
-//      // check timing in Game, might have changed
-//      Thread.sleep(11000);
-//    } catch (InterruptedException e) {
-//      e.printStackTrace();
-//    }
-//    assertSame(Color.BLACK, game.getTurn().getColor());
-//  }
-//
-//  @Test
-//  public void testStopTimer() {
-//    assertNotNull(game.getTimer());
-//    assertNotNull(game.getTimeOutPass());
-//
-//    game.doMove(new int[]{1, 1}, Color.BLACK);
-//    assertSame(Color.WHITE, game.getTurn().getColor());
-//
-//    try {
-//      Thread.sleep(1000);
-//    } catch (InterruptedException e) {
-//      e.printStackTrace();
-//    }
-//
-//    game.stopTimer();
-//
-//    try {
-//      // check timing in Game, might have changed
-//      Thread.sleep(10000);
-//    } catch (InterruptedException e) {
-//      e.printStackTrace();
-//    }
-//    assertSame(Color.WHITE, game.getTurn().getColor());
-//
-//    assertNull(game.getTimer());
-//    assertNull(game.getTimeOutPass());
-//
-//  }
+  @Test
+  public void testDoResign() {
+    assertTrue(game.getActive());
+    game.doResign(Color.WHITE);
+    assertFalse(game.getActive());
+
+  }
+
+  @Test
+  public void testIsKoFight(){
+    game.board.setStone(new int[]{2, 1}, Color.WHITE);
+    game.board.setStone(new int[]{1, 2}, Color.WHITE);
+    game.board.setStone(new int[]{2, 2}, Color.BLACK);
+    game.board.setStone(new int[]{1, 3}, Color.BLACK);
+    game.board.setStone(new int[]{3, 3}, Color.BLACK);
+    System.out.println(game.board.toString());
+
+    game.doMove(new int[]{3, 2}, Color.WHITE);
+    game.doMove(new int[]{2, 4}, Color.BLACK);
+    game.doMove(new int[]{2, 3}, Color.WHITE);
+    System.out.println(game.board.toString());
+    assertTrue(game.isKoFight(new int[]{2, 2}, Color.BLACK));
+    game.doMove(new int[]{2, 2}, Color.BLACK);
+    assertSame(game.getTurn().color, Color.BLACK);
+    System.out.println(game.board.toString());
+  }
+
+  @Test
+  public void testEnd() {
+    assertTrue(game.getActive());
+    game.end(Color.WHITE);
+    assertFalse(game.getActive());
+  }
 
 }
