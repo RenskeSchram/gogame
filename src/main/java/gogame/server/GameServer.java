@@ -18,10 +18,9 @@ import java.util.Map.Entry;
 public class GameServer extends SocketServer {
 
   protected Map<ServerPlayer, Game> serverMap;
-  protected List<ServerPlayer> queue;
+  private List<ServerPlayer> queue;
   private int serverBoardDIM;
   private int gameCodeCounter = 0;
-  boolean runServer;
 
   /**
    * Constructor to create a new server which listens on the given port.
@@ -32,26 +31,29 @@ public class GameServer extends SocketServer {
   public GameServer(int port) throws IOException {
     super(port);
     serverBoardDIM = 9;
-    runServer = true;
     serverMap = new HashMap<>();
     queue = new ArrayList<>();
     startServer();
   }
 
+  /**
+   * Start server and accept new connections.
+   */
   private void startServer() {
     Thread acceptConnectionsThread = new Thread(() -> {
       try {
         acceptConnections();
       } catch (IOException e) {
-        e.printStackTrace(); //
+        System.err.println("IOExceptions for while accepting connections.");
       }
     });
     acceptConnectionsThread.start();
   }
 
-
+  /**
+   * Start server, end all games, remove all logged players and close socket.
+   */
   public void stopServer() {
-    runServer = false;
     for (Game game : serverMap.values()) {
       game.setActive(false);
     }
@@ -63,15 +65,39 @@ public class GameServer extends SocketServer {
    * Creates a connection handler for the socket.
    *
    * @param socket the socket used to make the connection
-   * @throws IOException
    */
   protected void handleConnection(Socket socket) throws IOException {
     ServerConnection serverConnection = new ServerConnection(socket);
     serverConnection.gameServer = this;
     serverConnection.start();
-    serverConnection.sendOutput(Protocol.HELLO + Protocol.SEPARATOR + "You connected to Renske's GameServer. Please login to proceed.");
+    serverConnection.sendOutput(Protocol.HELLO + Protocol.SEPARATOR
+        + "You connected to Renske's GameServer. Please login to proceed.");
   }
 
+  @Override
+  public String toString() {
+    StringBuilder serverString = new StringBuilder();
+    serverString.append("Renske's GameServer");
+    if (!serverMap.isEmpty()) {
+      serverString.append(" (").append(serverMap.size()).append(" online players are connected)");
+      for (ServerPlayer player : serverMap.keySet()) {
+        serverString.append("\n     ").append(player.getUsername()).append(" in Game ")
+            .append(serverMap.get(player).toString());
+      }
+    }
+    return serverString.toString();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  ///                                Logging of playerstatus                                     ///
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+  /**
+   * Login new players and save player status in serverMap.
+   *
+   * @param serverPlayer new player.
+   */
   public void loginPlayer(ServerPlayer serverPlayer) {
     if (serverMap.containsKey(serverPlayer)) {
       System.err.println("Cannot LOGIN this player twice");
@@ -80,6 +106,12 @@ public class GameServer extends SocketServer {
     }
   }
 
+  /**
+   * Verify if this username is available.
+   *
+   * @param userName username to be checked.
+   * @return true of username is not taken by another connected player.
+   */
   public boolean usernameAvailable(String userName) {
     for (Player player : serverMap.keySet()) {
       if (userName.equalsIgnoreCase(player.getUsername())) {
@@ -89,15 +121,27 @@ public class GameServer extends SocketServer {
     return true;
   }
 
+  /**
+   * @return queue
+   */
+  public List<ServerPlayer> getQueue() {
+    return queue;
+  }
+
+  /**
+   * Queue player and check if ready to start a new game.
+   *
+   * @param serverPlayer player to be queued.
+   */
   public void handleQueue(ServerPlayer serverPlayer) {
     queueServerPlayer(serverPlayer);
     checkQueue();
   }
 
   /**
-   * Add serverPlayer to gameMap.
+   * Add serverPlayer to queue.
    *
-   * @param serverPlayer serverPlayer to be added to the gameMap
+   * @param serverPlayer serverPlayer to be added to the queue
    */
   protected void queueServerPlayer(ServerPlayer serverPlayer) {
     if (!queue.contains(serverPlayer)) {
@@ -119,11 +163,25 @@ public class GameServer extends SocketServer {
     }
   }
 
+  public void handleDisconnect(ServerPlayer serverPlayer) {
+    if (serverMap.get(serverPlayer) != null) {
+      serverMap.get(serverPlayer).doResign(serverPlayer.getColor());
+    }
+    removeInactiveGames();
+    serverMap.remove(serverPlayer);
+    System.out.println(
+        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(serverMap));
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  ///                                         Handling games                                     ///
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+
   /**
    * Start a new game, remove assigned players from queue to gameMap with corresponding game.
    *
-   * @param firstPlayer
-   * @param secondPlayer
+   * @param firstPlayer  first player in game.
+   * @param secondPlayer second player in game.
    */
   protected void startGame(ServerPlayer firstPlayer, ServerPlayer secondPlayer) {
     Game game = new Game(firstPlayer, secondPlayer, serverBoardDIM);
@@ -145,16 +203,6 @@ public class GameServer extends SocketServer {
         String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(serverMap));
   }
 
-  public void handleDisconnect(ServerPlayer serverPlayer) {
-    if (serverMap.get(serverPlayer) != null) {
-      serverMap.get(serverPlayer).doResign(serverPlayer.getColor());
-    }
-    removeInactiveGames();
-    serverMap.remove(serverPlayer);
-    System.out.println(
-        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(serverMap));
-  }
-
   public void removeInactiveGames() {
     for (Entry<ServerPlayer, Game> entries : serverMap.entrySet()) {
       if (!entries.getValue().getActive()) {
@@ -167,6 +215,7 @@ public class GameServer extends SocketServer {
     serverBoardDIM = DIM;
 
   }
+
   public int getServerBoardDIM() {
     return serverBoardDIM;
   }
@@ -175,18 +224,5 @@ public class GameServer extends SocketServer {
     return gameCodeCounter;
   }
 
-  @Override
-  public String toString() {
-    StringBuilder serverString = new StringBuilder();
-    serverString.append("Renske's GameServer");
-    if (!serverMap.isEmpty()) {
-      serverString.append(" (").append(serverMap.size()).append(" online players are connected)");
-      for (ServerPlayer player : serverMap.keySet()) {
-        serverString.append("\n     ").append(player.getUsername()).append(" in Game ")
-            .append(serverMap.get(player).toString());
-      }
-    }
-    return serverString.toString();
-  }
 }
 

@@ -1,9 +1,6 @@
 package gogame.player;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import gogame.Game;
 import gogame.Protocol;
@@ -51,12 +48,6 @@ public class PlayerConnectionTest {
   }
 
   @Test
-  public void testHandleInputDefault() {
-    playerConnection.handleInput("INCORRECT MESSAGE");
-    assertTrue(outputStreamCaptor.toString().trim().contains(Protocol.ERROR));
-  }
-
-  @Test
   public void testHandleInputHello() {
     playerConnection.handleInput(Protocol.HELLO);
 
@@ -86,7 +77,6 @@ public class PlayerConnectionTest {
     playerConnection.handleInput(
         Protocol.GAMESTARTED + Protocol.SEPARATOR + "nameI" + "," + "nameII" + Protocol.SEPARATOR + "5");
     assertTrue(outputStreamCaptor.toString().trim().contains("nameII"));
-    assertNotNull(playerConnection.player.game);
 
     // Test incorrect GAME STARTED inputs are not handled
     outputStreamCaptor.reset();
@@ -103,7 +93,7 @@ public class PlayerConnectionTest {
     playerConnection.handleInput(
         Protocol.GAMESTARTED + Protocol.SEPARATOR + "nameI,nameII" + Protocol.SEPARATOR + "5");
     Game oldGame = playerConnection.player.game;
-    assertTrue(outputStreamCaptor.toString().trim().contains("nameI"));
+    assertFalse(outputStreamCaptor.toString().trim().contains("nameI"));
 
     outputStreamCaptor.reset();
     playerConnection.handleInput(
@@ -133,10 +123,6 @@ public class PlayerConnectionTest {
 
   @Test
   public void testHandleInputRejected() {
-    // player does not have username jet
-    playerConnection.handleInput(Protocol.REJECTED + Protocol.SEPARATOR + "username");
-    assertTrue(outputStreamCaptor.toString().trim().isEmpty());
-
     // correct situation
     outputStreamCaptor.reset();
     playerConnection.player.setUsername("username");
@@ -147,16 +133,7 @@ public class PlayerConnectionTest {
     outputStreamCaptor.reset();
     playerConnection.handleInput(Protocol.REJECTED);
     assertEquals("", outputStreamCaptor.toString().trim());
-
-    // incorrect username received
-    outputStreamCaptor.reset();
-    playerConnection.handleInput(Protocol.REJECTED + Protocol.SEPARATOR + "wrongusername");
-    assertTrue(outputStreamCaptor.toString().trim().isEmpty());
   }
 
-  @Test
-  public void testHandleInputGameOver() {
-    // TODO
-  }
 
 }

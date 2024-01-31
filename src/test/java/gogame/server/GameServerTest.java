@@ -49,6 +49,8 @@ class GameServerTest {
     gameServer.startGame(player1, player2);
     gameServer.stopServer();
     assertTrue(gameServer.serverMap.isEmpty());
+
+    gameServer.loginPlayer(player1);
   }
 
   @Test
@@ -62,10 +64,10 @@ class GameServerTest {
 
   @Test
   protected void testQueueServerPlayer() {
-    assertEquals(0, gameServer.queue.size());
+    assertEquals(0, gameServer.getQueue().size());
     gameServer.queueServerPlayer(player1);
     gameServer.queueServerPlayer(player2);
-    assertEquals(2, gameServer.queue.size());
+    assertEquals(2, gameServer.getQueue().size());
   }
 
   @Test
@@ -83,7 +85,7 @@ class GameServerTest {
     gameServer.queueServerPlayer(player1);
     gameServer.queueServerPlayer(player2);
     gameServer.checkQueue();
-    assertEquals(0, gameServer.queue.size());
+    assertEquals(0, gameServer.getQueue().size());
   }
 
   @Test

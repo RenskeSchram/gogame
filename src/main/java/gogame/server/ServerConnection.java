@@ -81,7 +81,7 @@ public class ServerConnection extends SocketConnection {
     if (serverPlayer != null && serverPlayer.getUsername() != null) {
         gameServer.handleQueue(serverPlayer);
 
-      if (gameServer.queue.contains(serverPlayer)) {
+      if (gameServer.getQueue().contains(serverPlayer)) {
         sendOutput(Protocol.QUEUED);
       }
     } else {
