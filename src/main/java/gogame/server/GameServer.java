@@ -81,10 +81,13 @@ public class GameServer extends SocketServer {
     if (!serverMap.isEmpty()) {
       serverString.append(" (").append(serverMap.size()).append(" online players are connected)");
       for (ServerPlayer player : serverMap.keySet()) {
-        serverString.append("\n     ").append(player.getUsername()).append(" in Game ")
-            .append(serverMap.get(player).toString());
+        serverString.append("\n     ").append(player.getUsername());
+        if(serverMap.get(player) != null) {
+          serverString.append(" in Game ").append(serverMap.get(player).toString());
+        }
       }
     }
+
     return serverString.toString();
   }
 
@@ -204,12 +207,15 @@ public class GameServer extends SocketServer {
   }
 
   public void removeInactiveGames() {
-    for (Entry<ServerPlayer, Game> entries : serverMap.entrySet()) {
-      if (!entries.getValue().getActive()) {
-        serverMap.replace(entries.getKey(), null);
+    for (Entry<ServerPlayer, Game> entry : serverMap.entrySet()) {
+      if (entry.getValue() != null) {
+        if (!entry.getValue().getActive()) {
+          serverMap.replace(entry.getKey(), null);
+        }
       }
     }
   }
+
 
   public void setServerBoardDIM(int DIM) {
     serverBoardDIM = DIM;

@@ -55,10 +55,11 @@ public class OnlinePlayer extends Player {
 
   public void setStrategy(String type) {
     // choose strategy
-    if (type.equals("computer")){
+    if (type.equals("computer")) {
       strategy = new ComputerStrategy(this);
+      receiveMessage("Computer Strategy applied");
     } else {
-      receiveMessage("human strategy applied");
+      receiveMessage("Human Strategy applied");
     }
   }
 

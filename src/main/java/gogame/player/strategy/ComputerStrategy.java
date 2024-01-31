@@ -1,11 +1,9 @@
 package gogame.player.strategy;
 
 import gogame.Board;
-import gogame.Color;
 import gogame.Protocol;
 import gogame.player.OnlinePlayer;
 import gogame.player.StrategyGame;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -42,41 +40,32 @@ public class ComputerStrategy implements Strategy {
   @Override
   public void determineMove() {
     int[] move = getImprovingTerritoryMove();
-    System.out.println(getValidMoves().size());
-    player.getConnection().sendOutput(Protocol.PRINT);
 
     try {
       Thread.sleep(2000);
     } catch (InterruptedException ie) {
       Thread.currentThread().interrupt();
     }
-
+    Board testBoard = strategyGame.board.deepCopy();
     if (move == null) {
-      if (!getValidMoves().isEmpty()) {
-        System.out.println("random move");
-        sendMove(getRandomMove(getValidMoves()));
+      if (!getValidMoves().isEmpty() || getTerritoryDifference(testBoard) < 0) {
+        int[] randomMove = getRandomMove(getValidMoves());
+        player.doMove(randomMove);
+        System.out.println(Arrays.toString(randomMove) + player.getColor());
+
       } else {
-        sendPass();
+        player.doPass();
       }
     } else {
-
       player.doMove(move);
       System.out.println(Arrays.toString(move) + player.getColor());
     }
   }
 
-  private void sendPass() {
-    player.getConnection().sendOutput(Protocol.PASS);
-  }
-
-  public void sendMove(int[] move) {
-    player.getConnection().sendOutput(
-        Protocol.MOVE + Protocol.SEPARATOR + gogame.Move.intersectionLocationToString(move));
-  }
 
   public int[] getImprovingTerritoryMove() {
     int[] bestMove = null;
-    int bestTerritoryDifference = -1;
+    int bestTerritoryDifference = 0;
 
     List<int[]> shuffledValidMoves = getValidMoves();
     Collections.shuffle(shuffledValidMoves);
@@ -91,16 +80,6 @@ public class ComputerStrategy implements Strategy {
       strategyGame.board = testBoard;
     }
     return bestMove;
-  }
-
-  protected List<int[]> getCaptures(Color color, int numOfLiberties) {
-    List<int[]> possibleCaptures = new ArrayList<>();
-    for (int[] stone : strategyGame.board.getStonesWithThisColor(color.other())) {
-      if (strategyGame.board.getLibertiesOfGroup(strategyGame.board.getGroup(stone, true)).size() == numOfLiberties) {
-        possibleCaptures.add(strategyGame.board.getLibertiesOfGroup(strategyGame.board.getGroup(stone, true)).get(0));
-      }
-    }
-    return possibleCaptures;
   }
 
   protected int getTerritoryDifference(Board board) {

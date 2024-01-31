@@ -22,7 +22,6 @@ public class GameServerTUITest {
     System.setIn(System.in);
   }
 
-
   @Test
   public void testCorrectPORT() throws IOException {
 

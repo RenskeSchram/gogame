@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Test;
 public class ServerConnectionTest {
 
   private ServerConnection serverConnection;
-  private ServerPlayer testPlayer;
   private GameServer gameServer;
   private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
@@ -37,7 +36,7 @@ public class ServerConnectionTest {
     serverConnection.gameServer = gameServer;
     serverConnection.start();
 
-    testPlayer = new ServerPlayer();
+    ServerPlayer testPlayer = new ServerPlayer();
 
     System.setOut(new PrintStream(outputStreamCaptor));
   }

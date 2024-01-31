@@ -109,5 +109,13 @@ class GameServerTest {
     gameServer.handleDisconnect(player1);
     assertFalse(gameServer.serverMap.containsKey(player1));
     assertNull(gameServer.serverMap.get(player2));
+
+    System.out.println(gameServer.toString());
+  }
+  @Test
+  public void testToString() {
+    gameServer.loginPlayer(player1);
+    gameServer.loginPlayer(player2);
+    System.out.println(gameServer.toString());
   }
 }

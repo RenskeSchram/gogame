@@ -27,7 +27,8 @@ public class GameServerTUI {
     }
 
     gameServer = new GameServer(port);
-    System.out.println(String.format("%-20s", "[SERVER STARTED]") + String.format("%-20s", "PORT: "+ port));
+    System.out.println(String.format("%-20s", "[SERVER STARTED]") + String.format("%-20s",
+        "PORT: " + port + "\n"));
 
     while (runTui) {
       String systemTuiInput = scanner.nextLine();

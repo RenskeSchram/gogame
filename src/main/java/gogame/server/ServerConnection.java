@@ -26,7 +26,7 @@ public class ServerConnection extends SocketConnection {
    */
   @Override
   public void handleInput(String input) {
-    System.out.println(String.format("%-20s", "[MESSAGE " + serverPlayer.getUsername() + "]") + input);
+    System.out.println("\u001B[37m" + String.format("%-20s", "[ " + serverPlayer.getUsername() + " ]") + input+ "\u001B[0m");
 
     String[] protocol = input.split(Protocol.SEPARATOR);
     switch (protocol[0]) {
@@ -113,17 +113,16 @@ public class ServerConnection extends SocketConnection {
     }
   }
 
+  /**
+   * Handle error by logging the error.
+   * @param protocol input message.
+   */
   private void handleError(String[] protocol) {
     if (protocol.length >= 1) {
       System.err.println("[RECEIVED ERROR]" + protocol[1]);
     } else {
       System.err.println("[RECEIVED ERROR]");
     }
-  }
-
-  public void sendOutput(String output) {
-    super.sendOutput(output);
-    //System.out.println(String.format("%-20s", "[OUTPUT MESSAGE]") + output);
   }
 
   /**
