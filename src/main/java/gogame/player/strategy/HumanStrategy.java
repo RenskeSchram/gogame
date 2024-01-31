@@ -4,7 +4,7 @@ import gogame.player.OnlinePlayer;
 import gogame.player.StrategyGame;
 
 public class HumanStrategy implements Strategy {
-
+  StrategyGame strategyGame;
   OnlinePlayer player;
 
   public HumanStrategy(OnlinePlayer player){
@@ -28,6 +28,6 @@ public class HumanStrategy implements Strategy {
 
   @Override
   public void setGame(StrategyGame game) {
-    //
+    this.strategyGame = game;
   }
 }

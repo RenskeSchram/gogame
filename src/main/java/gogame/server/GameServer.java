@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Networking server for accepting connections from online players.
@@ -51,9 +52,10 @@ public class GameServer extends SocketServer {
 
   public void stopServer() {
     runServer = false;
-
-    // TODO: Close all active connections, games etc.
-
+    for (Game game : serverMap.values()) {
+      game.setActive(false);
+    }
+    serverMap.clear();
     super.close();
   }
 
@@ -71,7 +73,11 @@ public class GameServer extends SocketServer {
   }
 
   public void loginPlayer(ServerPlayer serverPlayer) {
-    serverMap.put(serverPlayer, null);
+    if (serverMap.containsKey(serverPlayer)) {
+      System.err.println("Cannot LOGIN this player twice");
+    } else {
+      serverMap.put(serverPlayer, null);
+    }
   }
 
   public boolean usernameAvailable(String userName) {
@@ -109,6 +115,7 @@ public class GameServer extends SocketServer {
   void checkQueue() {
     if (queue.size() >= 2) {
       startGame(queue.get(0), queue.get(1));
+
     }
   }
 
@@ -120,7 +127,6 @@ public class GameServer extends SocketServer {
    */
   protected void startGame(ServerPlayer firstPlayer, ServerPlayer secondPlayer) {
     Game game = new Game(firstPlayer, secondPlayer, serverBoardDIM);
-
     queue.remove(firstPlayer);
     serverMap.replace(firstPlayer, game);
     firstPlayer.game = game;
@@ -139,17 +145,22 @@ public class GameServer extends SocketServer {
         String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(serverMap));
   }
 
-  public void quitGame(ServerPlayer serverPlayer) {
-    serverMap.replace(serverPlayer, null);
-
+  public void handleDisconnect(ServerPlayer serverPlayer) {
+    if (serverMap.get(serverPlayer) != null) {
+      serverMap.get(serverPlayer).doResign(serverPlayer.getColor());
+    }
+    removeInactiveGames();
+    serverMap.remove(serverPlayer);
     System.out.println(
         String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(serverMap));
-
   }
 
-  public void handleDisconnect(ServerPlayer serverPlayer) {
-    serverMap.get(serverPlayer).doResign(serverPlayer.getColor());
-    serverMap.remove(serverPlayer);
+  public void removeInactiveGames() {
+    for (Entry<ServerPlayer, Game> entries : serverMap.entrySet()) {
+      if (!entries.getValue().getActive()) {
+        serverMap.replace(entries.getKey(), null);
+      }
+    }
   }
 
   public void setServerBoardDIM(int DIM) {
@@ -158,6 +169,10 @@ public class GameServer extends SocketServer {
   }
   public int getServerBoardDIM() {
     return serverBoardDIM;
+  }
+
+  public int getGameCodeCounter() {
+    return gameCodeCounter;
   }
 
   @Override

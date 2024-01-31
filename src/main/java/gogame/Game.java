@@ -15,6 +15,9 @@ public class Game {
   protected boolean useTimer = true;
   private int gameCode;
 
+//  private Timer timer;
+//  private TimerTask timeOutPass;
+//  private static final int MOVE_DURATION = 1000;
 
   /**
    * Constructor for new Game object with players and a new Board.
@@ -170,7 +173,7 @@ public class Game {
       }
 
     } else {
-      getPlayer(color).passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "wait for your turn to make a move");
+      getPlayer(color).passGameUpdate( Protocol.ERROR + Protocol.SEPARATOR + "wait for your turn to make a move");
     }
 
   }
@@ -253,5 +256,48 @@ public class Game {
     copyBoard.removeCaptured(copyBoard.getCaptured(location));
     return Arrays.deepEquals(copyBoard.getIntersections(), previousBoard.getIntersections());
   }
+
+//
+//  protected void startTimer() {
+//    stopTimer();
+//
+//    if (useTimer) {
+//      timer = new Timer();
+//      timeOutPass = new TimerTask() {
+//        @Override
+//        public void run() {
+//          getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "automated pass");
+//          doPass(getTurn().getColor());
+//        }
+//      };
+//      timer.schedule(timeOutPass, MOVE_DURATION);
+//    } else {
+//      timer = null;
+//      timeOutPass = null;
+//    }
+//  }
+//  protected void stopTimer() {
+//    if (useTimer && timer != null) {
+//      timer.cancel();
+//      timer = null;
+//    }
+//    if (useTimer && timeOutPass != null) {
+//      timeOutPass.cancel();
+//      timeOutPass = null;
+//    }
+//  }
+//  protected void resetTimer() {
+//    System.out.println("reset Timer");
+//    stopTimer();
+//    startTimer();
+//  }
+//
+//  public Timer getTimer() {
+//    return timer;
+//  }
+//
+//  public TimerTask getTimeOutPass() {
+//    return timeOutPass;
+//  }
 
 }

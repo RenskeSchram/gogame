@@ -50,6 +50,7 @@ public class GameTest {
   @AfterEach
   public void reset() {
     System.setOut(System.out);
+    //game.stopTimer();
   }
 
 
@@ -140,7 +141,7 @@ public class GameTest {
   }
 
   @Test
-  public void testIsKoFight(){
+  public void testIsKoFight() {
     game.board.setStone(new int[]{2, 1}, Color.WHITE);
     game.board.setStone(new int[]{1, 2}, Color.WHITE);
     game.board.setStone(new int[]{2, 2}, Color.BLACK);
@@ -164,5 +165,85 @@ public class GameTest {
     game.end(Color.WHITE);
     assertFalse(game.getActive());
   }
-
 }
+
+//  @Test
+//  public void testStartTimer() {
+//    game.useTimer = false;
+//    game.startTimer();
+//    Assertions.assertNull(game.getTimer());
+//    Assertions.assertNull(game.getTimeOutPass());
+//
+//    game.useTimer = true;
+//
+//    game.startTimer();
+//    Assertions.assertNotNull(game.getTimer());
+//    Assertions.assertNotNull(game.getTimeOutPass());
+//
+//    try {
+//      // check timing in MoveTimer, might have changed
+//      Thread.sleep(1500);
+//    } catch (InterruptedException e) {
+//      System.err.println("sleep thread interrupted");
+//    }
+//    assertTrue(outputStreamCaptor.toString().trim().contains("automated pass"));
+//  }
+//
+
+//  @Test
+//  public void testStopTimer() {
+//    game.startTimer();
+//    Assertions.assertNotNull(game.getTimer());
+//    Assertions.assertNotNull(game.getTimeOutPass());
+//
+//    try {
+//      Thread.sleep(500);
+//    } catch (InterruptedException e) {
+//      e.printStackTrace();
+//    }
+//
+//    game.stopTimer();
+//    Assertions.assertNull(game.getTimer());
+//    Assertions.assertNull(game.getTimeOutPass());
+//
+//    try {
+//      // check timing in Game, might have changed
+//      Thread.sleep(1500);
+//    } catch (InterruptedException e) {
+//      System.err.println("sleep thread interrupted");
+//    }
+//    Assertions.assertNull(game.getTimer());
+//    Assertions.assertNull(game.getTimeOutPass());
+//  }
+//
+//  @Test
+//  public void testResetTimer() {
+//    game.startTimer();
+//    Assertions.assertNotNull(game.getTimer());
+//    Assertions.assertNotNull(game.getTimeOutPass());
+//
+//    try {
+//      Thread.sleep(600);
+//    } catch (InterruptedException e) {
+//      System.err.println("sleep thread interrupted");
+//    }
+//
+//    game.resetTimer();
+//
+//    try {
+//      Thread.sleep(500);
+//    } catch (InterruptedException e) {
+//      System.err.println("sleep thread interrupted");
+//    }
+//
+//    Assertions.assertFalse(outputStreamCaptor.toString().trim().contains("automated pass"));
+//
+//    try {
+//      Thread.sleep(800);
+//    } catch (InterruptedException e) {
+//      System.err.println("sleep thread interrupted");
+//    }
+//    Assertions.assertTrue(outputStreamCaptor.toString().trim().contains("automated pass"));
+//  }
+//
+//}

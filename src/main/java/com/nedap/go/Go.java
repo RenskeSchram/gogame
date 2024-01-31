@@ -102,8 +102,8 @@ public class Go {
     gogui.addHintIndicator(4, 4);
   }
 
-//  public static void main(String[] args) {
-//    Go go = new Go(9);
-//    go.placeStone(new int[]{0,0}, Color.WHITE);
-//  }
+public static void main(String[] args) {
+    Go go = new Go(9);
+    go.placeStone(new int[]{0,0}, Color.WHITE);
+  }
 }

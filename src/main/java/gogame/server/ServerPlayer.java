@@ -26,6 +26,5 @@ public class ServerPlayer extends Player {
 
   public void quitGame() {
     super.quitGame();
-    serverConnection.gameServer.quitGame(this);
   }
 }

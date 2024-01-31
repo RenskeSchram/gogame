@@ -34,25 +34,25 @@ public class ServerConnection extends SocketConnection {
         sendError("Hello to you too! We have exchanged HELLOs before right?");
         break;
       case Protocol.LOGIN:
-        handleLoginProtocol(protocol);
+        handleLogin(protocol);
         break;
       case Protocol.QUEUE:
-        handleQueueProtocol();
+        handleQueue();
         break;
       case Protocol.MOVE:
-        handleMoveProtocol(protocol);
+        handleMove(protocol);
         break;
       case Protocol.PASS:
-        handlePassProtocol(protocol);
+        handlePass();
         break;
       case Protocol.RESIGN:
-        handleResignProtocol(protocol);
+        handleResign();
         break;
       case Protocol.PRINT:
         sendOutput(Protocol.PRINT);
         break;
       case Protocol.ERROR:
-        handleErrorProtocol(protocol);
+        handleError(protocol);
         break;
       default:
         sendError("Could not handle message on serverside");
@@ -63,7 +63,7 @@ public class ServerConnection extends SocketConnection {
     serverPlayer.serverConnection = this;
   }
 
-  private void handleLoginProtocol(String[] protocol) {
+  private void handleLogin(String[] protocol) {
     if (protocol.length >= 2) {
       if (gameServer.usernameAvailable(protocol[1]) && serverPlayer.getUsername() == null) {
         serverPlayer.setUsername(protocol[1]);
@@ -77,7 +77,7 @@ public class ServerConnection extends SocketConnection {
     }
   }
 
-  private void handleQueueProtocol() {
+  private void handleQueue() {
     if (serverPlayer != null && serverPlayer.getUsername() != null) {
         gameServer.handleQueue(serverPlayer);
 
@@ -89,15 +89,15 @@ public class ServerConnection extends SocketConnection {
     }
   }
 
-  private void handleMoveProtocol(String[] protocol) {
-    if (protocol.length >= 2 && gameServer.serverMap.containsKey(serverPlayer)) {
+  private void handleMove(String[] protocol) {
+    if (protocol.length >= 2 && gameServer.serverMap.get(serverPlayer) != null) {
       serverPlayer.doMove(getLocationArray(protocol[1], serverPlayer.game.board.getDIM()), Color.EMPTY);
     } else {
       sendError("Could not handle MOVE");
     }
   }
 
-  private void handlePassProtocol(String[] protocol) {
+  private void handlePass() {
     if (gameServer.serverMap.containsKey(serverPlayer)) {
       serverPlayer.doPass();
     } else {
@@ -105,7 +105,7 @@ public class ServerConnection extends SocketConnection {
     }
   }
 
-  private void handleResignProtocol(String[] protocol) {
+  private void handleResign() {
     if (gameServer.serverMap.containsKey(serverPlayer)) {
       serverPlayer.doResign();
     } else {
@@ -113,7 +113,7 @@ public class ServerConnection extends SocketConnection {
     }
   }
 
-  private void handleErrorProtocol(String[] protocol) {
+  private void handleError(String[] protocol) {
     if (protocol.length >= 1) {
       System.err.println("[RECEIVED ERROR]" + protocol[1]);
     } else {
