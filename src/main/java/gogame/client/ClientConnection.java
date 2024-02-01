@@ -124,6 +124,7 @@ public class ClientConnection extends SocketConnection {
       sendError("could not handle START GAME, player is already in a game");
     }
   }
+
   private void handleGameOver(String[] protocol) {
     player.receiveMessage(printProtocolMessage(protocol));
     game.board.getFilledBoard();

@@ -32,4 +32,5 @@ public class StrategyGame extends Game {
   private void updateGoGui() {
     goGui.updateGUI(board);
   }
+
 }

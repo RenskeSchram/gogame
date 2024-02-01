@@ -117,9 +117,16 @@ public class Game {
    */
   protected void end(Color color) {
     active = false;
-    for (Player player : players) {
-      player.quitGame();
-      player.passGameUpdate(Protocol.GAMEOVER + Protocol.SEPARATOR + color);
+    if (color == Color.WHITE || color == Color.BLACK) {
+      for (Player player : players) {
+        player.quitGame();
+        player.passGameUpdate( Protocol.GAMEOVER + Protocol.SEPARATOR + "WINNER" + Protocol.SEPARATOR + color);
+      }
+    } else {
+      for (Player player : players) {
+        player.quitGame();
+        player.passGameUpdate(Protocol.GAMEOVER + Protocol.SEPARATOR + "DRAW");
+      }
     }
   }
 
@@ -146,7 +153,7 @@ public class Game {
     if (isValidTurn(color) && active) {
 
       if (isValidMove(location, color)) {
-        passGameUpdateToAll(Protocol.MOVE + Protocol.SEPARATOR + location[0] + "," + location[1]
+        passGameUpdateToAll(Protocol.MOVE + Protocol.SEPARATOR + intersectionArrayToSingleInt(location)
             + Protocol.SEPARATOR + getTurn().getColor());
 
         passed = false;
@@ -166,6 +173,10 @@ public class Game {
       getPlayer(color).passGameUpdate( Protocol.ERROR + Protocol.SEPARATOR + "wait for your turn to make a move");
     }
 
+  }
+
+  private int intersectionArrayToSingleInt(int[] intersectionArray) {
+    return intersectionArray[1]*board.getDIM() + intersectionArray[0];
   }
 
   public void handleValidMove(int[] location, Color color) {

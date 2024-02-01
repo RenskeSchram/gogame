@@ -61,14 +61,15 @@ public class ComputerStrategy implements Strategy {
       Thread.currentThread().interrupt();
     }
     Board testBoard = strategyGame.board.deepCopy();
-    if (move == null) {
-      if (!getValidMoves().isEmpty() || getTerritoryDifference(testBoard) < 0) {
+
+    if (move == null || getValidMoves().size() < 3) {
+      if (getValidMoves().size() < 3 || getTerritoryDifference(testBoard) > 0) {
+        player.doPass();
+        System.out.println("PASS" + player.getColor());
+      } else {
         int[] randomMove = getRandomMove(getValidMoves());
         player.doMove(randomMove);
         System.out.println(Arrays.toString(randomMove) + player.getColor());
-
-      } else {
-        player.doPass();
       }
     } else {
       player.doMove(move);
