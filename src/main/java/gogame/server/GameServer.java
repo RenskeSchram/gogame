@@ -74,6 +74,19 @@ public class GameServer extends SocketServer {
         + "You connected to Renske's GameServer. Please login to proceed.");
   }
 
+  public void handleDisconnect(ServerPlayer serverPlayer) {
+    // check queue
+    queue.remove(serverPlayer);
+    // check serverMap and game
+    if (serverMap.get(serverPlayer) != null) {
+      serverMap.get(serverPlayer).doResign(serverPlayer.getColor());
+    }
+    removeInactiveGames();
+    serverMap.remove(serverPlayer);
+    System.out.println(
+        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(serverMap));
+  }
+
   @Override
   public String toString() {
     StringBuilder serverString = new StringBuilder();
@@ -82,7 +95,7 @@ public class GameServer extends SocketServer {
       serverString.append(" (").append(serverMap.size()).append(" online players are connected)");
       for (ServerPlayer player : serverMap.keySet()) {
         serverString.append("\n     ").append(player.getUsername());
-        if(serverMap.get(player) != null) {
+        if (serverMap.get(player) != null) {
           serverString.append(" in Game ").append(serverMap.get(player).toString());
         }
       }
@@ -92,7 +105,7 @@ public class GameServer extends SocketServer {
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  ///                                Logging of playerstatus                                     ///
+  ///                                Logging of player-status                                    ///
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -131,15 +144,6 @@ public class GameServer extends SocketServer {
     return queue;
   }
 
-  /**
-   * Queue player and check if ready to start a new game.
-   *
-   * @param serverPlayer player to be queued.
-   */
-  public void handleQueue(ServerPlayer serverPlayer) {
-    queueServerPlayer(serverPlayer);
-    checkQueue();
-  }
 
   /**
    * Add serverPlayer to queue.
@@ -159,21 +163,11 @@ public class GameServer extends SocketServer {
   /**
    * Check queue and start game if two players are queued.
    */
-  void checkQueue() {
+  protected synchronized void checkQueue() {
     if (queue.size() >= 2) {
       startGame(queue.get(0), queue.get(1));
 
     }
-  }
-
-  public void handleDisconnect(ServerPlayer serverPlayer) {
-    if (serverMap.get(serverPlayer) != null) {
-      serverMap.get(serverPlayer).doResign(serverPlayer.getColor());
-    }
-    removeInactiveGames();
-    serverMap.remove(serverPlayer);
-    System.out.println(
-        String.format("%-20s", "[CURRENT GAMEMAP]") + Collections.singletonList(serverMap));
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -215,7 +209,6 @@ public class GameServer extends SocketServer {
       }
     }
   }
-
 
   public void setServerBoardDIM(int DIM) {
     serverBoardDIM = DIM;

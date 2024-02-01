@@ -1,26 +1,30 @@
-package gogame.player;
+package gogame.client;
 
 import gogame.Player;
 import gogame.Protocol;
 import gogame.SocketConnection;
-import gogame.player.strategy.ComputerStrategy;
-import gogame.player.strategy.HumanStrategy;
-import gogame.player.strategy.Strategy;
+import gogame.client.strategy.ComputerStrategy;
+import gogame.client.strategy.HumanStrategy;
+import gogame.client.strategy.Strategy;
 import java.io.IOException;
 import java.net.Socket;
 
-public class OnlinePlayer extends Player {
+/**
+ * Client player. Has a tui and strategy to determine plays in the game.
+ */
 
-  public PlayerConnection playerConnection;
-  public PlayerTUI tui;
-  public Strategy strategy;
+public class ClientPlayer extends Player {
 
-  public OnlinePlayer(){
+  private ClientConnection playerConnection;
+  protected ClientTUI tui;
+  protected Strategy strategy;
+
+  public ClientPlayer(){
     strategy = new HumanStrategy(this);
   }
 
-  public void makeConnection(Socket socket) throws IOException {
-    playerConnection = new PlayerConnection(socket, this);
+  protected void makeConnection(Socket socket) throws IOException {
+    playerConnection = new ClientConnection(socket, this);
   }
 
   @Override
@@ -41,11 +45,11 @@ public class OnlinePlayer extends Player {
 
   @Override
   public void passGameUpdate(String gameUpdate) {
-    // do nothing, passing not needed for online player
+    // do nothing, passing not needed for client player
   }
 
   public void sendUsername() {
-    // send username based on online player strategy
+    // send username based on client player strategy
     strategy.getUsername();
   }
 

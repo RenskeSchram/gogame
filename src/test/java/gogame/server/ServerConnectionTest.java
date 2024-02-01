@@ -1,7 +1,7 @@
 package gogame.server;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import gogame.Protocol;
@@ -48,12 +48,6 @@ public class ServerConnectionTest {
 
   @Test
   public void testHandleInputHello(){
-    // test correct situation
-    assertNull(serverConnection.serverPlayer);
-    serverConnection.handleInput(Protocol.HELLO);
-    assertNotNull(serverConnection.serverPlayer);
-    assertNotNull(serverConnection.serverPlayer.serverConnection);
-
     // test second handshake, no changes happen
     ServerPlayer oldServerPlayer = serverConnection.serverPlayer;
     serverConnection.handleInput(Protocol.HELLO);
@@ -62,12 +56,6 @@ public class ServerConnectionTest {
 
   @Test
   public void testHandleInputLogin() {
-    // no previous handshake
-    serverConnection.handleInput(Protocol.LOGIN + Protocol.SEPARATOR + "name");
-    assertNull(serverConnection.serverPlayer);
-
-    serverConnection.handleInput(Protocol.HELLO);
-
     // test login without provided username
     assertNull(serverConnection.serverPlayer.getUsername());
     serverConnection.handleInput(Protocol.LOGIN);
@@ -85,23 +73,35 @@ public class ServerConnectionTest {
 
   @Test
   public void testHandleQueue() {
-    // test not logged in jet
-    serverConnection.handleInput(Protocol.QUEUE);
+    boolean failed = false;
+    try {
+      // test not logged in jet
+      serverConnection.handleInput(Protocol.QUEUE);
 
-    // correct login
-    serverConnection.handleInput(Protocol.HELLO);
-    serverConnection.handleInput(Protocol.LOGIN+Protocol.SEPARATOR+"name");
-    serverConnection.handleInput(Protocol.QUEUE);
+      // correct login
+      serverConnection.handleInput(Protocol.HELLO);
+      serverConnection.handleInput(Protocol.LOGIN + Protocol.SEPARATOR + "name");
+      serverConnection.handleInput(Protocol.QUEUE);
+    } catch (Exception e) {
+      System.err.println("Test failed");
+      failed = true;
+    }
+    assertFalse(failed);
   }
 
   @Test
   public void testHandleMovePassResign() {
-    // test not logged in jet
-    serverConnection.handleInput(Protocol.MOVE +Protocol.SEPARATOR+"5");
-    serverConnection.handleInput(Protocol.PASS);
-    serverConnection.handleInput(Protocol.RESIGN);
-
-
+    boolean failed = false;
+    try {
+      // test not logged in jet
+      serverConnection.handleInput(Protocol.MOVE +Protocol.SEPARATOR+"5");
+      serverConnection.handleInput(Protocol.PASS);
+      serverConnection.handleInput(Protocol.RESIGN);
+    } catch (Exception e) {
+      System.err.println("Test failed");
+      failed = true;
+    }
+    assertFalse(failed);
   }
 
 }

@@ -63,7 +63,7 @@ public abstract class SocketServer {
    * Creates a connection handler for the socket.
    *
    * @param socket the socket used to make the connection
-   * @throws IOException
+   * @throws IOException if an I/O error occurs when handling the connection.
    */
   protected abstract void handleConnection(Socket socket) throws IOException;
 }

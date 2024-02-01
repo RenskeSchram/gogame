@@ -1,5 +1,8 @@
 package gogame;
 
+/**
+ * Color object.
+ */
 public enum Color {
 
   EMPTY("\u001B[37m" + "◌" + "\u001B[0m"), BLACK("\u001B[30m" + "●" + "\u001B[0m"), WHITE("●"),

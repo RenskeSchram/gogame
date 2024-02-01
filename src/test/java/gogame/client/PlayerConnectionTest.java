@@ -1,4 +1,4 @@
-package gogame.player;
+package gogame.client;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,8 +17,8 @@ import org.junit.jupiter.api.Test;
 
 public class PlayerConnectionTest {
 
-  private PlayerConnection playerConnection;
-  private OnlinePlayer testPlayer;
+  private ClientConnection playerConnection;
+  private ClientPlayer testPlayer;
   private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
   public int getRandomPort() {
@@ -31,10 +31,10 @@ public class PlayerConnectionTest {
   public void setUp() throws IOException {
     int PORT = getRandomPort();
     new GameServer(PORT);
-    testPlayer = new OnlinePlayer();
-    playerConnection = new PlayerConnection(
+    testPlayer = new ClientPlayer();
+    playerConnection = new ClientConnection(
         new Socket(InetAddress.getByName("localhost"), PORT), testPlayer);
-    testPlayer.tui = new PlayerTUI();
+    testPlayer.tui = new ClientTUI();
     playerConnection.player = testPlayer;
 
     System.setOut(new PrintStream(outputStreamCaptor));

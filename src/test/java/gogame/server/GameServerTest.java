@@ -103,7 +103,13 @@ class GameServerTest {
   public void testHandleDisconnect() {
     gameServer.loginPlayer(player1);
     gameServer.loginPlayer(player2);
+    gameServer.queueServerPlayer(player1);
+    gameServer.handleDisconnect(player1);
+    assertTrue(gameServer.getQueue().isEmpty());
+    assertEquals(1, gameServer.serverMap.size());
 
+    gameServer.loginPlayer(player1);
+    assertEquals(2, gameServer.serverMap.size());
     gameServer.startGame(player1, player2);
     assertNotNull(gameServer.serverMap.get(player1));
     gameServer.handleDisconnect(player1);

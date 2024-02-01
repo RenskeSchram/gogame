@@ -106,9 +106,11 @@ public abstract class SocketConnection {
 
 
   /**
-   * @param input
-   * @param DIM
-   * @return
+   * Correctly format string input to intersection array.
+   *
+   * @param input String input of intersection.
+   * @param DIM dimension of board for correct formatting.
+   * @return int array with intersection.
    */
   protected int[] getLocationArray(String input, int DIM) {
     String[] splitInput = input.split(",");
@@ -135,6 +137,12 @@ public abstract class SocketConnection {
     }
   }
 
+  /**
+   * Format input String to color object.
+   *
+   * @param input String defining color.
+   * @return color object.
+   */
   protected Color getColor(String input) {
     return switch (input.toLowerCase()) {
       case "white" -> Color.WHITE;

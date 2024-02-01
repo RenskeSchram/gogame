@@ -1,14 +1,17 @@
 package gogame;
 
+/**
+ * GoGame player.
+ */
 public abstract class Player {
 
-  Color color;
-  String userName;
+  private Color color;
+  private String userName;
   public Game game;
 
   /**
    * Send move to board.
-   * @param intersection
+   * @param intersection location of stone to be placed.
    */
   public void doMove(int[] intersection, Color color) {
     game.doMove(intersection, this.color);
@@ -60,7 +63,7 @@ public abstract class Player {
     return this.userName;
   }
 
-  public void quitGame() {
+  protected void quitGame() {
     this.game = null;
   }
 
@@ -71,6 +74,6 @@ public abstract class Player {
 
   public abstract SocketConnection getConnection();
 
-  public abstract void passGameUpdate(String gameUpdate);
+  protected abstract void passGameUpdate(String gameUpdate);
 
 }

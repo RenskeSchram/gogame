@@ -1,13 +1,13 @@
-package gogame.player.strategy;
+package gogame.client.strategy;
 
-import gogame.player.OnlinePlayer;
-import gogame.player.StrategyGame;
+import gogame.client.ClientPlayer;
+import gogame.client.StrategyGame;
 
 public class HumanStrategy implements Strategy {
-  StrategyGame strategyGame;
-  OnlinePlayer player;
+  protected StrategyGame strategyGame;
+  private final ClientPlayer player;
 
-  public HumanStrategy(OnlinePlayer player){
+  public HumanStrategy(ClientPlayer player){
     this.player = player;
   }
 
@@ -23,7 +23,6 @@ public class HumanStrategy implements Strategy {
 
   @Override
   public void sendQueue() {
-    //
   }
 
   @Override

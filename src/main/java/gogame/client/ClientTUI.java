@@ -1,4 +1,4 @@
-package gogame.player;
+package gogame.client;
 
 
 import java.io.IOException;
@@ -9,12 +9,17 @@ import java.net.UnknownHostException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class PlayerTUI {
-  boolean run = true;
+/**
+ * Client TUI to start a new Client side, create a player to play games and handle the Client side.
+ */
+public class ClientTUI {
 
-  public void runTUI() {
+  private boolean run = true;
+
+  private void runTUI() {
     Scanner scanner = new Scanner(System.in);
 
+    // retrieve server adres
     InetAddress server = null;
     boolean validServer = false;
     while (!validServer) {
@@ -27,6 +32,7 @@ public class PlayerTUI {
       }
     }
 
+    // retrieve port number
     int PORT = 0;
     boolean validPort = false;
     while (!validPort) {
@@ -40,48 +46,55 @@ public class PlayerTUI {
       }
     }
 
-    OnlinePlayer onlinePlayer = new OnlinePlayer();
+    // create a new client player based on strategy
+    ClientPlayer onlinePlayer = new ClientPlayer();
 
     System.out.print("strategy:    \n");
     String strategy = scanner.next();
     onlinePlayer.tui = this;
     onlinePlayer.setStrategy(strategy);
 
+    // make connection
     boolean connection = false;
     while (!connection) {
       try {
         onlinePlayer.makeConnection(new Socket(server, PORT));
         connection = true;
       } catch (ConnectException e) {
-        System.err.println("Connection failed. Retrying.");
+        System.err.println("Connecting failed.");
+        break;
       } catch (IOException e) {
-        System.err.println("An IOException error occurred. Please retry.");
+        System.err.println("An IOException error occurred while making a connection.");
+        break;
       }
     }
 
     while (run) {
       String message = scanner.nextLine();
 
+      // TUI options beside regular protocol
       if (message.equalsIgnoreCase("help")) {
         System.out.println(this);
       } else if (message.equalsIgnoreCase("disconnect")) {
-        //TODO: stop serverconnection.
+        onlinePlayer.getConnection().close();
         run = false;
       } else {
-        onlinePlayer.playerConnection.sendOutput(message);
+        if (onlinePlayer.getConnection() != null) {
+          onlinePlayer.getConnection().sendOutput(message);
+        } else {
+          System.err.println("No connection. Quitting the TUI, please restart.");
+          run = false;
+        }
       }
     }
   }
 
-  /**
-   * Print Message.
-   */
-  public void printMessage(String message) {
+  protected void printMessage(String message) {
     System.out.println(message);
   }
 
   public static void main(String[] args) {
-    PlayerTUI playerTUI = new PlayerTUI();
+    ClientTUI playerTUI = new ClientTUI();
     playerTUI.runTUI();
   }
 
@@ -97,7 +110,5 @@ public class PlayerTUI {
             "   PRINT ...................... print current state of Board \n" +
             "   DISCONNECT ..................disconnect and stop \n" +
             "   HELP ....................... help (this menu) \n";
-
-
   }
 }

@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+/**
+ * TUI to handle and run GameServer.
+ */
 public class GameServerTUI {
 
   GameServer gameServer;

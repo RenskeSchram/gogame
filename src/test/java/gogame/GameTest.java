@@ -127,7 +127,7 @@ public class GameTest {
   public void testDoPass() {
     game.doPass(Color.BLACK);
     assertTrue(game.getActive());
-    assertSame(game.getTurn().color, Color.WHITE);
+    assertSame(game.getTurn().getColor(), Color.WHITE);
     game.doPass(Color.WHITE);
     assertFalse(game.getActive());
   }
@@ -155,7 +155,7 @@ public class GameTest {
     System.out.println(game.board.toString());
     assertTrue(game.isKoFight(new int[]{2, 2}, Color.BLACK));
     game.doMove(new int[]{2, 2}, Color.BLACK);
-    assertSame(game.getTurn().color, Color.BLACK);
+    assertSame(game.getTurn().getColor(), Color.BLACK);
     System.out.println(game.board.toString());
   }
 

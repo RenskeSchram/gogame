@@ -1,4 +1,4 @@
-package gogame.player;
+package gogame.client;
 
 
 import gogame.Protocol;
@@ -7,17 +7,25 @@ import gogame.SocketConnection;
 import java.io.IOException;
 import java.net.Socket;
 
-public class PlayerConnection extends SocketConnection {
+/**
+ * Handles incoming and forwarded message from and to the server.
+ */
+public class ClientConnection extends SocketConnection {
 
-  OnlinePlayer player;
+  protected ClientPlayer player;
   private StrategyGame game;
 
-  public PlayerConnection(Socket socket, OnlinePlayer player) throws IOException {
+  public ClientConnection(Socket socket, ClientPlayer player) throws IOException {
     super(socket);
     this.start();
     this.player = player;
   }
 
+  /**
+   * Decipher incoming message bases on protocol.
+   *
+   * @param input line of input to be handled
+   */
   @Override
   public void handleInput(String input) {
     String[] protocol = input.split(Protocol.SEPARATOR);
@@ -147,15 +155,14 @@ public class PlayerConnection extends SocketConnection {
 
     }
   }
-
   private void initializeStrategyGame(String[] protocol) {
     int DIM = Integer.parseInt(protocol[2]);
     String[] playerNames = protocol[1].split(",");
     if (playerNames[0].equals(player.getUsername())) {
-      game = new StrategyGame(player, new OnlinePlayer(), DIM);
+      game = new StrategyGame(player, new ClientPlayer(), DIM);
       player.receiveMessage("Playing with BLACK");
     } else {
-      game = new StrategyGame(new OnlinePlayer(), player, DIM);
+      game = new StrategyGame(new ClientPlayer(), player, DIM);
       player.receiveMessage("Playing with WHITE");
     }
 

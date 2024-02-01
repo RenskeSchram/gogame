@@ -79,11 +79,11 @@ public class ServerConnection extends SocketConnection {
 
   private void handleQueue() {
     if (serverPlayer != null && serverPlayer.getUsername() != null) {
-        gameServer.handleQueue(serverPlayer);
-
+      gameServer.queueServerPlayer(serverPlayer);
       if (gameServer.getQueue().contains(serverPlayer)) {
         sendOutput(Protocol.QUEUED);
       }
+      gameServer.checkQueue();
     } else {
       sendError("Correct LOGIN required to queue");
     }

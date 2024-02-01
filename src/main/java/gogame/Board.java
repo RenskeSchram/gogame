@@ -138,13 +138,6 @@ public class Board {
   protected void setStone(int[] intersection, Color color) {
     if (isIntersection(intersection)) {
       this.intersections[intersection[0]][intersection[1]] = color;
-      if (color == Color.WHITE || color == Color.BLACK) {
-        //go.placeStone(intersection, color);
-      } else if (color == Color.EMPTY) {
-        //go.removeStone(intersection);
-      } else {
-        // Color.NEUTRAL not possible on Go board. Or implement with different color.
-      }
     }
   }
 
@@ -155,7 +148,7 @@ public class Board {
    * @return Color of the field with row and col
    * // requires: isIntersection(row, col)
    */
-  protected Color getStone(int[] intersection) {
+  public Color getStone(int[] intersection) {
     if (isIntersection(intersection)) {
       return intersections[intersection[0]][intersection[1]];
     } else {
@@ -326,7 +319,7 @@ public class Board {
    * Returns if it is a valid move to make on the board.
    *
    * @param intersection intersection saved as int[] {col, row}
-   * @return
+   * @return true if it is a valid move to make on the board.
    */
   public boolean isValid(int[] intersection) {
     return isIntersection(intersection) && isEmptyIntersection(intersection);
@@ -406,7 +399,6 @@ public class Board {
       }
     }
   }
-
 
   /**
    * Determine winner of the board, by determining the final territories and counting the stones.

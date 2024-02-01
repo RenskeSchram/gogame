@@ -1,10 +1,12 @@
-package gogame.player;
+package gogame.client;
 
 import gogame.Color;
 import gogame.Game;
-import gogame.GoBoardGui;
 import gogame.Player;
 
+/**
+ * Inherited object from Game class, with adjustments for the Client, e.g. update GUI.
+ */
 public class StrategyGame extends Game {
 
   GoBoardGui goGui;
@@ -18,9 +20,9 @@ public class StrategyGame extends Game {
    */
   public StrategyGame(Player firstPlayer, Player secondPlayer, int DIM) {
     super(firstPlayer, secondPlayer, DIM);
-    //this.useTimer = false;
     this.goGui = new GoBoardGui(DIM);
   }
+
   @Override
   public void doMove(int[] location, Color color) {
     super.doMove(location, color);
@@ -30,10 +32,4 @@ public class StrategyGame extends Game {
   private void updateGoGui() {
     goGui.updateGUI(board);
   }
-
-//  public static void main(String[] args) {
-//    StrategyGame game = new StrategyGame(new OnlinePlayer(), new OnlinePlayer(), 9);
-//    game.handleValidMove(new int[]{5,6}, Color.WHITE);
-//    game.handleValidMove(new int[]{5,5}, Color.BLACK);
-//  }
 }
