@@ -2,6 +2,7 @@ package gogame;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class Game {
@@ -9,16 +10,17 @@ public class Game {
   private final List<Player> players = new ArrayList<>();
   private Player turn;
   public Board board;
-  private Board previousBoard;
   private boolean active = false;
   private boolean passed = false;
   private int gameCode;
+  private HashMap<Integer, Color[][]> koRuleBoards;
+  int counter = 0;
   /**
    * Constructor for new Game object with players and a new Board.
    */
   public Game(Player firstPlayer, Player secondPlayer, int DIM) {
     board = new Board(DIM);
-    previousBoard = new Board(DIM);
+    koRuleBoards = new HashMap<>();
     players.add(firstPlayer);
     players.add(secondPlayer);
 
@@ -115,7 +117,7 @@ public class Game {
   /**
    * End game. Stop possibility to make a move, calculate scores and call out winner.
    */
-  protected void end(Color color) {
+  public void end(Color color) {
     active = false;
     if (color == Color.WHITE || color == Color.BLACK) {
       for (Player player : players) {
@@ -128,6 +130,7 @@ public class Game {
         player.passGameUpdate(Protocol.GAMEOVER + Protocol.SEPARATOR + "DRAW");
       }
     }
+    board.clear();
   }
 
 
@@ -157,12 +160,13 @@ public class Game {
             + Protocol.SEPARATOR + getTurn().getColor());
 
         passed = false;
-        previousBoard = board.deepCopy();
 
-        handleValidMove(location, color);
+        handleValidMove(board, location, color);
 
         turn = otherTurn();
         getTurn().passGameUpdate(Protocol.MAKEMOVE);
+        koRuleBoards.put(counter, board.deepCopy().getIntersections());
+        counter++;
 
       } else {
         getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "invalid move, try again");
@@ -179,7 +183,7 @@ public class Game {
     return intersectionArray[1]*board.getDIM() + intersectionArray[0];
   }
 
-  public void handleValidMove(int[] location, Color color) {
+  public void handleValidMove(Board board, int[] location, Color color) {
     // put the stone on the field
     board.setStone(location, color);
     //check for and remove captured stones
@@ -204,6 +208,8 @@ public class Game {
         turn = otherTurn();
         passed = true;
         getTurn().passGameUpdate(Protocol.MAKEMOVE);
+        koRuleBoards.put(counter, board.deepCopy().getIntersections());
+        counter++;
       }
 
     }
@@ -248,13 +254,18 @@ public class Game {
    */
   protected boolean isKoFight(int[] location, Color color) {
     Board copyBoard = board.deepCopy();
+    handleValidMove(copyBoard, location, color);
 
-    // do to-be-tested move
-    copyBoard.setStone(location, color);
+    boolean isKoFight = false;
 
-    // check if this moves results in a similar board as one move ago, if so: Ko-fight
-    copyBoard.removeCaptured(copyBoard.getCaptured(location));
-    return Arrays.deepEquals(copyBoard.getIntersections(), previousBoard.getIntersections());
+    for (Color[][] oldBoardArray : koRuleBoards.values()) {
+      if (Arrays.deepEquals(oldBoardArray, copyBoard.getIntersections())) {
+        isKoFight = true;
+        break;
+      }
+    }
+
+    return isKoFight;
   }
 
 }

@@ -1,6 +1,7 @@
 package gogame.client;
 
 
+import gogame.Color;
 import gogame.Protocol;
 import gogame.SocketConnection;
 
@@ -128,8 +129,11 @@ public class ClientConnection extends SocketConnection {
   private void handleGameOver(String[] protocol) {
     player.receiveMessage(printProtocolMessage(protocol));
     game.board.getFilledBoard();
-    player.game = null;
     System.out.println(game.board.toString());
+    game = null;
+    if (player.game != null) {
+      player.game.end(Color.NEUTRAL);
+    }
   }
 
   private void handleMove(String[] protocol) {

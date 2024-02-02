@@ -33,4 +33,8 @@ public class StrategyGame extends Game {
     goGui.updateGUI(board);
   }
 
+  @Override
+  public void end(Color color) {
+    super.end(color);
+  }
 }

@@ -7,9 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import gogame.server.GameServer;
 import gogame.server.ServerConnection;
 import gogame.server.ServerPlayer;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Random;
@@ -20,7 +18,6 @@ import org.junit.jupiter.api.Test;
 public class GameTest {
 
   private Game game;
-  private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
 
   public int getRandomPort() {
@@ -43,8 +40,6 @@ public class GameTest {
 
     int DIM = 9;
     game = new Game(playerI, playerII, DIM);
-
-    System.setOut(new PrintStream(outputStreamCaptor));
   }
 
   @AfterEach
@@ -142,19 +137,20 @@ public class GameTest {
 
   @Test
   public void testIsKoFight() {
-    game.board.setStone(new int[]{2, 1}, Color.WHITE);
-    game.board.setStone(new int[]{1, 2}, Color.WHITE);
-    game.board.setStone(new int[]{2, 2}, Color.BLACK);
-    game.board.setStone(new int[]{1, 3}, Color.BLACK);
-    game.board.setStone(new int[]{3, 3}, Color.BLACK);
-    System.out.println(game.board.toString());
-
+    game.doMove(new int[]{2, 2}, Color.BLACK);
+    game.doMove(new int[]{2, 1}, Color.WHITE);
+    game.doMove(new int[]{1, 3}, Color.BLACK);
+    game.doMove(new int[]{1, 2}, Color.WHITE);
+    game.doMove(new int[]{3, 3}, Color.BLACK);
     game.doMove(new int[]{3, 2}, Color.WHITE);
+    System.out.println(game.board.toString());
     game.doMove(new int[]{2, 4}, Color.BLACK);
+    System.out.println(game.board.toString());
     game.doMove(new int[]{2, 3}, Color.WHITE);
     System.out.println(game.board.toString());
     assertTrue(game.isKoFight(new int[]{2, 2}, Color.BLACK));
     game.doMove(new int[]{2, 2}, Color.BLACK);
+    System.out.println(game.board.toString());
     assertSame(game.getTurn().getColor(), Color.BLACK);
     System.out.println(game.board.toString());
   }

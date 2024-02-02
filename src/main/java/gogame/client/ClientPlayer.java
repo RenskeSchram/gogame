@@ -59,7 +59,7 @@ public class ClientPlayer extends Player {
 
   public void setStrategy(String type) {
     // choose strategy
-    if (type.equals("computer")) {
+    if (type.equalsIgnoreCase("computer")) {
       strategy = new ComputerStrategy(this);
       receiveMessage("Computer Strategy applied");
     } else {

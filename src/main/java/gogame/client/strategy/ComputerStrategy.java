@@ -56,26 +56,19 @@ public class ComputerStrategy implements Strategy {
     int[] move = getImprovingTerritoryMove();
 
     try {
-      Thread.sleep(2000);
+      Thread.sleep(250);
     } catch (InterruptedException ie) {
       Thread.currentThread().interrupt();
     }
-    Board testBoard = strategyGame.board.deepCopy();
 
-    if (move == null || getValidMoves().size() < 3) {
-      if (getValidMoves().size() < 3 || getTerritoryDifference(testBoard) > 0) {
-        player.doPass();
-        System.out.println("PASS" + player.getColor());
-      } else {
-        int[] randomMove = getRandomMove(getValidMoves());
-        player.doMove(randomMove);
-        System.out.println(Arrays.toString(randomMove) + player.getColor());
-      }
-    } else {
+    if (move != null && getValidMoves().size() > 3) {
       player.doMove(move);
       System.out.println(Arrays.toString(move) + player.getColor());
+    } else {
+      System.out.println("pass");
+      player.doPass();
     }
-    System.out.println(testBoard.toString());
+    System.out.println(strategyGame.board.toString());
   }
 
   /**
@@ -84,22 +77,32 @@ public class ComputerStrategy implements Strategy {
    */
   public int[] getImprovingTerritoryMove() {
     int[] bestMove = null;
-    int bestTerritoryDifference = 0;
+    int bestTerritoryDifference = -strategyGame.board.getDIM() * strategyGame.board.getDIM();
 
     List<int[]> shuffledValidMoves = getValidMoves();
     Collections.shuffle(shuffledValidMoves);
 
     for (int[] move : shuffledValidMoves) {
-      Board testBoard = strategyGame.board.deepCopy();
-      strategyGame.handleValidMove(move, player.getColor());
-      if (getTerritoryDifference(strategyGame.board) > bestTerritoryDifference) {
+      Board copyBoard = strategyGame.board.deepCopy();
+      strategyGame.handleValidMove(strategyGame.board, move, player.getColor());
+      if (getTerritoryDifference(strategyGame.board) >= bestTerritoryDifference) {
         bestMove = move;
         bestTerritoryDifference = getTerritoryDifference(strategyGame.board);
       }
-      strategyGame.board = testBoard;
+      strategyGame.board = copyBoard;
     }
     return bestMove;
   }
+
+//  private boolean isEqualNumOfBlackAndWhiteStones(Board oldBoard, Board newBoard) {
+//    int[] oldStones = new int[]{oldBoard.getStonesWithThisColor(Color.BLACK).size(),
+//        oldBoard.getStonesWithThisColor(Color.WHITE).size()};
+//    int[] newStones = new int[]{newBoard.getStonesWithThisColor(Color.BLACK).size(),
+//        newBoard.getStonesWithThisColor(Color.WHITE).size()};
+//    System.out.println(Arrays.equals(oldStones, newStones) + "   " + Arrays.toString(oldStones) + "   " + Arrays.toString(newStones));
+//    return Arrays.equals(oldStones, newStones);
+//  }
+//
 
   /**
    * Calculate current territory difference.

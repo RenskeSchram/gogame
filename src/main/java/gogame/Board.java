@@ -17,7 +17,6 @@ public class Board {
   private final int DIM;
   private final Color[][] intersections;
 
-
   /**
    * Constructor for an empty Board.
    * For all intersections, set to Color.EMPTY
@@ -419,4 +418,11 @@ public class Board {
     }
   }
 
+  public void clear() {
+    for (int row = 0; row < DIM; row++) {
+      for (int col = 0; col < DIM; col++) {
+        setStone(new int[]{col, row}, Color.EMPTY);
+      }
+    }
+  }
 }
