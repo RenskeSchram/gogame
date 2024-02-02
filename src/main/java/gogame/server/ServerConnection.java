@@ -128,7 +128,7 @@ public class ServerConnection extends SocketConnection {
   @Override
   public void sendOutput(String output) {
     super.sendOutput(output);
-    //System.out.println(output);
+    System.out.println(output);
   }
 
   /**

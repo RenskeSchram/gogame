@@ -29,6 +29,7 @@ public class ClientConnection extends SocketConnection {
    */
   @Override
   public void handleInput(String input) {
+    System.out.println(input);
     String[] protocol = input.split(Protocol.SEPARATOR);
 
     switch (protocol[0]) {

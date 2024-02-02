@@ -119,6 +119,10 @@ public class Game {
    */
   public void end(Color color) {
     active = false;
+    System.out.println(board.toString());
+    System.out.println("WHITE: " + board.getStonesWithThisColor(Color.WHITE).size());
+    System.out.println("BLACK: " + board.getStonesWithThisColor(Color.BLACK).size());
+
     if (color == Color.WHITE || color == Color.BLACK) {
       for (Player player : players) {
         player.quitGame();

@@ -36,8 +36,13 @@ public class ClientPlayer extends Player {
   public void doMove(int[] location) {
     assert game instanceof StrategyGame;
     playerConnection.sendOutput(
-        Protocol.MOVE + Protocol.SEPARATOR + gogame.Move.intersectionLocationToString(location));
+        Protocol.MOVE + Protocol.SEPARATOR + intersectionArrayToSingleInt(location));
   }
+
+  private int intersectionArrayToSingleInt(int[] intersectionArray) {
+    return intersectionArray[1]* 9 + intersectionArray[0];
+  }
+
 
   public void doPass() {
     playerConnection.sendOutput(Protocol.PASS);

@@ -56,7 +56,7 @@ public class ComputerStrategy implements Strategy {
     int[] move = getImprovingTerritoryMove();
 
     try {
-      Thread.sleep(2000);
+      Thread.sleep(1000);
     } catch (InterruptedException ie) {
       Thread.currentThread().interrupt();
     }
@@ -93,16 +93,6 @@ public class ComputerStrategy implements Strategy {
     }
     return bestMove;
   }
-
-//  private boolean isEqualNumOfBlackAndWhiteStones(Board oldBoard, Board newBoard) {
-//    int[] oldStones = new int[]{oldBoard.getStonesWithThisColor(Color.BLACK).size(),
-//        oldBoard.getStonesWithThisColor(Color.WHITE).size()};
-//    int[] newStones = new int[]{newBoard.getStonesWithThisColor(Color.BLACK).size(),
-//        newBoard.getStonesWithThisColor(Color.WHITE).size()};
-//    System.out.println(Arrays.equals(oldStones, newStones) + "   " + Arrays.toString(oldStones) + "   " + Arrays.toString(newStones));
-//    return Arrays.equals(oldStones, newStones);
-//  }
-//
 
   /**
    * Calculate current territory difference.

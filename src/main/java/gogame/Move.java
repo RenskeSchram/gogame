@@ -11,6 +11,7 @@ public class Move {
   }
 
   public static String intersectionLocationToString(int[] intersectionLocation) {
+
     return intersectionLocation[0] + "," + intersectionLocation[1];
   }
 
