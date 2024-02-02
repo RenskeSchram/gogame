@@ -167,6 +167,7 @@ public class Game {
         getTurn().passGameUpdate(Protocol.MAKEMOVE);
         koRuleBoards.put(counter, board.deepCopy().getIntersections());
         counter++;
+        //System.out.println(board.toString());
 
       } else {
         getTurn().passGameUpdate(Protocol.ERROR + Protocol.SEPARATOR + "invalid move, try again");

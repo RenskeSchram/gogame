@@ -125,6 +125,12 @@ public class ServerConnection extends SocketConnection {
     }
   }
 
+  @Override
+  public void sendOutput(String output) {
+    super.sendOutput(output);
+    //System.out.println(output);
+  }
+
   /**
    * Handles a disconnection of the connection.
    */

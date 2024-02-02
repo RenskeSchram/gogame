@@ -56,7 +56,7 @@ public class ComputerStrategy implements Strategy {
     int[] move = getImprovingTerritoryMove();
 
     try {
-      Thread.sleep(250);
+      Thread.sleep(2000);
     } catch (InterruptedException ie) {
       Thread.currentThread().interrupt();
     }
